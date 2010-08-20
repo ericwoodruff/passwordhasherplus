@@ -49,13 +49,12 @@ $("input[type=password]").each (function (index) {
 	var hashing = false;
 	var masking = true;
 
-	$(this).wrap ('<span class="passhash" />');
-	$(this).parent ().append (
-		'<input type="button" style="align: left; white-space:nowrap; width: 22px;" class="hashbutton" title="Enable/disable Hashing" value="#"/>' +
-		'<input type="button" style="align: left; white-space:nowrap; width: 22px;" class="maskbutton" title="Disable/enable Masking" value="a"/>');
+	$(this).after (
+		'<a class="hashbutton buttonlink" title="Enable/disable Hashing">#</a>' +
+		'<a class="maskbutton buttonlink" title="Disable/enable Masking">a</a>');
 
-	hashbutton = $(this).next ("input[type=button][className=hashbutton]").get (0);
-	maskbutton = $(this).nextAll ("input[type=button][className=maskbutton]").get (0);
+	hashbutton = $(this).next ("a.hashbutton").get (0);
+	maskbutton = $(this).nextAll ("a.maskbutton").get (0);
 
 	if ("" == field.id) {
 		// field has no id, so we will make one
@@ -93,10 +92,10 @@ $("input[type=password]").each (function (index) {
 
 	function painthashbutton () {
 		if (hashing) {
-			hashbutton.value = "\"";
+			hashbutton.innerHTML = "\"";
 			hashbutton.title = "Literal password (Ctrl + #)"
 		} else {
-			hashbutton.value = "#";
+			hashbutton.innerHTML = "#";
 			hashbutton.title = "Hash password (Ctrl + #)"
 		}
 	}
@@ -104,11 +103,11 @@ $("input[type=password]").each (function (index) {
 	function setfieldtype () {
 		if (masking) {
 			field.type = "password";
-			maskbutton.value = "a";
+			maskbutton.innerHTML = "a";
 			maskbutton.title = "Show password (Ctrl + *)";
 		} else {
 			field.type = "text";
-			maskbutton.value = "*";
+			maskbutton.innerHTML = "*";
 			maskbutton.title = "Mask password (Ctrl + *)";
 		}
 	}
