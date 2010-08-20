@@ -1,0 +1,112 @@
+<!--
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Password Hasher Redux
+ *
+ * The Initial Developer of the Original Code is Eric Woodruff.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s): (none)
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+-->
+<html>
+<script type="text/javascript">
+
+var portsByTabId = {};
+
+chrome.extension.onConnect.addListener (function (port) {
+	console.assert (port.name == "passhash");
+	port.onMessage.addListener (function (msg) {
+		if (null != msg.init) {
+			var url = msg.init;
+			var site = getsite (url);
+			var config = loadconfig (site);
+			portsByTabId[port.tab.id] = port;
+			port.postMessage ({ update: config });
+		} else if (null != msg.save) {
+			saveconfig (msg.save.site, msg.save, null);
+		}
+	});
+
+	port.onDisconnect.addListener (function (event) {
+		portsByTabId.splice (port.tab.id, 1);
+		console.log ("Removed " + port.tab.id);
+	});
+});
+
+Storage.prototype.setObject = function (key, value) {
+	this.setItem (key, JSON.stringify (value));
+}
+
+Storage.prototype.getObject = function (key) {
+	var str = this.getItem (key);
+	if (null == str) {
+		throw "No object stored";
+	}
+	return JSON.parse (str);
+}
+
+function saveconfig (site, config, tabid) {
+	console.log ("Called saveconfig " + site);
+	localStorage.setObject (site, config);
+
+	if (null != tabid) {
+		portsByTabId[tabid].postMessage ({ update: config });
+	}
+}
+
+function loadconfig (site) {
+	console.log ("Called loadconfig " + site);
+	try {
+		return localStorage.getObject (site);
+	} catch (e) {
+		var obj = new Object ();
+		obj.site = site;
+		obj.length = 8;
+		obj.strength = 2;
+		obj.fields = new Array ();
+		return obj;
+	}
+}
+
+function getsite (url) {
+	console.log ("getsite "+url);
+	var reg = new RegExp ("^https?://([^.]+\.)*?([^.]+)\.([a-z]{2,5})/.*$");
+	var m = reg.exec (url);
+	try {
+		if ("" == m[2]) {
+			throw "chrome";
+		}
+		return m[2];
+	} catch (e) {
+		return 'chrome';
+	}
+}
+
+</script>
+</html>

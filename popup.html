@@ -1,0 +1,124 @@
+<!--
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Password Hasher Redux
+ *
+ * The Initial Developer of the Original Code is Eric Woodruff.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s): (none)
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+-->
+<html>
+<head>
+<style>
+* { font-family: Arial; font-size: 12px; }
+</style>
+<script type="text/javascript" src="lib/jquery-1.4.2.min.js"></script>
+</head>
+
+<body>
+<div style="width: 310px;">
+	<table border="0">
+		<tr>
+			<td>Site Tag:</td>
+			<td>
+				<input style="width: 134px;" type="text" id="site" value="" />
+				<input style="width: 56px;" type="button" value="Bump" id="bump" />
+			</td>
+		</tr>
+		<tr>
+			<td>Password Length:</td>
+			<td><select id="length">
+				<option value="2">2</option>
+				<option value="4">4</option>
+				<option value="6">6</option>
+				<option value="8">8</option>
+				<option value="10">10</option>
+				<option value="12">12</option>
+				<option value="14">14</option>
+				<option value="16">16</option>
+				<option value="18">18</option>
+				<option value="20">20</option>
+				<option value="22">22</option>
+				<option value="24">24</option>
+				<option value="26">26</option>
+			</select></td>
+		</tr>
+		<tr>
+			<td>Password Strength:</td>
+			<td><select id="strength">
+				<option value="2">Alphanumeric+Special</option>
+				<option value="1">Alphanumeric</option>
+				<option value="0">Numeric</option>
+			</select></td>
+		</tr>
+	</table>
+</div>
+</body>
+
+<script type="text/javascript">
+var site;
+var config;
+var tabid;
+
+function writemodel () {
+	config.site = $('#site').val ();
+	config.length = $('#length').val ();
+	config.strength = $('#strength').val ();
+	chrome.extension.getBackgroundPage ().saveconfig (site, config, tabid);
+}
+window.onunload = writemodel;
+
+function readmodel (site) {
+	config = chrome.extension.getBackgroundPage ().loadconfig (site);
+	$('#site').val (config.site);
+	$('#length').val (config.length);
+	$('#strength').val (config.strength);
+}
+
+chrome.tabs.getSelected (null, function (tab) {
+	tabid = tab.id;
+	site = chrome.extension.getBackgroundPage ().getsite (tab.url);
+	readmodel (site);
+});
+
+$('#bump').click (function () {
+	var re = new RegExp ("^([^:]+?)(:([0-9]+))?$");
+	var site = $("#site").val ();
+	var matcher = re.exec (site);
+	var bump = 1;
+	if (null != matcher[3]) {
+		site = matcher[1];
+		bump += parseInt (matcher[3]);
+	}
+	$("#site").val (site + ":" + bump);
+});
+
+</script>
+</html>
