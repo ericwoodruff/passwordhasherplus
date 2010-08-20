@@ -87,8 +87,14 @@ function loadconfig (site) {
 	} catch (e) {
 		var obj = new Object ();
 		obj.site = site;
-		obj.length = 8;
-		obj.strength = 2;
+		obj.length = localStorage["default_length"];
+		if (!obj.length) {
+			obj.length = 8;
+		}
+		obj.strength = localStorage["default_strength"];
+		if (!obj.strength) {
+			obj.strength = 2;
+		}
 		obj.fields = new Array ();
 		return obj;
 	}
