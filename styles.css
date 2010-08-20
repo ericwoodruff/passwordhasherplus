@@ -33,16 +33,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-a.buttonlink {
+span.buttonlink {
 	-webkit-appearance: button;
 	align: left;
 	white-space: nowrap;
-	width: 22px;
+	width: 20px;
 	text-align: center;
 	padding: 2px;
-	text-decoration: none;
-}
-
-a.buttonlink:hover {
-	text-decoration: none;
+	margin-left: 2px;
 }

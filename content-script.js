@@ -50,11 +50,11 @@ $("input[type=password]").each (function (index) {
 	var masking = true;
 
 	$(this).after (
-		'<a class="hashbutton buttonlink" title="Enable/disable Hashing">#</a>' +
-		'<a class="maskbutton buttonlink" title="Disable/enable Masking">a</a>');
+		'<span class="hashbutton buttonlink" title="Enable/disable Hashing">#</span>' +
+		'<span class="maskbutton buttonlink" title="Disable/enable Masking">a</span>');
 
-	hashbutton = $(this).next ("a.hashbutton").get (0);
-	maskbutton = $(this).nextAll ("a.maskbutton").get (0);
+	hashbutton = $(this).next ("span.hashbutton").get (0);
+	maskbutton = $(this).nextAll ("span.maskbutton").get (0);
 
 	if ("" == field.id) {
 		// field has no id, so we will make one
@@ -277,7 +277,7 @@ port.onMessage.addListener (function (msg) {
 	console.debug (msg);
 	if (null != msg.update) {
 		config = msg.update;
-		$(":button[className=hashbutton]").each (function (index) {
+		$("span.hashbutton").each (function (index) {
 			this.dispatchEvent (evt);
 		});
 	}
