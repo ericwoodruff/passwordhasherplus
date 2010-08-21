@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Password Hasher Redux
+ * The Original Code is Password Hasher Plus
  *
  * The Initial Developer of the Original Code is Eric Woodruff.
  * Portions created by the Initial Developer are Copyright (C) 2010
