@@ -100,13 +100,13 @@ function loadconfig (site) {
 		obj.fields = new Array ();
 	}
 
-	# Object wasn't saved with a seed so it requires compatibility
+	// Object wasn't saved with a seed so it requires compatibility
 	if (!obj.seed) {
 		obj.site = "compatible:" + obj.site;
 	}
 
 	obj.seed = localStorage["private_seed"];
-	# No private seed generated, create one
+	// No private seed generated, create one
 	if (!obj.seed) {
 		obj.seed = localStorage["private_seed"] = generate_guid ();
 	}
