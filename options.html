@@ -102,6 +102,7 @@ function save_options () {
 	localStorage["default_length"] = document.getElementById ("length").value;
 	localStorage["default_strength"] = document.getElementById ("strength").value;
 	localStorage["private_seed"] = document.getElementById ("seed").value;
+	chrome.extension.getBackgroundPage ().optionschanged ();
 }
 
 function restore_options () {

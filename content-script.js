@@ -76,7 +76,7 @@ $("input[type=password]").each (function (index) {
 				false // only digits
 			);
 		} else {
-			site = site.split (":")[1];
+			site = site.substringAfter (":");
 		}
 
 		hash = PassHashCommon.generateHashWord (

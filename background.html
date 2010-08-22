@@ -38,7 +38,7 @@
 <script type="text/javascript" src="common.js"/>
 <script type="text/javascript">
 
-var portsByTabId = {};
+var portsByTabId = new Array ();
 
 chrome.extension.onConnect.addListener (function (port) {
 	console.assert (port.name == "passhash");
@@ -47,6 +47,7 @@ chrome.extension.onConnect.addListener (function (port) {
 			var url = msg.init;
 			var site = getsite (url);
 			var config = loadconfig (site);
+			port.passhashsite = site;
 			portsByTabId[port.tab.id] = port;
 			port.postMessage ({ update: config });
 		} else if (null != msg.save) {
@@ -72,8 +73,18 @@ Storage.prototype.getObject = function (key) {
 	return JSON.parse (str);
 }
 
+function optionschanged () {
+	for (tabid in portsByTabId) {
+		var port = portsByTabId[tabid];
+		port.postMessage ({ update: loadconfig (port.passhashsite) });
+	}
+}
+
 function saveconfig (site, config, tabid) {
 	console.log ("Called saveconfig " + site);
+	if (site.startsWith ("compatible:")) {
+		site = site.substringAfter ("compatible:");
+	}
 	localStorage.setObject (site, config);
 
 	if (null != tabid) {

@@ -40,6 +40,7 @@
 * { font-family: Arial; font-size: 12px; }
 </style>
 <script type="text/javascript" src="lib/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="common.js"></script>
 </head>
 
 <body>
@@ -111,6 +112,9 @@ chrome.tabs.getSelected (null, function (tab) {
 $('#bump').click (function () {
 	var re = new RegExp ("^([^:]+?)(:([0-9]+))?$");
 	var site = $("#site").val ();
+	if (site.startsWith ("compatible:")) {
+		site = site.substringAfter ("compatible:");
+	}
 	var matcher = re.exec (site);
 	var bump = 1;
 	if (null != matcher[3]) {

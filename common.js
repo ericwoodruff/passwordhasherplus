@@ -37,6 +37,10 @@ String.prototype.startsWith = function (str) {
 	return (this.match ("^" + str) == str);
 }
 
+String.prototype.substringAfter = function (str) {
+	return (this.substring (this.indexOf (str) + str.length));
+}
+
 var default_length = 8;
 var default_strength = 2;
 
