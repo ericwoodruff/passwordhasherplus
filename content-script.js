@@ -50,8 +50,8 @@ $("input[type=password]").each (function (index) {
 	var masking = true;
 
 	$(this).after (
-		'<span class="hashbutton buttonlink" title="Enable/disable Hashing">#</span>' +
-		'<span class="maskbutton buttonlink" title="Disable/enable Masking">a</span>');
+		'<span class="hashbutton passhashbutton" title="Enable/disable Hashing">#</span>' +
+		'<span class="maskbutton passhashbutton" title="Disable/enable Masking">a</span>');
 
 	hashbutton = $(this).next ("span.hashbutton").get (0);
 	maskbutton = $(this).nextAll ("span.maskbutton").get (0);
@@ -62,8 +62,25 @@ $("input[type=password]").each (function (index) {
 	}
 
 	function rehash () {
+		var site = config.site;
+
+		if (!site.startsWith ("compatible:")) {
+			site = PassHashCommon.generateHashWord (
+				config.seed,
+				site,
+				24,
+				true, // require digits
+				true, // require punctuation
+				true, // require mixed case
+				false, // no special characters
+				false // only digits
+			);
+		} else {
+			site = site.split (":")[1];
+		}
+
 		hash = PassHashCommon.generateHashWord (
-			config.site,
+			site,
 			input,
 			config.length,
 			true, // require digits
