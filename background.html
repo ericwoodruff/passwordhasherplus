@@ -94,9 +94,20 @@ function saveconfig (site, config, tabid) {
 
 function loadconfig (site) {
 	console.log ("Called loadconfig " + site);
+
+	var seed = localStorage["private_seed"];
+	// No private seed generated, create one
+	if (!seed) {
+		seed = localStorage["private_seed"] = generate_guid ();
+	}
+
 	var obj;
 	try {
 		obj = localStorage.getObject (site);
+		// Object wasn't saved with a seed so it requires compatibility
+		if (!obj.seed) {
+			obj.site = "compatible:" + obj.site;
+		}
 	} catch (e) {
 		obj = new Object ();
 		obj.site = site;
@@ -109,17 +120,7 @@ function loadconfig (site) {
 			obj.strength = default_strength;
 		}
 		obj.fields = new Array ();
-	}
-
-	// Object wasn't saved with a seed so it requires compatibility
-	if (!obj.seed) {
-		obj.site = "compatible:" + obj.site;
-	}
-
-	obj.seed = localStorage["private_seed"];
-	// No private seed generated, create one
-	if (!obj.seed) {
-		obj.seed = localStorage["private_seed"] = generate_guid ();
+		obj.seed = seed;
 	}
 
 	return obj;
