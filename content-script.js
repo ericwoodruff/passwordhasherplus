@@ -36,10 +36,9 @@ var config;
 
 var port = chrome.extension.connect ({name: "passhash"});
 
-var index = 0;
+var id = 0;
 
-$("input[type=password]").each (function (index) {
-	var field = this;
+function bind (field) {
 	var hasFocus = false;
 	var hashbutton;
 	var maskbutton;
@@ -49,16 +48,16 @@ $("input[type=password]").each (function (index) {
 	var hashing = false;
 	var masking = true;
 
-	$(this).after (
+	$(field).after (
 		'<span class="hashbutton passhashbutton" title="Enable/disable Hashing">#</span>' +
 		'<span class="maskbutton passhashbutton" title="Disable/enable Masking">a</span>');
 
-	hashbutton = $(this).next ("span.hashbutton").get (0);
-	maskbutton = $(this).nextAll ("span.maskbutton").get (0);
+	hashbutton = $(field).next ("span.hashbutton").get (0);
+	maskbutton = $(field).nextAll ("span.maskbutton").get (0);
 
 	if ("" == field.id) {
 		// field has no id, so we will make one
-		field.id = "passhash_" + index++;
+		field.id = "passhash_" + id++;
 	}
 
 	function rehash () {
@@ -192,21 +191,21 @@ $("input[type=password]").each (function (index) {
 	painthashbutton ();
 	setfieldtype ();
 
-	this.addEventListener ("click", function () {
+	field.addEventListener ("click", function () {
 		if (field.readOnly) {
 			field.readOnly = false;
 			paintvalue ();
 		}
 	});
 
-	this.addEventListener ("focus", function () {
+	field.addEventListener ("focus", function () {
 		if (hashing) {
 			paintvalue ();
 		}
 		hasFocus = true;
 	});
 
-	this.addEventListener ("blur", function () {
+	field.addEventListener ("blur", function () {
 		update ();
 		if (hashing) {
 			painthash ();
@@ -214,7 +213,7 @@ $("input[type=password]").each (function (index) {
 		hasFocus = false;
 	});
 
-	this.addEventListener ("change", update);
+	field.addEventListener ("change", update);
 
 	hashbutton.addEventListener ("click", function () {
 		togglehashing (true);
@@ -242,7 +241,7 @@ $("input[type=password]").each (function (index) {
 	var ctrlDown = false;
 	var shiftDown = false;
 	var altDown = false;
-	$(this).keyup (function (e) {
+	$(field).keyup (function (e) {
 		switch (e.which) {
 			case 16: shiftDown = false; break;
 			case 17: ctrlDown = false; break;
@@ -254,7 +253,7 @@ $("input[type=password]").each (function (index) {
 	var alt = 10000;
 	var shift = 1000;
 
-	$(this).keydown (function (e) {
+	$(field).keydown (function (e) {
 		switch (e.which) {
 			case 16: shiftDown = true; break;
 			case 17: ctrlDown = true; break;
@@ -286,7 +285,19 @@ $("input[type=password]").each (function (index) {
 				};
 		};
 	});
+}
+
+$("input[type=password]").each (function (index) {
+	bind (this);
 });
+
+document.addEventListener ("DOMNodeInserted", onNodeInserted, false);
+
+function onNodeInserted (evt) {
+	$(evt.srcElement).find ("input[type=password]").each (function (index) {
+		bind (this);
+	});
+}
 
 var evt = document.createEvent ("HTMLEvents");
 evt.initEvent ('rehash', true, true);
