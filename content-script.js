@@ -40,20 +40,19 @@ var id = 0;
 
 function bind (field) {
 	var hasFocus = false;
-	var hashbutton;
-	var maskbutton;
 	var backgroundStyle = field.style.backgroundColor;
 	var input = field.value;
 	var hash = "";
 	var hashing = false;
 	var masking = true;
+	var editing = false;
 
 	$(field).after (
 		'<span class="hashbutton passhashbutton" title="Enable/disable Hashing">#</span>' +
 		'<span class="maskbutton passhashbutton" title="Disable/enable Masking">a</span>');
 
-	hashbutton = $(field).next ("span.hashbutton").get (0);
-	maskbutton = $(field).nextAll ("span.maskbutton").get (0);
+	var hashbutton = $(field).next ("span.hashbutton").get (0);
+	var maskbutton = $(field).nextAll ("span.maskbutton").get (0);
 
 	if ("" == field.id) {
 		// field has no id, so we will make one
@@ -97,13 +96,13 @@ function bind (field) {
 			field.value = "";
 		}
 		field.style.backgroundColor = "#D1D1D1";
-		field.readOnly = true;
+		editing = false;
 	}
 
 	function paintvalue () {
 		field.value = input;
 		field.style.backgroundColor = backgroundStyle;
-		field.readOnly = false;
+		editing = true;
 	}
 
 	function painthashbutton () {
@@ -191,15 +190,16 @@ function bind (field) {
 	painthashbutton ();
 	setfieldtype ();
 
-	field.addEventListener ("click", function () {
-		if (field.readOnly) {
-			field.readOnly = false;
+	/*field.addEventListener ("click", function () {
+		if (!editing) {
+			editing = true;
 			paintvalue ();
 		}
-	});
+	});*/
 
 	field.addEventListener ("focus", function () {
 		if (hashing) {
+			editing = true;
 			paintvalue ();
 		}
 		hasFocus = true;
