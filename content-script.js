@@ -183,8 +183,8 @@ function bind (field) {
 		update ();
 		painthash ();
 		field.select ();
-		document.execCommand ('Copy');
-		paintvalue ();
+		//document.execCommand ('Copy');
+		//paintvalue ();
 	}
 
 	painthashbutton ();
@@ -206,7 +206,9 @@ function bind (field) {
 	});
 
 	field.addEventListener ("blur", function () {
-		update ();
+		if (editing) {
+			update ();
+		}
 		if (hashing) {
 			painthash ();
 		}
@@ -272,7 +274,7 @@ function bind (field) {
 						togglemasking ();
 					break;
 					case ctrl + 67: // ctrl + c
-						if (null == getselection()) {
+						if (null == getselection () && !masking) {
 							copy ();
 						}
 					break;
