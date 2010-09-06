@@ -50,3 +50,33 @@ function generate_guid () {
 		return v.toString (16);
 	}).toUpperCase ();
 }
+
+function generate_hash (config, input) {
+	var site = config.site;
+
+	if (!site.startsWith ("compatible:")) {
+		site = PassHashCommon.generateHashWord (
+			config.seed,
+			site,
+			24,
+			true, // require digits
+			true, // require punctuation
+			true, // require mixed case
+			false, // no special characters
+			false // only digits
+		);
+	} else {
+		site = site.substringAfter (":");
+	}
+
+	return PassHashCommon.generateHashWord (
+		site,
+		input,
+		config.length,
+		true, // require digits
+		config.strength > 1, // require punctuation
+		true, // require mixed case
+		config.strength < 2, // no special characters
+		config.strength == 0 // only digits
+	);
+}

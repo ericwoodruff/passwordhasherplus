@@ -39,6 +39,9 @@ var port = chrome.extension.connect ({name: "passhash"});
 var id = 0;
 
 function bind (field) {
+	if ("nopasshash" == field.className) {
+		return;
+	}
 	var hasFocus = false;
 	var backgroundStyle = field.style.backgroundColor;
 	var input = field.value;
@@ -60,33 +63,7 @@ function bind (field) {
 	}
 
 	function rehash () {
-		var site = config.site;
-
-		if (!site.startsWith ("compatible:")) {
-			site = PassHashCommon.generateHashWord (
-				config.seed,
-				site,
-				24,
-				true, // require digits
-				true, // require punctuation
-				true, // require mixed case
-				false, // no special characters
-				false // only digits
-			);
-		} else {
-			site = site.substringAfter (":");
-		}
-
-		hash = PassHashCommon.generateHashWord (
-			site,
-			input,
-			config.length,
-			true, // require digits
-			config.strength > 1, // require punctuation
-			true, // require mixed case
-			config.strength < 2, // no special characters
-			config.strength == 0 // only digits
-		);
+		hash = generate_hash (config, input);
 	}
 
 	function painthash () {
