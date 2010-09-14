@@ -96,6 +96,12 @@ function loadconfig (site) {
 	console.log ("Called loadconfig " + site);
 
 	var seed = localStorage["private_seed"];
+	var compatibilitymode = localStorage["compatibility_mode"];
+	if ("true" == compatibilitymode) {
+		compatibilitymode = true;
+	} else {
+		compatibilitymode = false;
+	}
 	// No private seed generated, create one
 	if (!seed) {
 		seed = localStorage["private_seed"] = generate_guid ();
@@ -105,9 +111,12 @@ function loadconfig (site) {
 	try {
 		obj = localStorage.getObject (site);
 		// Object wasn't saved with a seed so it requires compatibility
-		if (!obj.seed) {
+		if (!compatibilitymode && !obj.seed) {
 			obj.site = "compatible:" + obj.site;
+		} else if (compatibilitymode && obj.site.startsWith ("compatible:")) {
+			obj.site = obj.site.substringAfter (":");
 		}
+		obj.compatibilitymode = compatibilitymode;
 	} catch (e) {
 		obj = new Object ();
 		obj.site = site;

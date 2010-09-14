@@ -54,7 +54,9 @@ function generate_guid () {
 function generate_hash (config, input) {
 	var site = config.site;
 
-	if (!site.startsWith ("compatible:")) {
+	var prefixed = site.startsWith ("compatible:");
+
+	if (!config.compatibilitymode && !prefixed) {
 		site = PassHashCommon.generateHashWord (
 			config.seed,
 			site,
@@ -65,7 +67,9 @@ function generate_hash (config, input) {
 			false, // no special characters
 			false // only digits
 		);
-	} else {
+	}
+
+	if (prefixed) {
 		site = site.substringAfter (":");
 	}
 

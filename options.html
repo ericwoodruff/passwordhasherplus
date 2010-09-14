@@ -76,6 +76,12 @@
 			</select></td>
 		</tr>
 		<tr>
+			<td>Compatibility Mode</td>
+			<td>
+				<input id="compatibility" type="checkbox"/> Use compatibility mode (less secure)
+			</td>
+		</tr>
+		<tr>
 			<td>Private Key:</td>
 			<td>
 				<input id="seed" type="text" size="48" maxlength="45"/>
@@ -101,6 +107,7 @@ function set_new_guid () {
 function save_options () {
 	localStorage["default_length"] = document.getElementById ("length").value;
 	localStorage["default_strength"] = document.getElementById ("strength").value;
+	localStorage["compatibility_mode"] = document.getElementById ("compatibility").checked;
 	localStorage["private_seed"] = document.getElementById ("seed").value;
 	chrome.extension.getBackgroundPage ().optionschanged ();
 }
@@ -117,6 +124,14 @@ function restore_options () {
 		strength = localStorage["default_strength"] = default_strength;
 	}
 	document.getElementById ("strength").value = strength;
+
+	var compatibility = localStorage["compatibility_mode"];
+	if ("true" == compatibility) {
+		compatibility = true;
+	} else {
+		compatibility = false;
+	}
+	document.getElementById ("compatibility").checked = compatibility;
 
 	var seed = localStorage["private_seed"];
 	if (!seed) {
