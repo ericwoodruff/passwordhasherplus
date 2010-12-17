@@ -137,7 +137,7 @@ function loadconfig (site) {
 
 function getsite (url) {
 	console.log ("getsite "+url);
-	var reg = new RegExp ("^https?://([^.]+\.)*?([^.]+)\.([a-z]{2,5})/.*$");
+	var reg = new RegExp ("^https?://([^:/]+\\.)?([^.:/]+)\\.([a-z]{2,5})(:\\d+)?/.*$");
 	var m = reg.exec (url);
 	try {
 		if ("" == m[2]) {
