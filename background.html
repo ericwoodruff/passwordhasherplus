@@ -102,6 +102,13 @@ function loadconfig (site) {
 	} else {
 		compatibilitymode = false;
 	}
+	var backedup = localStorage["backed_up"];
+	if ("true" == backedup) {
+		backedup = true;
+	} else {
+		backedup = false;
+	}
+
 	// No private seed generated, create one
 	if (!seed) {
 		seed = localStorage["private_seed"] = generate_guid ();
@@ -132,6 +139,7 @@ function loadconfig (site) {
 
 	obj.seed = seed;
 	obj.compatibilitymode = compatibilitymode;
+	obj.backedup = backedup;
 	return obj;
 }
 

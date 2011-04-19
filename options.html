@@ -79,7 +79,7 @@
 		<tr>
 			<td>Compatibility Mode</td>
 			<td>
-				<input id="compatibility" type="checkbox"/> Use compatibility mode (less secure)
+				<input id="compatibility" type="checkbox"/> Use compatibility mode (less secure).
 			</td>
 		</tr>
 		<tr>
@@ -87,7 +87,13 @@
 			<td>
 				<input id="seed" type="text" size="48" maxlength="45"/>
 				<input type="button" value="Generate" onClick="set_new_guid ()"/>
+			</td>
+		</tr>
+		<tr>
+			<td>Backup:</td>
+			<td>
 				<p><b>Note: You must backup this key and keep it safe and secure in case you need to restore it in the future.</b></p>
+				<input id="backedup" type="checkbox"/> I have backed up my private key.
 			</td>
 		</tr>
 		<tr>
@@ -111,6 +117,7 @@ function save_options () {
 	localStorage["default_strength"] = document.getElementById ("strength").value;
 	localStorage["compatibility_mode"] = document.getElementById ("compatibility").checked;
 	localStorage["private_seed"] = document.getElementById ("seed").value;
+	localStorage["backed_up"] = document.getElementById ("backedup").checked;
 	chrome.extension.getBackgroundPage ().optionschanged ();
 }
 
@@ -140,6 +147,14 @@ function restore_options () {
 		seed = localStorage["private_seed"] = generate_guid ();
 	}
 	document.getElementById ("seed").value = seed;
+
+	var backedup = localStorage["backed_up"];
+	if ("true" == backedup) {
+		backedup = true;
+	} else {
+		backedup = false;
+	}
+	document.getElementById ("backedup").checked = backedup;
 }
 
 </script>

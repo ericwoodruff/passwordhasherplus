@@ -109,6 +109,10 @@ function readmodel (site) {
 		$('div#compatmodeheader').html ("<b>Compatibility:</b>");
 		$('div#compatmode').text ("on");
 	}
+	if (false == config.backedup && !config.compatibilitymode) {
+		$('div#compatmodeheader').html ("<b>Warning:</b>");
+		$('div#compatmode').text ("You have not yet indicated that you have backed up your private key. Please do so on the Options page.");
+	}
 }
 
 chrome.tabs.getSelected (null, function (tab) {
