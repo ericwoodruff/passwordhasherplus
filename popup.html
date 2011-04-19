@@ -47,6 +47,10 @@
 <div style="width: 310px;">
 	<table border="0">
 		<tr>
+			<td><div id="compatmodeheader"/></td>
+			<td><div id="compatmode"/></td>
+		</tr>
+		<tr>
 			<td>Site Tag:</td>
 			<td>
 				<input style="width: 134px;" type="text" id="site" value="" />
@@ -101,6 +105,10 @@ function readmodel (site) {
 	$('#site').val (config.site);
 	$('#length').val (config.length);
 	$('#strength').val (config.strength);
+	if (true == config.compatibilitymode) {
+		$('div#compatmodeheader').html ("<b>Compatibility:</b>");
+		$('div#compatmode').text ("on");
+	}
 }
 
 chrome.tabs.getSelected (null, function (tab) {
@@ -123,6 +131,7 @@ $('#bump').click (function () {
 	}
 	$("#site").val (site + ":" + bump);
 });
+
 
 </script>
 </html>

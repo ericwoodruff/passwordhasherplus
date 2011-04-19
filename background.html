@@ -116,7 +116,6 @@ function loadconfig (site) {
 		} else if (compatibilitymode && obj.site.startsWith ("compatible:")) {
 			obj.site = obj.site.substringAfter (":");
 		}
-		obj.compatibilitymode = compatibilitymode;
 	} catch (e) {
 		obj = new Object ();
 		obj.site = site;
@@ -132,6 +131,7 @@ function loadconfig (site) {
 	}
 
 	obj.seed = seed;
+	obj.compatibilitymode = compatibilitymode;
 	return obj;
 }
 

@@ -47,8 +47,9 @@
 <body onLoad="restore_options ()">
 <img src="images/icon.png"/>
 <h1>Password Hasher Plus - Options</h1>
-<div style="width: 410px;">
+<div style="width: 500px;">
 	<table border="0">
+		<tr><td width="25%"/><td width="75%"/></tr>
 		<tr>
 			<td>Default Password Length:</td>
 			<td><select id="length">
@@ -86,6 +87,7 @@
 			<td>
 				<input id="seed" type="text" size="48" maxlength="45"/>
 				<input type="button" value="Generate" onClick="set_new_guid ()"/>
+				<p><b>Note: You must backup this key and keep it safe and secure in case you need to restore it in the future.</b></p>
 			</td>
 		</tr>
 		<tr>
