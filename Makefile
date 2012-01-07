@@ -10,10 +10,7 @@ zip=passhashplus-${version}.zip
 
 export:
 	rm -f ${zip}
-	rm -rf ./${export}
-	svn export . ./${export}
-	cd ${export} && zip ../${zip} -r *
-	rm -rf ./${export}
+	zip archive/${zip} -r *
 
 passhashplus.html: passhashplus.html.sh
 	bash $< > $@
