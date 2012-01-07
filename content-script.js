@@ -39,7 +39,8 @@ var port = chrome.extension.connect ({name: "passhash"});
 var id = 0;
 
 function bind (field) {
-	if ("nopasshash" == field.className) {
+	var hashbutton = $(field).next ("span.hashbutton").get (0);
+	if (null != hashbutton || $(field).hasClass ("nopasshash")) {
 		return;
 	}
 	var hasFocus = false;
@@ -49,6 +50,8 @@ function bind (field) {
 	var hashing = false;
 	var masking = true;
 	var editing = false;
+
+	$(field).addClass ("passhashfield");
 
 	$(field).after (
 		'<span class="hashbutton passhashbutton" title="Enable/disable Hashing">#</span>' +
@@ -271,6 +274,8 @@ $("input[type=password]").each (function (index) {
 });
 
 document.addEventListener ("DOMNodeInserted", onNodeInserted, false);
+document.addEventListener ("DOMNodeInsertedIntoDocument", onNodeInserted, false);
+document.addEventListener ("DOMSubtreeModified", onNodeInserted, false);
 
 function onNodeInserted (evt) {
 	$(evt.srcElement).find ("input[type=password]").each (function (index) {
