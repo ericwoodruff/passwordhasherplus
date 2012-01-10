@@ -17,7 +17,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): (none)
+ * Contributor(s): Oren Ben-Kiki
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -281,7 +281,6 @@ function onNodeInserted (evt) {
 var evt = document.createEvent ("HTMLEvents");
 evt.initEvent ('rehash', true, true);
 port.onMessage.addListener (function (msg) {
-	console.debug (msg);
 	if (null != msg.update) {
 		config = msg.update;
 		$("span.hashbutton").each (function (index) {

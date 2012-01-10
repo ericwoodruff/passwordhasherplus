@@ -18,7 +18,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): (none)
+ * Contributor(s): Oren Ben-Kiki
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -62,11 +62,11 @@ chrome.extension.onConnect.addListener (function (port) {
 });
 
 Storage.prototype.setObject = function (key, value) {
-	this.setItem (key, JSON.stringify (value));
+	this.setItem ("site:" + key, JSON.stringify (value));
 }
 
 Storage.prototype.getObject = function (key) {
-	var str = this.getItem (key);
+	var str = this.getItem ("site:" + key);
 	if (null == str) {
 		throw "No object stored";
 	}
@@ -95,14 +95,14 @@ function saveconfig (site, config, tabid) {
 function loadconfig (site) {
 	console.log ("Called loadconfig " + site);
 
-	var seed = localStorage["private_seed"];
-	var compatibilitymode = localStorage["compatibility_mode"];
+	var seed = localStorage["option:private_seed"];
+	var compatibilitymode = localStorage["option:compatibility_mode"];
 	if ("true" == compatibilitymode) {
 		compatibilitymode = true;
 	} else {
 		compatibilitymode = false;
 	}
-	var backedup = localStorage["backed_up"];
+	var backedup = localStorage["option:backed_up"];
 	if ("true" == backedup) {
 		backedup = true;
 	} else {
@@ -111,7 +111,7 @@ function loadconfig (site) {
 
 	// No private seed generated, create one
 	if (!seed) {
-		seed = localStorage["private_seed"] = generate_guid ();
+		seed = localStorage["option:private_seed"] = generate_guid ();
 	}
 
 	var obj;
@@ -126,11 +126,11 @@ function loadconfig (site) {
 	} catch (e) {
 		obj = new Object ();
 		obj.site = site;
-		obj.length = localStorage["default_length"];
+		obj.length = localStorage["option:default_length"];
 		if (!obj.length) {
 			obj.length = default_length;
 		}
-		obj.strength = localStorage["default_strength"];
+		obj.strength = localStorage["option:default_strength"];
 		if (!obj.strength) {
 			obj.strength = default_strength;
 		}
@@ -144,18 +144,16 @@ function loadconfig (site) {
 }
 
 function getsite (url) {
-	console.log ("getsite "+url);
-	var reg = new RegExp ("^https?://([^:/]+\\.)?([^.:/]+)\\.([a-z]{2,5})(:\\d+)?/.*$");
-	var m = reg.exec (url);
+	console.log("getsite " + url);
 	try {
-		if ("" == m[2]) {
-			throw "chrome";
-		}
-		return m[2];
-	} catch (e) {
-		return 'chrome';
-	}
+	        var match = new RegExp("^https?://([^:/]+\\.)?([^.:/]+)\\.[a-z]{2,5}\\.[a-z][a-z](:\\d+)?/.*$").exec(url);
+		if ("" != match[2]) return match[2];
+	} catch (exception) {}
+	try {
+	        match = new RegExp("^https?://([^:/]+\\.)?([^.:/]+)\\.[a-z]{2,5}(:\\d+)?/.*$").exec(url);
+		if ("" != match[2]) return match[2];
+	} catch (exception) {}
+        return "chrome";
 }
-
 </script>
 </html>
