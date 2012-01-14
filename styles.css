@@ -33,6 +33,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+input.passhashfield {
+	display: inline;
+}
+
 span.passhashbutton {
 	-webkit-appearance: button;
 	align: left;
@@ -40,5 +44,6 @@ span.passhashbutton {
 	width: 20px;
 	text-align: center;
 	padding: 2px;
-	margin-left: 2px;
+	margin-left: 6px;
+	display: inline;
 }
