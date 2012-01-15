@@ -18,7 +18,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): (none)
+ * Contributor(s): Oren Ben-Kiki
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,6 +37,8 @@
 <html>
 <script type="text/javascript" src="common.js"></script>
 <script type="text/javascript">
+
+migrate ();
 
 var portsByTabId = new Array ();
 
@@ -66,7 +68,7 @@ Storage.prototype.setObject = function (key, value) {
 }
 
 Storage.prototype.getObject = function (key) {
-	var str = this.getItem (key);
+	var str = this.getItem ("site:" + key);
 	if (null == str) {
 		throw "No object stored";
 	}
@@ -85,7 +87,7 @@ function saveconfig (site, config, tabid) {
 	if (site.startsWith ("compatible:")) {
 		site = site.substringAfter ("compatible:");
 	}
-	localStorage.setObject (site, config);
+	localStorage.setObject ("site:" + site, config);
 
 	if (null != tabid) {
 		portsByTabId[tabid].postMessage ({ update: config });
@@ -95,14 +97,14 @@ function saveconfig (site, config, tabid) {
 function loadconfig (site) {
 	console.log ("Called loadconfig " + site);
 
-	var seed = localStorage["private_seed"];
-	var compatibilitymode = localStorage["compatibility_mode"];
+	var seed = localStorage["option:private_seed"];
+	var compatibilitymode = localStorage["option:compatibility_mode"];
 	if ("true" == compatibilitymode) {
 		compatibilitymode = true;
 	} else {
 		compatibilitymode = false;
 	}
-	var backedup = localStorage["backed_up"];
+	var backedup = localStorage["option:backed_up"];
 	if ("true" == backedup) {
 		backedup = true;
 	} else {
@@ -111,12 +113,12 @@ function loadconfig (site) {
 
 	// No private seed generated, create one
 	if (!seed) {
-		seed = localStorage["private_seed"] = generate_guid ();
+		seed = localStorage["option:private_seed"] = generate_guid ();
 	}
 
 	var obj;
 	try {
-		obj = localStorage.getObject (site);
+		obj = localStorage.getObject ("site:" + site);
 		// Object wasn't saved with a seed so it requires compatibility
 		if (!compatibilitymode && !obj.seed) {
 			obj.site = "compatible:" + obj.site;
@@ -126,11 +128,11 @@ function loadconfig (site) {
 	} catch (e) {
 		obj = new Object ();
 		obj.site = site;
-		obj.length = localStorage["default_length"];
+		obj.length = localStorage["option:default_length"];
 		if (!obj.length) {
 			obj.length = default_length;
 		}
-		obj.strength = localStorage["default_strength"];
+		obj.strength = localStorage["option:default_strength"];
 		if (!obj.strength) {
 			obj.strength = default_strength;
 		}
@@ -144,7 +146,7 @@ function loadconfig (site) {
 }
 
 function getsite (url) {
-	console.log ("getsite "+url);
+	console.log ("getsite " + url);
 	var reg = new RegExp ("^https?://([^:/]+?\\.)*?([^.:/]+)\\.([a-z]{2,15}(\\.[a-z]{2})?)(:\\d+)?/.*$");
 	var m = reg.exec (url);
 	try {
@@ -155,6 +157,33 @@ function getsite (url) {
 	} catch (e) {
 		return 'chrome';
 	}
+}
+
+
+
+function migrate () {
+	var version = localStorage["version"];
+	if ("1" == version) {
+		return;
+	}
+
+	var keys = new Array ();
+	for (var i = 0; i < localStorage.length; ++i) {
+		keys[i] = localStorage.key (i);
+	}
+
+	var reg = new RegExp ("compatibility_mode|default_length|default_strength|private_seed|backed_up");
+	for (var i = 0; i < keys.length; ++i) {
+		var key = keys[i];
+		var to = "site";
+		if (reg.test (key)) {
+			to = "option";
+		}
+		localStorage[to + ":" + key] = localStorage[key];
+		delete localStorage[key];
+	}
+	
+	localStorage["version"] = "1";
 }
 
 </script>

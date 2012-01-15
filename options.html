@@ -18,7 +18,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): (none)
+ * Contributor(s): Oren Ben-Kiki
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -45,11 +45,10 @@
 </head>
 
 <body onLoad="restore_options ()">
-<img src="images/icon.png"/>
+<img src="images/icon128.png"/>
 <h1>Password Hasher Plus - Options</h1>
-<div style="width: 500px;">
+<div>
 	<table border="0">
-		<tr><td width="25%"/><td width="75%"/></tr>
 		<tr>
 			<td>Default Password Length:</td>
 			<td><select id="length">
@@ -97,10 +96,25 @@
 			</td>
 		</tr>
 		<tr>
-			<td><br/><button onClick="save_options ()">Save</button>
-			<button onClick="restore_options ()">Revert</button>
+			<td></td>
+                        <td>
+                                <button onClick="save_options ()">Save</button>
+			        <button onClick="restore_options ()">Revert</button>
 			</td>
 		</tr>
+                <tr>
+                        <td colspan=2"><hr/></td>
+                </tr>
+                <tr>
+			<td>Database: <button onClick="clear_storage ()">Clear</button>
+                        </td>
+                        <td>
+				<textarea id="everything" cols="120" rows="12"></textarea>
+				<br/>
+                                <button onClick="load_storage ()">Save</button>
+                                <button onClick="refresh_storage ()">Revert</button>
+                        </td>
+                </tr>
 	</table>
 </div>
 </body>
@@ -113,28 +127,29 @@ function set_new_guid () {
 }
 
 function save_options () {
-	localStorage["default_length"] = document.getElementById ("length").value;
-	localStorage["default_strength"] = document.getElementById ("strength").value;
-	localStorage["compatibility_mode"] = document.getElementById ("compatibility").checked;
-	localStorage["private_seed"] = document.getElementById ("seed").value;
-	localStorage["backed_up"] = document.getElementById ("backedup").checked;
+	localStorage["option:default_length"] = document.getElementById ("length").value;
+	localStorage["option:default_strength"] = document.getElementById ("strength").value;
+	localStorage["option:compatibility_mode"] = document.getElementById ("compatibility").checked;
+	localStorage["option:private_seed"] = document.getElementById ("seed").value;
+	localStorage["option:backed_up"] = document.getElementById ("backedup").checked;
 	chrome.extension.getBackgroundPage ().optionschanged ();
+        refresh_storage();
 }
 
 function restore_options () {
 	var length = localStorage["default_length"];
 	if (!length) {
-		length = localStorage["default_length"] = default_length;
+		length = localStorage["option:default_length"] = default_length;
 	}
 	document.getElementById ("length").value = length;
 
-	var strength = localStorage["default_strength"];
+	var strength = localStorage["option:default_strength"];
 	if (!strength) {
-		strength = localStorage["default_strength"] = default_strength;
+		strength = localStorage["option:default_strength"] = default_strength;
 	}
 	document.getElementById ("strength").value = strength;
 
-	var compatibility = localStorage["compatibility_mode"];
+	var compatibility = localStorage["option:compatibility_mode"];
 	if ("true" == compatibility) {
 		compatibility = true;
 	} else {
@@ -142,19 +157,70 @@ function restore_options () {
 	}
 	document.getElementById ("compatibility").checked = compatibility;
 
-	var seed = localStorage["private_seed"];
+	var seed = localStorage["option:private_seed"];
 	if (!seed) {
-		seed = localStorage["private_seed"] = generate_guid ();
+		seed = localStorage["option:private_seed"] = generate_guid ();
 	}
 	document.getElementById ("seed").value = seed;
 
-	var backedup = localStorage["backed_up"];
+	var backedup = localStorage["option:backed_up"];
 	if ("true" == backedup) {
 		backedup = true;
 	} else {
 		backedup = false;
 	}
 	document.getElementById ("backedup").checked = backedup;
+        refresh_storage();
+}
+
+function refresh_storage() {
+        var entries = [];
+        var length = localStorage.length;
+        for (var i = 0; i < length; i++) {
+                var key = localStorage.key(i);
+                var value = localStorage.getItem(key);
+                var entry = {}
+                if (key.slice(0, 7) == "option:") {
+                        entry[key] = value;
+                } else {
+                        try {
+                                entry[key] = JSON.parse(value);
+                        } catch (e) {
+                                entry[key] = "BAD: " + value
+                        }
+                }
+                entry = JSON.stringify(entry);
+                entry = entry.replace("{","").replace(/}$/,"");
+                entries.push(entry);
+        }
+        entries.sort();
+	document.getElementById ("everything").value = "{\n" + entries.join(",\n") + "\n}\n";
+}
+
+function clear_storage() {
+        if (confirm("You are about to erase all of the Password Hasher Plus database. " +
+                    "This is typically done before loading a snapshot of a previous database state. " +
+                    "Are you certain you want to erase the database?")) {
+                localStorage.clear();
+                alert("Your database is now empty. " +
+                      "You probably want to paste a previous snapshot of the database to the text area to the right, " +
+                      "and hit \"Load\" to re-populate the database. " +
+                      "Good luck.");
+        }
+}
+
+function load_storage() {
+        try {
+                everything = JSON.parse(document.getElementById ("everything").value);
+        } catch(e) {
+                alert("Sorry, the data in the text area to the right is not valid JSON.");
+                return;
+        }
+        for (var key in everything) {
+                var value = everything[key];
+                if (key.slice(0, 7) != "option:") value = JSON.stringify(value);
+                localStorage.setItem (key, value);
+        }
 }
 
 </script>
