@@ -46,14 +46,14 @@ chrome.extension.onConnect.addListener (function (port) {
 	console.assert (port.name == "passhash");
 	port.onMessage.addListener (function (msg) {
 		if (null != msg.init) {
-			var url = msg.init;
-			var site = getsite (url);
+			var site = getsite (msg.url);
 			var config = loadconfig (site);
 			port.passhashsite = site;
 			portsByTabId[port.tab.id] = port;
 			port.postMessage ({ update: config });
 		} else if (null != msg.save) {
-			saveconfig (msg.save.site, msg.save, null);
+			var site = getsite (msg.url);
+			saveconfig (site, msg.save, null);
 		}
 	});
 
@@ -87,7 +87,7 @@ function saveconfig (site, config, tabid) {
 	if (site.startsWith ("compatible:")) {
 		site = site.substringAfter ("compatible:");
 	}
-	localStorage.setObject ("site:" + site, config);
+	localStorage.setObject ("url:" + site, config);
 
 	if (null != tabid) {
 		portsByTabId[tabid].postMessage ({ update: config });
@@ -118,7 +118,7 @@ function loadconfig (site) {
 
 	var obj;
 	try {
-		obj = localStorage.getObject ("site:" + site);
+		obj = localStorage.getObject ("url:" + site);
 		// Object wasn't saved with a seed so it requires compatibility
 		if (!compatibilitymode && !obj.seed) {
 			obj.site = "compatible:" + obj.site;
@@ -160,15 +160,14 @@ function getsite (url) {
 }
 
 
-
 function migrate () {
-	if (null == localStorage["version"] && null != localStorage["option:private_seed"]) {
-		// Migrate Password Hasher Plus Plus databases
-		localStorage["version"] = "1";
-	}
+	migrate_v1 ();
+	migrate_v2 ();
+}
 
-	var version = localStorage["version"];
-	if ("1" == version) {
+function migrate_v2 () {
+	var version = parseInt (localStorage["version"]);
+	if (2 <= version) {
 		return;
 	}
 
@@ -177,7 +176,37 @@ function migrate () {
 		keys[i] = localStorage.key (i);
 	}
 
-	var reg = new RegExp ("compatibility_mode|default_length|default_strength|private_seed|backed_up");
+	var reg = new RegExp ("^site:.*$");
+	for (var i = 0; i < keys.length; ++i) {
+		var key = keys[i];
+		if (reg.test (key)) {
+			var to = "url";
+			localStorage[to + key.slice(4)] = localStorage[key];
+			delete localStorage[key];
+		}
+	}
+	
+	localStorage["version"] = "2";
+}
+
+function migrate_v1 () {
+	if (null == localStorage["version"] && null != localStorage["option:private_seed"]) {
+		// Migrate Password Hasher Plus Plus databases
+		localStorage["version"] = "1";
+	}
+
+	var version = parseInt (localStorage["version"]);
+	if (Number.NaN != version && 1 <= version) {
+		return;
+	}
+
+
+	var keys = new Array ();
+	for (var i = 0; i < localStorage.length; ++i) {
+		keys[i] = localStorage.key (i);
+	}
+
+	var reg = new RegExp ("^compatibility_mode|default_length|default_strength|private_seed|backed_up$");
 	for (var i = 0; i < keys.length; ++i) {
 		var key = keys[i];
 		var to = "site";
