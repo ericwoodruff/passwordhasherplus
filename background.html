@@ -62,7 +62,7 @@ chrome.extension.onConnect.addListener (function (port) {
 });
 
 Storage.prototype.setObject = function (key, value) {
-	this.setItem ("site:" + key, JSON.stringify (value));
+	this.setItem (key, JSON.stringify (value));
 }
 
 Storage.prototype.getObject = function (key) {
@@ -85,7 +85,7 @@ function saveconfig (site, config, tabid) {
 	if (site.startsWith ("compatible:")) {
 		site = site.substringAfter ("compatible:");
 	}
-	localStorage.setObject (site, config);
+	localStorage.setObject ("site:" + site, config);
 
 	if (null != tabid) {
 		portsByTabId[tabid].postMessage ({ update: config });
