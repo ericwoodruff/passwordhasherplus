@@ -68,7 +68,7 @@ Storage.prototype.setObject = function (key, value) {
 }
 
 Storage.prototype.getObject = function (key) {
-	var str = this.getItem ("site:" + key);
+	var str = this.getItem (key);
 	if (null == str) {
 		throw "No object stored";
 	}
