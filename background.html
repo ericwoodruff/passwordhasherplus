@@ -162,6 +162,11 @@ function getsite (url) {
 
 
 function migrate () {
+	if (null == localStorage["version"] && null != localStorage["option:private_seed"]) {
+		// Migrate Password Hasher Plus Plus databases
+		localStorage["version"] = "1";
+	}
+
 	var version = localStorage["version"];
 	if ("1" == version) {
 		return;
