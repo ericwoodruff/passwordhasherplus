@@ -38,6 +38,8 @@
 <script type="text/javascript" src="common.js"></script>
 <script type="text/javascript">
 
+//migrate ();
+
 var portsByTabId = new Array ();
 
 chrome.extension.onConnect.addListener (function (port) {
@@ -116,7 +118,7 @@ function loadconfig (site) {
 
 	var obj;
 	try {
-		obj = localStorage.getObject (site);
+		obj = localStorage.getObject ("site:" + site);
 		// Object wasn't saved with a seed so it requires compatibility
 		if (!compatibilitymode && !obj.seed) {
 			obj.site = "compatible:" + obj.site;
@@ -144,7 +146,7 @@ function loadconfig (site) {
 }
 
 function getsite (url) {
-	console.log ("getsite "+url);
+	console.log ("getsite " + url);
 	var reg = new RegExp ("^https?://([^:/]+?\\.)*?([^.:/]+)\\.([a-z]{2,15}(\\.[a-z]{2})?)(:\\d+)?/.*$");
 	var m = reg.exec (url);
 	try {
@@ -155,6 +157,33 @@ function getsite (url) {
 	} catch (e) {
 		return 'chrome';
 	}
+}
+
+
+
+function migrate () {
+	var version = localStorage["version"];
+	if ("1" == version) {
+		return;
+	}
+
+	var keys = new Array ();
+	for (var i = 0; i < localStorage.length; ++i) {
+		keys[i] = localStorage.key (i);
+	}
+
+	var reg = new RegExp ("compatibility_mode|default_length|default_strength|private_seed|backed_up");
+	for (var i = 0; i < keys.length; ++i) {
+		var key = keys[i];
+		var to = "site";
+		if (reg.test (key)) {
+			to = "option";
+		}
+		localStorage[to + ":" + key] = localStorage[key];
+		delete localStorage[key];
+	}
+	
+	localStorage["version"] = "1";
 }
 
 </script>
