@@ -144,16 +144,18 @@ function loadconfig (site) {
 }
 
 function getsite (url) {
-	console.log("getsite " + url);
+	console.log ("getsite "+url);
+	var reg = new RegExp ("^https?://([^:/]+?\\.)*?([^.:/]+)\\.([a-z]{2,15}(\\.[a-z]{2})?)(:\\d+)?/.*$");
+	var m = reg.exec (url);
 	try {
-	        var match = new RegExp("^https?://([^:/]+\\.)?([^.:/]+)\\.[a-z]{2,5}\\.[a-z][a-z](:\\d+)?/.*$").exec(url);
-		if ("" != match[2]) return match[2];
-	} catch (exception) {}
-	try {
-	        match = new RegExp("^https?://([^:/]+\\.)?([^.:/]+)\\.[a-z]{2,5}(:\\d+)?/.*$").exec(url);
-		if ("" != match[2]) return match[2];
-	} catch (exception) {}
-        return "chrome";
+		if ("" == m[2]) {
+			throw "chrome";
+		}
+		return m[2];
+	} catch (e) {
+		return 'chrome';
+	}
 }
+
 </script>
 </html>
