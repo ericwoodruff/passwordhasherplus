@@ -17,7 +17,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): Oren Ben-Kiki
+ * Contributor(s): (none)
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,7 +39,8 @@ var port = chrome.extension.connect ({name: "passhash"});
 var id = 0;
 
 function bind (field) {
-	if ("nopasshash" == field.className) {
+	var hashbutton = $(field).next ("span.hashbutton").get (0);
+	if (null != hashbutton || $(field).hasClass ("nopasshash")) {
 		return;
 	}
 	var hasFocus = false;
@@ -49,6 +50,8 @@ function bind (field) {
 	var hashing = false;
 	var masking = true;
 	var editing = false;
+
+	$(field).addClass ("passhashfield");
 
 	$(field).after (
 		'<span class="hashbutton passhashbutton" title="Enable/disable Hashing">#</span>' +
@@ -271,6 +274,8 @@ $("input[type=password]").each (function (index) {
 });
 
 document.addEventListener ("DOMNodeInserted", onNodeInserted, false);
+document.addEventListener ("DOMNodeInsertedIntoDocument", onNodeInserted, false);
+document.addEventListener ("DOMSubtreeModified", onNodeInserted, false);
 
 function onNodeInserted (evt) {
 	$(evt.srcElement).find ("input[type=password]").each (function (index) {
@@ -281,6 +286,7 @@ function onNodeInserted (evt) {
 var evt = document.createEvent ("HTMLEvents");
 evt.initEvent ('rehash', true, true);
 port.onMessage.addListener (function (msg) {
+	console.debug (msg);
 	if (null != msg.update) {
 		config = msg.update;
 		$("span.hashbutton").each (function (index) {
