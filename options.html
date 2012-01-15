@@ -45,11 +45,10 @@
 </head>
 
 <body onLoad="restore_options ()">
-<img src="images/icon-64.png"/>
+<img src="images/icon128.png"/>
 <h1>Password Hasher Plus - Options</h1>
-<div style="width: 500px;">
+<div>
 	<table border="0">
-		<tr><td width="25%"/><td width="75%"/></tr>
 		<tr>
 			<td>Default Password Length:</td>
 			<td><select id="length">
@@ -107,13 +106,13 @@
                         <td colspan=2"><hr/></td>
                 </tr>
                 <tr>
-			<td>Database:
-                                <br/><button onClick="refresh_storage ()">Refresh</button>
-                                <br/><button onClick="clear_storage ()">Clear</button>
-                                <br/><button onClick="load_storage ()">Load</button>
+			<td>Database: <button onClick="clear_storage ()">Clear</button>
                         </td>
                         <td>
 				<textarea id="everything" cols="120" rows="12"></textarea>
+				<br/>
+                                <button onClick="load_storage ()">Save</button>
+                                <button onClick="refresh_storage ()">Revert</button>
                         </td>
                 </tr>
 	</table>
