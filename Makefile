@@ -10,7 +10,7 @@ zip=passhashplus-${version}.zip
 
 export:
 	rm -f ${zip}
-	zip archive/${zip} -r *
+	zip archive/${zip} -r * --exclude archive/*
 
 passhashplus.html.sh: passhashplus.in.html Makefile
 	echo "#!/bin/bash" > $@
