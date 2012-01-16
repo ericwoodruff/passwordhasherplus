@@ -124,6 +124,7 @@ var sites = {};
 			</td>
 		</tr>
 	</table>
+	<input type="button" value="Save" id="save"/>
 </div>
 </body>
 
@@ -134,6 +135,7 @@ if (typeof String.prototype.startsWith != 'function') {
 	};
 }
 
+if (chrome) {
 for (var i = 0; i < localStorage.length; ++i) {
 	var key = localStorage.key (i);
 	if (key.startsWith ("url:")) {
@@ -142,6 +144,7 @@ for (var i = 0; i < localStorage.length; ++i) {
 		sites[key] = config;
 		$("#template").append ("sites[\"" + url + "\"]=JSON.parse(\"" + localStorage[key] + "\");\n");
 	}
+}
 }
 
 $.each (sites, function (key, value) {
@@ -183,6 +186,11 @@ $('#bump').click (function () {
 		bump += parseInt (matcher[3]);
 	}
 	$("#site").val (site + ":" + bump);
+});
+
+$('#save').click (function () {
+	var uriContent = "data:application/octet-stream," + encodeURIComponent($('html').html());
+	location.href=uriContent;
 });
 
 var selectfield = $('#urls').get (0);
