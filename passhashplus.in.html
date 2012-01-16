@@ -124,7 +124,7 @@ var sites = {};
 			</td>
 		</tr>
 	</table>
-	<input type="button" value="Save" id="save"/>
+	<input type="button" value="Download" id="save"/>
 </div>
 </body>
 
@@ -230,7 +230,7 @@ hashfield.addEventListener ("click", function () {
 	hashfield.select ();
 });
 
-selectfield.addEventListener ("change", function () {
+function selectionchanged () {
 	var url = $("#urls option:selected").val ();
 	var config = sites[url];
 	sitefield.value = config.site;
@@ -238,7 +238,11 @@ selectfield.addEventListener ("change", function () {
 	lengthfield.value = config.length;
 	strengthfield.value = config.strength;
 	update ();
-});
+}
+
+selectfield.addEventListener ("change", selectionchanged);
+
+selectionchanged ();
 
 </script>
 </html>
