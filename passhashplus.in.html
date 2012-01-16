@@ -1,5 +1,3 @@
-#!/bin/bash
-cat <<-EOF
 <!--
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -41,18 +39,10 @@ cat <<-EOF
 <style>
 * { font-family: Arial; font-size: 12px; }
 </style>
-<script type="text/javascript">
-$(cat lib/jquery-1.4.2.min.js)
-</script>
-<script type="text/javascript">
-$(cat lib/sha1.js)
-</script>
-<script type="text/javascript">
-$(cat lib/passhashcommon.js)
-</script>
-<script type="text/javascript">
-$(cat common.js)
-</script>
+<script type="text/javascript" src="lib/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="lib/sha1.js"></script>
+<script type="text/javascript" src="lib/passhashcommon.js"></script>
+<script type="text/javascript" src="common.js"></script>
 </head>
 
 <body>
@@ -133,12 +123,12 @@ $(cat common.js)
 </body>
 
 <script type="text/javascript">
-\$('#length').val (12);
-\$('#strength').val (2);
+$('#length').val (12);
+$('#strength').val (2);
 
 function togglefield () {
 	var button = this;
-	var field = \$(this).prev ("input").get (0);
+	var field = $(this).prev ("input").get (0);
 	if ("text" == field.type) {
 		field.type = "password";
 		button.value = "a";
@@ -150,13 +140,13 @@ function togglefield () {
 	}
 }
 
-\$('#unmaskseed').click (togglefield);
-\$('#unmasksite').click (togglefield);
-\$('#unmaskpassword').click (togglefield);
+$('#unmaskseed').click (togglefield);
+$('#unmasksite').click (togglefield);
+$('#unmaskpassword').click (togglefield);
 
-\$('#bump').click (function () {
+$('#bump').click (function () {
 	var re = new RegExp ("^([^:]+?)(:([0-9]+))?$");
-	var site = \$('#site').val ();
+	var site = $('#site').val ();
 	if (site.startsWith ("compatible:")) {
 		site = site.substringAfter ("compatible:");
 	}
@@ -166,15 +156,15 @@ function togglefield () {
 		site = matcher[1];
 		bump += parseInt (matcher[3]);
 	}
-	\$("#site").val (site + ":" + bump);
+	$("#site").val (site + ":" + bump);
 });
 
-var sitefield = \$('#site').get (0);
-var seedfield = \$('#seed').get (0);
-var lengthfield = \$('#length').get (0);
-var strengthfield = \$('#strength').get (0);
-var inputfield = \$('#input').get (0);
-var hashfield = \$('#hash').get (0);
+var sitefield = $('#site').get (0);
+var seedfield = $('#seed').get (0);
+var lengthfield = $('#length').get (0);
+var strengthfield = $('#strength').get (0);
+var inputfield = $('#input').get (0);
+var hashfield = $('#hash').get (0);
 
 hashfield.readOnly = true;
 
@@ -207,4 +197,3 @@ hashfield.addEventListener ("click", function () {
 
 </script>
 </html>
-EOF
