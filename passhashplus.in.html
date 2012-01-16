@@ -43,11 +43,16 @@
 <script type="text/javascript" src="lib/sha1.js"></script>
 <script type="text/javascript" src="lib/passhashcommon.js"></script>
 <script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" id="template">
+var sites = {};
+</script>
 </head>
 
 <body>
 <h1>This is the Password Hasher Plus portable HTML page</h1>
 <div style="">
+<select id="urls">
+</select>
 	<table border="0">
 		<tr>
 			<td></td>
@@ -123,6 +128,27 @@
 </body>
 
 <script type="text/javascript">
+if (typeof String.prototype.startsWith != 'function') {
+	String.prototype.startsWith = function (str){
+		return this.indexOf(str) == 0;
+	};
+}
+
+for (var i = 0; i < localStorage.length; ++i) {
+	var key = localStorage.key (i);
+	if (key.startsWith ("url:")) {
+		var url = key.slice (4);
+		var config = chrome.extension.getBackgroundPage ().loadconfig (url);
+		sites[key] = config;
+		$("#template").append ("sites[\"" + url + "\"]=JSON.parse(\"" + localStorage[key] + "\");\n");
+	}
+}
+
+$.each (sites, function (key, value) {
+	$("#urls").append ($("<option></option>").
+	attr("value", key).text (value.site));
+});
+
 $('#length').val (12);
 $('#strength').val (2);
 
@@ -159,6 +185,7 @@ $('#bump').click (function () {
 	$("#site").val (site + ":" + bump);
 });
 
+var selectfield = $('#urls').get (0);
 var sitefield = $('#site').get (0);
 var seedfield = $('#seed').get (0);
 var lengthfield = $('#length').get (0);
@@ -193,6 +220,16 @@ strengthfield.addEventListener ("change", update);
 
 hashfield.addEventListener ("click", function () {
 	hashfield.select ();
+});
+
+selectfield.addEventListener ("change", function () {
+	var url = $("#urls option:selected").val ();
+	var config = sites[url];
+	sitefield.value = config.site;
+	seedfield.value = config.seed;
+	lengthfield.value = config.length;
+	strengthfield.value = config.strength;
+	update ();
 });
 
 </script>
