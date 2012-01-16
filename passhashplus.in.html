@@ -142,7 +142,7 @@ for (var i = 0; i < localStorage.length; ++i) {
 		var url = key.slice (4);
 		var config = chrome.extension.getBackgroundPage ().loadconfig (url);
 		sites[key] = config;
-		$("#template").append ("sites[\"" + url + "\"]=JSON.parse(\"" + localStorage[key] + "\");\n");
+		$("#template").append ("sites[\"" + url + "\"]=JSON.parse(\"" + localStorage[key].replace (/"/g, "\\\\\"") + "\");\n");
 	}
 }
 }
