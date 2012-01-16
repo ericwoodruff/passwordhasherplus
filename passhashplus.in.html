@@ -135,22 +135,28 @@ if (typeof String.prototype.startsWith != 'function') {
 	};
 }
 
-if (chrome) {
-for (var i = 0; i < localStorage.length; ++i) {
-	var key = localStorage.key (i);
-	if (key.startsWith ("url:")) {
-		var url = key.slice (4);
-		var config = chrome.extension.getBackgroundPage ().loadconfig (url);
-		sites[key] = config;
-		$("#template").append ("sites[\"" + url + "\"]=JSON.parse(\"" + localStorage[key].replace (/"/g, "\\\\\"") + "\");\n");
+if (chrome.extension) {
+	for (var i = 0; i < localStorage.length; ++i) {
+		var key = localStorage.key (i);
+		if (key.startsWith ("url:")) {
+			var url = key.slice (4);
+			var config = chrome.extension.getBackgroundPage ().loadconfig (url);
+			sites[url] = config;
+			$("#template").append ("sites[\"" + url + "\"]=JSON.parse(\"" + localStorage[key].replace (/"/g, "\\\\\"") + "\");\n");
+		}
 	}
-}
+
+	$.each (sites, function (key, value) {
+		$("#urls").append ($("<option></option>").attr("value", key).text (value.site));
+	});
+
+	function sortAlpha (a,b) {
+		return a.innerHTML.toLowerCase() > b.innerHTML.toLowerCase() ? 1 : -1;
+	}
+
+	$("#urls option").sort (sortAlpha).appendTo ("#urls");
 }
 
-$.each (sites, function (key, value) {
-	$("#urls").append ($("<option></option>").
-	attr("value", key).text (value.site));
-});
 
 $('#length').val (12);
 $('#strength').val (2);
