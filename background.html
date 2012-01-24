@@ -113,7 +113,7 @@ function loadconfig (site) {
 
 	// No private seed generated, create one
 	if (!seed) {
-		seed = localStorage["option:private_seed"] = generate_guid ();
+		seed = localStorage["option:private_seed"] = generateGuid ();
 	}
 
 	var obj;

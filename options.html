@@ -124,7 +124,7 @@
 
 function set_new_guid () {
 	var seedElement = document.getElementById ("seed");
-	seedElement.value = generate_guid ();
+	seedElement.value = generateGuid ();
 }
 
 function save_options () {
@@ -160,7 +160,7 @@ function restore_options () {
 
 	var seed = localStorage["option:private_seed"];
 	if (!seed) {
-		seed = localStorage["option:private_seed"] = generate_guid ();
+		seed = localStorage["option:private_seed"] = generateGuid ();
 	}
 	document.getElementById ("seed").value = seed;
 
