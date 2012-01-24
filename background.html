@@ -46,13 +46,13 @@ chrome.extension.onConnect.addListener (function (port) {
 	console.assert (port.name == "passhash");
 	port.onMessage.addListener (function (msg) {
 		if (null != msg.init) {
-			var site = getsite (msg.url);
+			var site = grepUrl (msg.url);
 			var config = loadconfig (site);
 			port.passhashsite = site;
 			portsByTabId[port.tab.id] = port;
 			port.postMessage ({ update: config });
 		} else if (null != msg.save) {
-			var site = getsite (msg.url);
+			var site = grepUrl (msg.url);
 			saveconfig (site, msg.save, null);
 		}
 	});
@@ -145,8 +145,8 @@ function loadconfig (site) {
 	return obj;
 }
 
-function getsite (url) {
-	console.log ("getsite " + url);
+function grepUrl (url) {
+	console.log ("grepUrl " + url);
 	var reg = new RegExp ("^https?://([^:/]+?\\.)*?([^.:/]+)\\.([a-z]{2,15}(\\.[a-z]{2})?)(:\\d+)?/.*$");
 	var m = reg.exec (url);
 	try {

@@ -119,7 +119,7 @@ function readmodel (site) {
 
 chrome.tabs.getSelected (null, function (tab) {
 	tabid = tab.id;
-	site = chrome.extension.getBackgroundPage ().getsite (tab.url);
+	site = chrome.extension.getBackgroundPage ().grepUrl (tab.url);
 	readmodel (site);
 });
 
