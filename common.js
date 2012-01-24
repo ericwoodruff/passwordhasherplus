@@ -51,15 +51,15 @@ function generateGuid () {
 	}).toUpperCase ();
 }
 
-function generate_hash (config, input) {
-	var site = config.site;
+function generateHash (config, input) {
+	var tag = config.tag;
 
-	var prefixed = site.startsWith ("compatible:");
+	var prefixed = tag.startsWith ("compatible:");
 
 	if (!config.compatibilitymode && !prefixed) {
-		site = PassHashCommon.generateHashWord (
+		tag = PassHashCommon.generateHashWord (
 			config.seed,
-			site,
+			tag,
 			24,
 			true, // require digits
 			true, // require punctuation
@@ -70,11 +70,11 @@ function generate_hash (config, input) {
 	}
 
 	if (prefixed) {
-		site = site.substringAfter (":");
+		tag = tag.substringAfter (":");
 	}
 
 	return PassHashCommon.generateHashWord (
-		site,
+		tag,
 		input,
 		config.length,
 		true, // require digits

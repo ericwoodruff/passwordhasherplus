@@ -53,7 +53,7 @@
 		<tr>
 			<td>Site Tag:</td>
 			<td>
-				<input style="width: 134px;" type="text" id="site" value="" />
+				<input style="width: 134px;" type="text" id="tag" value="" />
 				<input type="button" value="Bump" id="bump" />
 			</td>
 		</tr>
@@ -95,7 +95,7 @@ var config;
 var tabid;
 
 function writeModel () {
-	config.site = $('#site').val ();
+	config.tag = $('#tag').val ();
 	config.length = $('#length').val ();
 	config.strength = $('#strength').val ();
 	chrome.extension.getBackgroundPage ().saveConfig (url, config, tabid);
@@ -104,7 +104,7 @@ window.onunload = writeModel;
 
 function readModel (url) {
 	config = chrome.extension.getBackgroundPage ().loadConfig (url);
-	$('#site').val (config.site);
+	$('#tag').val (config.tag);
 	$('#length').val (config.length);
 	$('#strength').val (config.strength);
 	if (true == config.compatibilitymode) {
@@ -125,17 +125,17 @@ chrome.tabs.getSelected (null, function (tab) {
 
 $('#bump').click (function () {
 	var re = new RegExp ("^([^:]+?)(:([0-9]+))?$");
-	var site = $("#site").val ();
-	if (site.startsWith ("compatible:")) {
-		site = site.substringAfter ("compatible:");
+	var tag = $("#tag").val ();
+	if (tag.startsWith ("compatible:")) {
+		tag = tag.substringAfter ("compatible:");
 	}
-	var matcher = re.exec (site);
+	var matcher = re.exec (tag);
 	var bump = 1;
 	if (null != matcher[3]) {
-		site = matcher[1];
+		tag = matcher[1];
 		bump += parseInt (matcher[3]);
 	}
-	$("#site").val (site + ":" + bump);
+	$("#tag").val (tag + ":" + bump);
 });
 
 

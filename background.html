@@ -38,6 +38,18 @@
 <script type="text/javascript" src="common.js"></script>
 <script type="text/javascript">
 
+Storage.prototype.setObject = function (key, value) {
+	this.setItem (key, JSON.stringify (value));
+}
+
+Storage.prototype.getObject = function (key) {
+	var str = this.getItem (key);
+	if (null == str) {
+		throw "No object stored";
+	}
+	return JSON.parse (str);
+}
+
 migrate ();
 
 var portsByTabId = new Array ();
@@ -62,18 +74,6 @@ chrome.extension.onConnect.addListener (function (port) {
 		console.log ("Removed " + port.tab.id);
 	});
 });
-
-Storage.prototype.setObject = function (key, value) {
-	this.setItem (key, JSON.stringify (value));
-}
-
-Storage.prototype.getObject = function (key) {
-	var str = this.getItem (key);
-	if (null == str) {
-		throw "No object stored";
-	}
-	return JSON.parse (str);
-}
 
 function optionschanged () {
 	for (tabid in portsByTabId) {
@@ -118,13 +118,13 @@ function loadConfig (url) {
 		obj = localStorage.getObject ("url:" + url);
 		// Object wasn't saved with a seed so it requires compatibility
 		if (!compatibilitymode && !obj.seed) {
-			obj.site = "compatible:" + obj.site;
-		} else if (compatibilitymode && obj.site.startsWith ("compatible:")) {
-			obj.site = obj.site.substringAfter (":");
+			obj.tag = "compatible:" + obj.tag;
+		} else if (compatibilitymode && obj.tag.startsWith ("compatible:")) {
+			obj.tag = obj.tag.substringAfter (":");
 		}
 	} catch (e) {
 		obj = new Object ();
-		obj.site = url;
+		obj.tag = url;
 		obj.length = localStorage["option:default_length"];
 		if (!obj.length) {
 			obj.length = default_length;
@@ -160,6 +160,35 @@ function grepUrl (url) {
 function migrate () {
 	migrate_v1 ();
 	migrate_v2 ();
+	migrate_v3 ();
+}
+
+function migrate_v3 () {
+	var version = parseInt (localStorage["version"]);
+	if (3 <= version) {
+		return;
+	}
+
+	var keys = new Array ();
+	for (var i = 0; i < localStorage.length; ++i) {
+		var key = localStorage.key (i);
+		if (!key.startsWith ("url:")) {
+			continue;
+		}
+		var url = key.substringAfter ("url:");
+		var config = loadConfig (url);
+		var config2 = new Object ();
+		config2.tag = config.site;
+		for (var property in config) {
+			if (config.hasOwnProperty (property)) {
+				config2[property] = config[property];
+			}
+		}
+		delete config2.site;
+		saveConfig (url, config2, null);
+	}
+
+	localStorage["version"] = "3";
 }
 
 function migrate_v2 () {

@@ -70,8 +70,8 @@ var urls = {};
 		<tr>
 			<td>Site Tag:</td>
 			<td>
-				<input style="width: 134px;" type="password" class="nopasshash" id="site" value="" />
-				<input type="button" value="a" id="unmasksite" title="Disable/enable Masking"/>
+				<input style="width: 134px;" type="password" class="nopasshash" id="tag" value="" />
+				<input type="button" value="a" id="unmasktag" title="Disable/enable Masking"/>
 				<input type="button" value="Bump" id="bump" />
 			</td>
 		</tr>
@@ -147,7 +147,7 @@ if (chrome.extension) {
 	}
 
 	$.each (urls, function (key, value) {
-		$("#urls").append ($("<option></option>").attr("value", key).text (value.site));
+		$("#urls").append ($("<option></option>").attr("value", key).text (value.tag));
 	});
 
 	function sortAlpha (a,b) {
@@ -176,22 +176,22 @@ function togglefield () {
 }
 
 $('#unmaskseed').click (togglefield);
-$('#unmasksite').click (togglefield);
+$('#unmasktag').click (togglefield);
 $('#unmaskpassword').click (togglefield);
 
 $('#bump').click (function () {
 	var re = new RegExp ("^([^:]+?)(:([0-9]+))?$");
-	var site = $('#site').val ();
-	if (site.startsWith ("compatible:")) {
-		site = site.substringAfter ("compatible:");
+	var tag = $('#tag').val ();
+	if (tag.startsWith ("compatible:")) {
+		tag = tag.substringAfter ("compatible:");
 	}
-	var matcher = re.exec (site);
+	var matcher = re.exec (tag);
 	var bump = 1;
 	if (null != matcher[3]) {
-		site = matcher[1];
+		tag = matcher[1];
 		bump += parseInt (matcher[3]);
 	}
-	$("#site").val (site + ":" + bump);
+	$("#tag").val (tag + ":" + bump);
 });
 
 $('#save').click (function () {
@@ -200,7 +200,7 @@ $('#save').click (function () {
 });
 
 var selectfield = $('#urls').get (0);
-var sitefield = $('#site').get (0);
+var tagfield = $('#tag').get (0);
 var seedfield = $('#seed').get (0);
 var lengthfield = $('#length').get (0);
 var strengthfield = $('#strength').get (0);
@@ -211,7 +211,7 @@ hashfield.readOnly = true;
 
 function update () {
 	var config = new Object ();
-	config.site = sitefield.value;
+	config.tag = tagfield.value;
 	config.seed = seedfield.value;
 	config.length = lengthfield.value;
 	config.strength = strengthfield.value;
@@ -220,13 +220,13 @@ function update () {
 	hashfield.value = hash;
 }
 
-sitefield.addEventListener ("keydown", update);
+tagfield.addEventListener ("keydown", update);
 seedfield.addEventListener ("keydown", update);
 inputfield.addEventListener ("keydown", update);
-sitefield.addEventListener ("keyup", update);
+tagfield.addEventListener ("keyup", update);
 seedfield.addEventListener ("keyup", update);
 inputfield.addEventListener ("keyup", update);
-sitefield.addEventListener ("change", update);
+tagfield.addEventListener ("change", update);
 seedfield.addEventListener ("change", update);
 inputfield.addEventListener ("change", update);
 lengthfield.addEventListener ("change", update);
@@ -239,7 +239,7 @@ hashfield.addEventListener ("click", function () {
 function selectionchanged () {
 	var url = $("#urls option:selected").val ();
 	var config = urls[url];
-	sitefield.value = config.site;
+	tagfield.value = config.tag;
 	seedfield.value = config.seed;
 	lengthfield.value = config.length;
 	strengthfield.value = config.strength;
