@@ -50,6 +50,14 @@ Storage.prototype.getObject = function (key) {
 	return JSON.parse (str);
 }
 
+Storage.prototype.getBoolean = function (key) {
+	if ("true" == localStorage[key]) {
+		return true;
+	}
+	return false;
+}
+
+
 migrate ();
 
 var portsByTabId = new Array ();
@@ -75,15 +83,9 @@ chrome.extension.onConnect.addListener (function (port) {
 	});
 });
 
-function optionschanged () {
-	for (tabid in portsByTabId) {
-		var port = portsByTabId[tabid];
-		port.postMessage ({ update: loadConfig (port.passhashUrl) });
-	}
-}
-
 function saveConfig (url, config, tabid) {
 	console.log ("Called saveConfig " + url);
+	delete config.options;
 	localStorage.setObject ("url:" + url, config);
 
 	if (null != tabid) {
@@ -91,55 +93,65 @@ function saveConfig (url, config, tabid) {
 	}
 }
 
+function loadOptions () {
+	var options = localStorage.getObject ("options");
+	var dirty = false;
+	if (null == options) {
+		options = new Object ();
+		dirty = true;
+	}
+	if (null == options.privateSeed) {
+		options.privateSeed = generateGuid ();
+		dirty = true;
+	}
+	if (null == options.defaultLength) {
+		options.defaultLength = default_length;
+		dirty = true;
+	}
+	if (null == options.defaultStrength) {
+		options.defaultStrength = default_strength;
+		dirty = true;
+	}
+	if (null == options.backedUp) {
+		options.backedUp = false;
+		dirty = true;
+	}
+	if (null == options.compatibilityMode) {
+		options.compatibilityMode = false;
+		dirty = true;
+	}
+	if (dirty) {
+		saveOptions (options);
+	}
+	return options;
+}
+
+function saveOptions (options) {
+	localStorage.setObject ("options", options);
+	for (tabid in portsByTabId) {
+		var port = portsByTabId[tabid];
+		port.postMessage ({ update: loadConfig (port.passhashUrl) });
+	}
+}
+
 function loadConfig (url) {
 	console.log ("Called loadConfig " + url);
 
-	var seed = localStorage["option:private_seed"];
-	var compatibilitymode = localStorage["option:compatibility_mode"];
-	if ("true" == compatibilitymode) {
-		compatibilitymode = true;
-	} else {
-		compatibilitymode = false;
-	}
-	var backedup = localStorage["option:backed_up"];
-	if ("true" == backedup) {
-		backedup = true;
-	} else {
-		backedup = false;
-	}
-
-	// No private seed generated, create one
-	if (!seed) {
-		seed = localStorage["option:private_seed"] = generateGuid ();
-	}
-
-	var obj;
+	var config;
 	try {
-		obj = localStorage.getObject ("url:" + url);
-		// Object wasn't saved with a seed so it requires compatibility
-		if (!compatibilitymode && !obj.seed) {
-			obj.tag = "compatible:" + obj.tag;
-		} else if (compatibilitymode && obj.tag.startsWith ("compatible:")) {
-			obj.tag = obj.tag.substringAfter (":");
-		}
+		config = localStorage.getObject ("url:" + url);
 	} catch (e) {
-		obj = new Object ();
-		obj.tag = url;
-		obj.length = localStorage["option:default_length"];
-		if (!obj.length) {
-			obj.length = default_length;
-		}
-		obj.strength = localStorage["option:default_strength"];
-		if (!obj.strength) {
-			obj.strength = default_strength;
-		}
-		obj.fields = new Array ();
+		config = new Object ();
+		config.tag = url;
+		config.length = options.defaultLength;
+		config.strength = options.defaultStrength;
+		config.fields = new Array ();
+		config.seed = options.privateSeed;
 	}
 
-	obj.seed = seed;
-	obj.compatibilitymode = compatibilitymode;
-	obj.backedup = backedup;
-	return obj;
+	config.options = loadOptions ();
+
+	return config;
 }
 
 function grepUrl (url) {
@@ -161,6 +173,46 @@ function migrate () {
 	migrate_v1 ();
 	migrate_v2 ();
 	migrate_v3 ();
+	migrate_v4 ();
+}
+
+function migrate_v4 () {
+	var version = parseInt (localStorage["version"]);
+	if (4 <= version) {
+		return;
+	}
+
+	var options = new Object ();
+	options.defaultLength = localStorage["option:default_length"];
+	options.defaultStrength = localStorage["option:default_strength"];
+	options.privateSeed = localStorage["option:private_seed"];
+	options.compatibilityMode = localStorage.getBoolean ("option:compatibility_mode");
+	options.backedUp = localStorage.getBoolean ("option:backed_up");
+
+	saveOptions (options);
+
+	var keys = new Array ();
+	for (var i = 0; i < localStorage.length; ++i) {
+		keys[i] = localStorage.key (i);
+	}
+
+	for (var i = 0; i < keys.length; ++i) {
+		var key = keys[i];
+		if (key.startsWith ("option:")) {
+			delete localStorage[key];
+		} else if (key.startsWith ("url:")) {
+			var config = localStorage.getObject (key);
+			if (config.tag.startsWith ("compatible:")) {
+				delete config.seed;
+				config.tag = config.tag.substringAfter ("compatible:");
+			}
+			delete config.compatibilitymode;
+			delete config.backedup;
+			localStorage.setObject (key, config);
+		}
+	}
+
+	localStorage["version"] = "4";
 }
 
 function migrate_v3 () {

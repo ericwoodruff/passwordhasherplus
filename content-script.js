@@ -66,7 +66,7 @@ function bind (field) {
 	}
 
 	function rehash () {
-		hash = generate_hash (config, input);
+		hash = generateHash (config, input);
 	}
 
 	function painthash () {

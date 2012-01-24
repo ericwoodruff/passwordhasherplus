@@ -96,6 +96,12 @@ var tabid;
 
 function writeModel () {
 	config.tag = $('#tag').val ();
+	if (config.tag.startsWith ("compatible:")) {
+		config.tag = config.tag.substringAfter ("compatible:");
+		delete config.seed;
+	} else if (null == config.seed) {
+		config.seed = config.options.privateSeed;
+	}
 	config.length = $('#length').val ();
 	config.strength = $('#strength').val ();
 	chrome.extension.getBackgroundPage ().saveConfig (url, config, tabid);
@@ -107,11 +113,13 @@ function readModel (url) {
 	$('#tag').val (config.tag);
 	$('#length').val (config.length);
 	$('#strength').val (config.strength);
-	if (true == config.compatibilitymode) {
+	if (true == config.options.compatibilityMode) {
 		$('div#compatmodeheader').html ("<b>Compatibility:</b>");
 		$('div#compatmode').text ("on");
+	} else if (null == config.seed) {
+		$('#tag').val ("compatible:" + config.tag);
 	}
-	if (false == config.backedup && !config.compatibilitymode) {
+	if (false == config.options.backedUp && false == config.options.compatibilityMode) {
 		$('div#compatmodeheader').html ("<b>Warning:</b>");
 		$('div#compatmode').text ("You have not yet indicated that you have backed up your private key. Please do so on the Options page.");
 	}
@@ -126,8 +134,10 @@ chrome.tabs.getSelected (null, function (tab) {
 $('#bump').click (function () {
 	var re = new RegExp ("^([^:]+?)(:([0-9]+))?$");
 	var tag = $("#tag").val ();
+	var compatible = false;
 	if (tag.startsWith ("compatible:")) {
 		tag = tag.substringAfter ("compatible:");
+		compatible = true;
 	}
 	var matcher = re.exec (tag);
 	var bump = 1;
@@ -135,9 +145,11 @@ $('#bump').click (function () {
 		tag = matcher[1];
 		bump += parseInt (matcher[3]);
 	}
+	if (compatible) {
+		tag = "compatible:" + tag;
+	}
 	$("#tag").val (tag + ":" + bump);
 });
-
 
 </script>
 </html>

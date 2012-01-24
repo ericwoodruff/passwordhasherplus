@@ -54,9 +54,7 @@ function generateGuid () {
 function generateHash (config, input) {
 	var tag = config.tag;
 
-	var prefixed = tag.startsWith ("compatible:");
-
-	if (!config.compatibilitymode && !prefixed) {
+	if (false == config.options.compatibilityMode && null != config.seed) {
 		tag = PassHashCommon.generateHashWord (
 			config.seed,
 			tag,
@@ -67,10 +65,6 @@ function generateHash (config, input) {
 			false, // no special characters
 			false // only digits
 		);
-	}
-
-	if (prefixed) {
-		tag = tag.substringAfter (":");
 	}
 
 	return PassHashCommon.generateHashWord (
