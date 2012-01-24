@@ -90,20 +90,20 @@
 </body>
 
 <script type="text/javascript">
-var site;
+var url;
 var config;
 var tabid;
 
-function writemodel () {
+function writeModel () {
 	config.site = $('#site').val ();
 	config.length = $('#length').val ();
 	config.strength = $('#strength').val ();
-	chrome.extension.getBackgroundPage ().saveConfig (site, config, tabid);
+	chrome.extension.getBackgroundPage ().saveConfig (url, config, tabid);
 }
-window.onunload = writemodel;
+window.onunload = writeModel;
 
-function readmodel (site) {
-	config = chrome.extension.getBackgroundPage ().loadConfig (site);
+function readModel (url) {
+	config = chrome.extension.getBackgroundPage ().loadConfig (url);
 	$('#site').val (config.site);
 	$('#length').val (config.length);
 	$('#strength').val (config.strength);
@@ -119,8 +119,8 @@ function readmodel (site) {
 
 chrome.tabs.getSelected (null, function (tab) {
 	tabid = tab.id;
-	site = chrome.extension.getBackgroundPage ().grepUrl (tab.url);
-	readmodel (site);
+	url = chrome.extension.getBackgroundPage ().grepUrl (tab.url);
+	readModel (url);
 });
 
 $('#bump').click (function () {

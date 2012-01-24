@@ -44,7 +44,7 @@
 <script type="text/javascript" src="lib/passhashcommon.js"></script>
 <script type="text/javascript" src="common.js"></script>
 <script type="text/javascript" id="template">
-var sites = {};
+var urls = {};
 </script>
 </head>
 
@@ -141,12 +141,12 @@ if (chrome.extension) {
 		if (key.startsWith ("url:")) {
 			var url = key.slice (4);
 			var config = chrome.extension.getBackgroundPage ().loadConfig (url);
-			sites[url] = config;
-			$("#template").append ("sites[\"" + url + "\"]=JSON.parse(\"" + localStorage[key].replace (/"/g, "\\\\\"") + "\");\n");
+			urls[url] = config;
+			$("#template").append ("urls[\"" + url + "\"]=JSON.parse(\"" + localStorage[key].replace (/"/g, "\\\\\"") + "\");\n");
 		}
 	}
 
-	$.each (sites, function (key, value) {
+	$.each (urls, function (key, value) {
 		$("#urls").append ($("<option></option>").attr("value", key).text (value.site));
 	});
 
@@ -238,7 +238,7 @@ hashfield.addEventListener ("click", function () {
 
 function selectionchanged () {
 	var url = $("#urls option:selected").val ();
-	var config = sites[url];
+	var config = urls[url];
 	sitefield.value = config.site;
 	seedfield.value = config.seed;
 	lengthfield.value = config.length;

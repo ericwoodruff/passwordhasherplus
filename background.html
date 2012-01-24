@@ -46,14 +46,14 @@ chrome.extension.onConnect.addListener (function (port) {
 	console.assert (port.name == "passhash");
 	port.onMessage.addListener (function (msg) {
 		if (null != msg.init) {
-			var site = grepUrl (msg.url);
-			var config = loadConfig (site);
-			port.passhashsite = site;
+			var url = grepUrl (msg.url);
+			var config = loadConfig (url);
+			port.passhashUrl = url;
 			portsByTabId[port.tab.id] = port;
 			port.postMessage ({ update: config });
 		} else if (null != msg.save) {
-			var site = grepUrl (msg.url);
-			saveConfig (site, msg.save, null);
+			var url = grepUrl (msg.url);
+			saveConfig (url, msg.save, null);
 		}
 	});
 
@@ -78,24 +78,21 @@ Storage.prototype.getObject = function (key) {
 function optionschanged () {
 	for (tabid in portsByTabId) {
 		var port = portsByTabId[tabid];
-		port.postMessage ({ update: loadConfig (port.passhashsite) });
+		port.postMessage ({ update: loadConfig (port.passhashUrl) });
 	}
 }
 
-function saveConfig (site, config, tabid) {
-	console.log ("Called saveConfig " + site);
-	if (site.startsWith ("compatible:")) {
-		site = site.substringAfter ("compatible:");
-	}
-	localStorage.setObject ("url:" + site, config);
+function saveConfig (url, config, tabid) {
+	console.log ("Called saveConfig " + url);
+	localStorage.setObject ("url:" + url, config);
 
 	if (null != tabid) {
 		portsByTabId[tabid].postMessage ({ update: config });
 	}
 }
 
-function loadConfig (site) {
-	console.log ("Called loadConfig " + site);
+function loadConfig (url) {
+	console.log ("Called loadConfig " + url);
 
 	var seed = localStorage["option:private_seed"];
 	var compatibilitymode = localStorage["option:compatibility_mode"];
@@ -118,7 +115,7 @@ function loadConfig (site) {
 
 	var obj;
 	try {
-		obj = localStorage.getObject ("url:" + site);
+		obj = localStorage.getObject ("url:" + url);
 		// Object wasn't saved with a seed so it requires compatibility
 		if (!compatibilitymode && !obj.seed) {
 			obj.site = "compatible:" + obj.site;
@@ -127,7 +124,7 @@ function loadConfig (site) {
 		}
 	} catch (e) {
 		obj = new Object ();
-		obj.site = site;
+		obj.site = url;
 		obj.length = localStorage["option:default_length"];
 		if (!obj.length) {
 			obj.length = default_length;
