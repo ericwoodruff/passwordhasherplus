@@ -180,18 +180,7 @@ $('#unmasktag').click (togglefield);
 $('#unmaskpassword').click (togglefield);
 
 $('#bump').click (function () {
-	var re = new RegExp ("^([^:]+?)(:([0-9]+))?$");
-	var tag = $('#tag').val ();
-	if (tag.startsWith ("compatible:")) {
-		tag = tag.substringAfter ("compatible:");
-	}
-	var matcher = re.exec (tag);
-	var bump = 1;
-	if (null != matcher[3]) {
-		tag = matcher[1];
-		bump += parseInt (matcher[3]);
-	}
-	$("#tag").val (tag + ":" + bump);
+	$("#tag").val (bump ($("#tag").val ()));
 });
 
 $('#save').click (function () {
@@ -216,7 +205,7 @@ function update () {
 	config.length = lengthfield.value;
 	config.strength = strengthfield.value;
 	var input = inputfield.value;
-	var hash = generate_hash (config, input);
+	var hash = generateHash (config, input);
 	hashfield.value = hash;
 }
 

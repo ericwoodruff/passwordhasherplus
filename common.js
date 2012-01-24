@@ -78,3 +78,22 @@ function generateHash (config, input) {
 		config.strength == 0 // only digits
 	);
 }
+
+function bump (tag) {
+	var re = new RegExp ("^([^:]+?)(:([0-9]+))?$");
+	var compatible = false;
+	if (tag.startsWith ("compatible:")) {
+		tag = tag.substringAfter ("compatible:");
+		compatible = true;
+	}
+	var matcher = re.exec (tag);
+	var bump = 1;
+	if (null != matcher[3]) {
+		tag = matcher[1];
+		bump += parseInt (matcher[3]);
+	}
+	if (compatible) {
+		tag = "compatible:" + tag;
+	}
+	return tag + ":" + bump;
+}
