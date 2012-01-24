@@ -98,12 +98,12 @@ function writemodel () {
 	config.site = $('#site').val ();
 	config.length = $('#length').val ();
 	config.strength = $('#strength').val ();
-	chrome.extension.getBackgroundPage ().saveconfig (site, config, tabid);
+	chrome.extension.getBackgroundPage ().saveConfig (site, config, tabid);
 }
 window.onunload = writemodel;
 
 function readmodel (site) {
-	config = chrome.extension.getBackgroundPage ().loadconfig (site);
+	config = chrome.extension.getBackgroundPage ().loadConfig (site);
 	$('#site').val (config.site);
 	$('#length').val (config.length);
 	$('#strength').val (config.strength);

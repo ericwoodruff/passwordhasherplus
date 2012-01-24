@@ -140,7 +140,7 @@ if (chrome.extension) {
 		var key = localStorage.key (i);
 		if (key.startsWith ("url:")) {
 			var url = key.slice (4);
-			var config = chrome.extension.getBackgroundPage ().loadconfig (url);
+			var config = chrome.extension.getBackgroundPage ().loadConfig (url);
 			sites[url] = config;
 			$("#template").append ("sites[\"" + url + "\"]=JSON.parse(\"" + localStorage[key].replace (/"/g, "\\\\\"") + "\");\n");
 		}

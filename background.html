@@ -47,13 +47,13 @@ chrome.extension.onConnect.addListener (function (port) {
 	port.onMessage.addListener (function (msg) {
 		if (null != msg.init) {
 			var site = grepUrl (msg.url);
-			var config = loadconfig (site);
+			var config = loadConfig (site);
 			port.passhashsite = site;
 			portsByTabId[port.tab.id] = port;
 			port.postMessage ({ update: config });
 		} else if (null != msg.save) {
 			var site = grepUrl (msg.url);
-			saveconfig (site, msg.save, null);
+			saveConfig (site, msg.save, null);
 		}
 	});
 
@@ -78,12 +78,12 @@ Storage.prototype.getObject = function (key) {
 function optionschanged () {
 	for (tabid in portsByTabId) {
 		var port = portsByTabId[tabid];
-		port.postMessage ({ update: loadconfig (port.passhashsite) });
+		port.postMessage ({ update: loadConfig (port.passhashsite) });
 	}
 }
 
-function saveconfig (site, config, tabid) {
-	console.log ("Called saveconfig " + site);
+function saveConfig (site, config, tabid) {
+	console.log ("Called saveConfig " + site);
 	if (site.startsWith ("compatible:")) {
 		site = site.substringAfter ("compatible:");
 	}
@@ -94,8 +94,8 @@ function saveconfig (site, config, tabid) {
 	}
 }
 
-function loadconfig (site) {
-	console.log ("Called loadconfig " + site);
+function loadConfig (site) {
+	console.log ("Called loadConfig " + site);
 
 	var seed = localStorage["option:private_seed"];
 	var compatibilitymode = localStorage["option:compatibility_mode"];
