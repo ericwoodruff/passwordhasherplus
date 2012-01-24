@@ -44,7 +44,7 @@
 <script type="text/javascript" src="common.js"></script>
 </head>
 
-<body onLoad="restore_options ()">
+<body onLoad="restoreOptions ()">
 <img src="images/icon128.png"/>
 <h1>Password Hasher Plus - Options</h1>
 <a href="javascript:void(0)" onclick="chrome.tabs.create({url:'chrome-extension://'+location.hostname+'/passhashplus.html'})" title="passhashplus.html">Portable HTML Page</a>
@@ -86,7 +86,7 @@
 			<td>Private Key:</td>
 			<td>
 				<input id="seed" type="text" size="48" maxlength="45"/>
-				<input type="button" value="Generate" onClick="set_new_guid ()"/>
+				<input type="button" value="Generate" onClick="setNewGuid ()"/>
 			</td>
 		</tr>
 		<tr>
@@ -99,21 +99,21 @@
 		<tr>
 			<td></td>
                         <td>
-                                <button onClick="save_options ()">Save</button>
-			        <button onClick="restore_options ()">Revert</button>
+                                <button onClick="saveOptions ()">Save</button>
+			        <button onClick="restoreOptions ()">Revert</button>
 			</td>
 		</tr>
                 <tr>
                         <td colspan=2"><hr/></td>
                 </tr>
                 <tr>
-			<td>Database: <button onClick="clear_storage ();refresh_storage ();">Clear</button>
+			<td>Database: <button onClick="clearStorage ();refreshStorage ();">Clear</button>
                         </td>
                         <td>
 				<textarea id="everything" cols="120" rows="12"></textarea>
 				<br/>
-                                <button onClick="load_storage ()">Save</button>
-                                <button onClick="refresh_storage ()">Revert</button>
+                                <button onClick="loadStorage ()">Save</button>
+                                <button onClick="refreshStorage ()">Revert</button>
                         </td>
                 </tr>
 	</table>
@@ -122,22 +122,22 @@
 
 <script type="text/javascript">
 
-function set_new_guid () {
+function setNewGuid () {
 	var seedElement = document.getElementById ("seed");
 	seedElement.value = generateGuid ();
 }
 
-function save_options () {
+function saveOptions () {
 	localStorage["option:default_length"] = document.getElementById ("length").value;
 	localStorage["option:default_strength"] = document.getElementById ("strength").value;
 	localStorage["option:compatibility_mode"] = document.getElementById ("compatibility").checked;
 	localStorage["option:private_seed"] = document.getElementById ("seed").value;
 	localStorage["option:backed_up"] = document.getElementById ("backedup").checked;
 	chrome.extension.getBackgroundPage ().optionschanged ();
-        refresh_storage();
+        refreshStorage();
 }
 
-function restore_options () {
+function restoreOptions () {
 	var length = localStorage["default_length"];
 	if (!length) {
 		length = localStorage["option:default_length"] = default_length;
@@ -171,10 +171,10 @@ function restore_options () {
 		backedup = false;
 	}
 	document.getElementById ("backedup").checked = backedup;
-        refresh_storage();
+        refreshStorage();
 }
 
-function refresh_storage() {
+function refreshStorage () {
         var entries = [];
         var length = localStorage.length;
         for (var i = 0; i < length; i++) {
@@ -198,7 +198,7 @@ function refresh_storage() {
 	document.getElementById ("everything").value = "{\n" + entries.join(",\n") + "\n}\n";
 }
 
-function clear_storage() {
+function clearStorage () {
         if (confirm("You are about to erase all of the Password Hasher Plus database. " +
                     "This is typically done before loading a snapshot of a previous database state. " +
                     "Are you certain you want to erase the database?")) {
@@ -210,7 +210,7 @@ function clear_storage() {
         }
 }
 
-function load_storage() {
+function loadStorage () {
         try {
                 everything = JSON.parse(document.getElementById ("everything").value);
         } catch(e) {
