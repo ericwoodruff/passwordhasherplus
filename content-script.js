@@ -69,7 +69,7 @@ function bind (field) {
 		hash = generateHash (config, input);
 	}
 
-	function painthash () {
+	function paintHash () {
 		if ("" != input) {
 			field.value = hash;
 		} else {
@@ -79,13 +79,13 @@ function bind (field) {
 		editing = false;
 	}
 
-	function paintvalue () {
+	function paintValue () {
 		field.value = input;
 		field.style.backgroundColor = backgroundStyle;
 		editing = true;
 	}
 
-	function painthashbutton () {
+	function paintHashButton () {
 		if (hashing) {
 			hashbutton.innerHTML = "\"";
 			hashbutton.title = "Literal password (Ctrl + #)"
@@ -95,7 +95,7 @@ function bind (field) {
 		}
 	}
 
-	function setfieldtype () {
+	function setFieldType () {
 		if (masking) {
 			field.type = "password";
 			maskbutton.innerHTML = "a";
@@ -112,14 +112,14 @@ function bind (field) {
 		rehash ();
 	}
 
-	function togglehashing (save) {
+	function toggleHashing (save) {
 		hashing = !hashing;
-		painthashbutton ();
+		paintHashButton ();
 		if (hashing) {
 			config.fields[config.fields.length] = field.id;
 			if (!hasFocus) {
 				rehash ();
-				painthash ();
+				paintHash ();
 			}
 		} else {
 			for (var i = 0; i < config.fields.length;) {
@@ -130,7 +130,7 @@ function bind (field) {
 				}
 			}
 			if (!hasFocus) {
-				paintvalue ();
+				paintValue ();
 			}
 		}
 		if (true == save) {
@@ -140,7 +140,7 @@ function bind (field) {
 
 	function togglemasking () {
 		masking = !masking;
-		setfieldtype ();
+		setFieldType ();
 	}
 
 	function getselection () {
@@ -161,26 +161,26 @@ function bind (field) {
 
 	function copy () {
 		update ();
-		painthash ();
+		paintHash ();
 		field.select ();
 		//document.execCommand ('Copy');
-		//paintvalue ();
+		//paintValue ();
 	}
 
-	painthashbutton ();
-	setfieldtype ();
+	paintHashButton ();
+	setFieldType ();
 
 	/*field.addEventListener ("click", function () {
 		if (!editing) {
 			editing = true;
-			paintvalue ();
+			paintValue ();
 		}
 	});*/
 
 	field.addEventListener ("focus", function () {
 		if (hashing) {
 			editing = true;
-			paintvalue ();
+			paintValue ();
 		}
 		hasFocus = true;
 	});
@@ -190,7 +190,7 @@ function bind (field) {
 			update ();
 		}
 		if (hashing) {
-			painthash ();
+			paintHash ();
 		}
 		hasFocus = false;
 	});
@@ -198,7 +198,7 @@ function bind (field) {
 	field.addEventListener ("change", update);
 
 	hashbutton.addEventListener ("click", function () {
-		togglehashing (true);
+		toggleHashing (true);
 	});
 
 	hashbutton.addEventListener ("rehash", function () {
@@ -206,7 +206,7 @@ function bind (field) {
 			if (config.fields[i] == field.id) {
 				if (!hashing) {
 					// Hashing for this field was persisted but it is not enabled yet
-					togglehashing (false);
+					toggleHashing (false);
 					return;
 				}
 				break;
@@ -214,7 +214,7 @@ function bind (field) {
 		}
 		if (hashing) {
 			rehash ();
-			painthash ();
+			paintHash ();
 		}
 	});
 
@@ -248,7 +248,7 @@ function bind (field) {
 				switch (e.which) {
 					case ctrl + shift + 51: // ctrl + #
 					case ctrl + 117: // ctrl + f6 
-						togglehashing (true);
+						toggleHashing (true);
 					break;
 					case ctrl + shift + 56: // ctrl + *
 						togglemasking ();
@@ -261,7 +261,7 @@ function bind (field) {
 					case 13:
 						update ();
 						if (hashing) {
-							painthash ();
+							paintHash ();
 						}
 					break;
 				};
