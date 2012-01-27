@@ -161,7 +161,7 @@ if (chrome.extension) {
 $('#length').val (12);
 $('#strength').val (2);
 
-function togglefield () {
+function toggleField () {
 	var button = this;
 	var field = $(this).prev ("input").get (0);
 	if ("text" == field.type) {
@@ -175,9 +175,9 @@ function togglefield () {
 	}
 }
 
-$('#unmaskseed').click (togglefield);
-$('#unmasktag').click (togglefield);
-$('#unmaskpassword').click (togglefield);
+$('#unmaskseed').click (toggleField);
+$('#unmasktag').click (toggleField);
+$('#unmaskpassword').click (toggleField);
 
 $('#bump').click (function () {
 	$("#tag").val (bump ($("#tag").val ()));
@@ -225,7 +225,7 @@ hashfield.addEventListener ("click", function () {
 	hashfield.select ();
 });
 
-function selectionchanged () {
+function selectionChanged () {
 	var url = $("#urls option:selected").val ();
 	var config = urls[url];
 	tagfield.value = config.tag;
@@ -235,9 +235,9 @@ function selectionchanged () {
 	update ();
 }
 
-selectfield.addEventListener ("change", selectionchanged);
+selectfield.addEventListener ("change", selectionChanged);
 
-selectionchanged ();
+selectionChanged ();
 
 </script>
 </html>
