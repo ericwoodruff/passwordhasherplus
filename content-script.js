@@ -39,10 +39,16 @@ var port = chrome.extension.connect ({name: "passhash"});
 var id = 0;
 
 function bind (field) {
-	var hashbutton = $(field).next ("span.hashbutton").get (0);
-	if (null != hashbutton || $(field).hasClass ("nopasshash")) {
+	if ("" == field.id) {
+		field.id = "passhash_" + id++;
+	}
+
+	var marker = $(field).next ("div.passhashfield").get (0);
+	if (null != marker || $(field).hasClass ("nopasshash")) {
 		return;
 	}
+	$(field).after ('<div class="passhashfield"/>');
+
 	var hasFocus = false;
 	var backgroundStyle = field.style.backgroundColor;
 	var input = field.value;
@@ -51,37 +57,65 @@ function bind (field) {
 	var masking = true;
 	var editing = false;
 
-	$(field).addClass ("passhashfield");
+	var content = '<span id="hash_' + field.id + '" class="passhashbutton" title="Enable/disable Hashing">#</span>' +
+		'<span id="mask_' + field.id + '" class="passhashbutton" title="Disable/enable Masking">a</span>';
 
-	var content = '<span class="hashbutton passhashbutton" title="Enable/disable Hashing">#</span>' +
-		'<span class="maskbutton passhashbutton" title="Disable/enable Masking">a</span>';
+	var hashbutton;
+	var maskbutton;
 
 	$(field).qtip ({
-		content: content,
-		position: { corner: { target: 'bottomRight', tooltip: 'topRight' } },
-		style: { padding: '5px 15px', },
+		id: "tip_" + field.id,
+		content: {
+			text: content
+		},
+		position: { my: 'top right', at: 'bottom right' },
+		style: { padding: '5px 10px', },
 		show: {
-			when: {
-				event: 'focus'
-			}
+			event: 'focus mouseenter',
+			solo: true
 		},
 		hide: {
 			fixed: true,
-			when: {
-				event: 'blur'
+			event: 'unfocus'
+		},
+		style: {
+			classes: 'ui-tooltip-light'
+		},
+		events: {
+			visible: function (event, api) {
+				if (null != hashbutton) {
+					return;
+				}
+				hashbutton = $("#hash_" + field.id, api.elements.content).get (0);
+				maskbutton = $("#mask_" + field.id, api.elements.content).get (0);
+
+				field.addEventListener ("change", update);
+
+				hashbutton.addEventListener ("click", function () {
+					toggleHashing (true);
+				});
+
+				hashbutton.addEventListener ("rehash", function () {
+					for (var i = 0; i < config.fields.length; ++i) {
+						if (config.fields[i] == field.id) {
+							if (!hashing) {
+								// Hashing for this field was persisted but it is not enabled yet
+								toggleHashing (false);
+								return;
+							}
+							break;
+						}
+					}
+					if (hashing) {
+						rehash ();
+						paintHash ();
+					}
+				});
+
+				maskbutton.addEventListener ("click", togglemasking);
 			}
 		}
 	});
-
-	$(field).after (content);
-
-	var hashbutton = $(field).next ("span.hashbutton").get (0);
-	var maskbutton = $(field).nextAll ("span.maskbutton").get (0);
-
-	if ("" == field.id) {
-		// field has no id, so we will make one
-		field.id = "passhash_" + id++;
-	}
 
 	function rehash () {
 		hash = generateHash (config, input);
@@ -181,19 +215,7 @@ function bind (field) {
 		update ();
 		paintHash ();
 		field.select ();
-		//document.execCommand ('Copy');
-		//paintValue ();
 	}
-
-	paintHashButton ();
-	setFieldType ();
-
-	/*field.addEventListener ("click", function () {
-		if (!editing) {
-			editing = true;
-			paintValue ();
-		}
-	});*/
 
 	field.addEventListener ("focus", function () {
 		if (hashing) {
@@ -212,31 +234,6 @@ function bind (field) {
 		}
 		hasFocus = false;
 	});
-
-	field.addEventListener ("change", update);
-
-	hashbutton.addEventListener ("click", function () {
-		toggleHashing (true);
-	});
-
-	hashbutton.addEventListener ("rehash", function () {
-		for (var i = 0; i < config.fields.length; ++i) {
-			if (config.fields[i] == field.id) {
-				if (!hashing) {
-					// Hashing for this field was persisted but it is not enabled yet
-					toggleHashing (false);
-					return;
-				}
-				break;
-			}
-		}
-		if (hashing) {
-			rehash ();
-			paintHash ();
-		}
-	});
-
-	maskbutton.addEventListener ("click", togglemasking);
 
 	var ctrlDown = false;
 	var shiftDown = false;
@@ -281,6 +278,7 @@ function bind (field) {
 						if (hashing) {
 							paintHash ();
 						}
+						$(field).qtip ("hide");
 					break;
 				};
 		};
