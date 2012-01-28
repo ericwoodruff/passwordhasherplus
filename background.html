@@ -137,6 +137,7 @@ function saveOptions (options) {
 function loadConfig (url) {
 	console.log ("Called loadConfig " + url);
 
+	var options = localStorage.getObject ("options");
 	var config;
 	try {
 		config = localStorage.getObject ("url:" + url);
