@@ -57,8 +57,8 @@ function bind (field) {
 	var masking = true;
 	var editing = false;
 
-	var content = '<span id="hash_' + field.id + '" class="passhashbutton" title="Enable/disable Hashing">#</span>' +
-		'<span id="mask_' + field.id + '" class="passhashbutton" title="Disable/enable Masking">a</span>';
+	var content = '<span id="hash_' + field.id + '" class="passhashbutton"/>' +
+		'<span id="mask_' + field.id + '" class="passhashbutton"/>';
 
 	var hashbutton;
 	var maskbutton;
@@ -86,33 +86,18 @@ function bind (field) {
 				if (null != hashbutton) {
 					return;
 				}
+
 				hashbutton = $("#hash_" + field.id, api.elements.content).get (0);
 				maskbutton = $("#mask_" + field.id, api.elements.content).get (0);
 
-				field.addEventListener ("change", update);
 
 				hashbutton.addEventListener ("click", function () {
 					toggleHashing (true);
 				});
 
-				hashbutton.addEventListener ("rehash", function () {
-					for (var i = 0; i < config.fields.length; ++i) {
-						if (config.fields[i] == field.id) {
-							if (!hashing) {
-								// Hashing for this field was persisted but it is not enabled yet
-								toggleHashing (false);
-								return;
-							}
-							break;
-						}
-					}
-					if (hashing) {
-						rehash ();
-						paintHash ();
-					}
-				});
-
 				maskbutton.addEventListener ("click", togglemasking);
+				paintHashButton ();
+				setFieldType ();
 			}
 		}
 	});
@@ -138,6 +123,9 @@ function bind (field) {
 	}
 
 	function paintHashButton () {
+		if (null == hashbutton) {
+			return;
+		}
 		if (hashing) {
 			hashbutton.innerHTML = "\"";
 			hashbutton.title = "Literal password (Ctrl + #)"
@@ -150,12 +138,16 @@ function bind (field) {
 	function setFieldType () {
 		if (masking) {
 			field.type = "password";
-			maskbutton.innerHTML = "a";
-			maskbutton.title = "Show password (Ctrl + *)";
+			if (null != maskbutton) {
+				maskbutton.innerHTML = "a";
+				maskbutton.title = "Show password (Ctrl + *)";
+			}
 		} else {
 			field.type = "text";
-			maskbutton.innerHTML = "*";
-			maskbutton.title = "Mask password (Ctrl + *)";
+			if (null != maskbutton) {
+				maskbutton.innerHTML = "*";
+				maskbutton.title = "Mask password (Ctrl + *)";
+			}
 		}
 	}
 
@@ -235,6 +227,25 @@ function bind (field) {
 		hasFocus = false;
 	});
 
+	field.addEventListener ("change", update);
+
+	field.addEventListener ("rehash", function () {
+		for (var i = 0; i < config.fields.length; ++i) {
+			if (config.fields[i] == field.id) {
+				if (!hashing) {
+					// Hashing for this field was persisted but it is not enabled yet
+					toggleHashing (false);
+					return;
+				}
+				break;
+			}
+		}
+		if (hashing) {
+			rehash ();
+			paintHash ();
+		}
+	});
+
 	var ctrlDown = false;
 	var shiftDown = false;
 	var altDown = false;
@@ -283,6 +294,8 @@ function bind (field) {
 				};
 		};
 	});
+
+	setFieldType ();
 }
 
 $("input[type=password]").each (function (index) {
@@ -305,7 +318,7 @@ port.onMessage.addListener (function (msg) {
 	console.debug (msg);
 	if (null != msg.update) {
 		config = msg.update;
-		$("span.hashbutton").each (function (index) {
+		$("input[type=password]").each (function (index) {
 			this.dispatchEvent (evt);
 		});
 	}
