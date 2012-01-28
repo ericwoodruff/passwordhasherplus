@@ -53,9 +53,27 @@ function bind (field) {
 
 	$(field).addClass ("passhashfield");
 
-	$(field).after (
-		'<span class="hashbutton passhashbutton" title="Enable/disable Hashing">#</span>' +
-		'<span class="maskbutton passhashbutton" title="Disable/enable Masking">a</span>');
+	var content = '<span class="hashbutton passhashbutton" title="Enable/disable Hashing">#</span>' +
+		'<span class="maskbutton passhashbutton" title="Disable/enable Masking">a</span>';
+
+	$(field).qtip ({
+		content: content,
+		position: { corner: { target: 'bottomRight', tooltip: 'topRight' } },
+		style: { padding: '5px 15px', },
+		show: {
+			when: {
+				event: 'focus'
+			}
+		},
+		hide: {
+			fixed: true,
+			when: {
+				event: 'blur'
+			}
+		}
+	});
+
+	$(field).after (content);
 
 	var hashbutton = $(field).next ("span.hashbutton").get (0);
 	var maskbutton = $(field).nextAll ("span.maskbutton").get (0);
