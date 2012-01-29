@@ -85,9 +85,7 @@ chrome.extension.onConnect.addListener (function (port) {
 
 function saveConfig (url, config, tabid) {
 	console.log ("Called saveConfig " + url);
-	if (config.fields instanceof Set) {
-		config.fields = toArray (config.fields);
-	}
+	config.fields = toArray (config.fields);
 	delete config.options;
 	localStorage.setObject ("url:" + url, config);
 	config.options = loadOptions ();
@@ -98,9 +96,11 @@ function saveConfig (url, config, tabid) {
 }
 
 function loadOptions () {
-	var options = localStorage.getObject ("options");
 	var dirty = false;
-	if (null == options) {
+	var options;
+	try {
+		options = localStorage.getObject ("options");
+	} catch (e) {
 		options = new Object ();
 		dirty = true;
 	}
