@@ -33,17 +33,22 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-input.passhashfield {
-	display: inline;
+.ui-tooltip-content {
+	padding: 3px 3px !important;
+	background-color: rgba(255,255,255,0.5) !important;
 }
 
-span.passhashbutton {
+.ui-tooltip-rounded, .ui-tooltip-rounded .ui-tooltip-content {
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
+}
+
+.passhashbutton {
 	-webkit-appearance: button;
 	align: left;
-	white-space: nowrap;
-	width: 20px;
+	width: 2em;
+	padding: 2px 2px;
+	margin: 2px 5px;
 	text-align: center;
-	padding: 2px;
-	margin-left: 6px;
 	display: inline;
 }
