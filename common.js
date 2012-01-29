@@ -41,6 +41,22 @@ String.prototype.substringAfter = function (str) {
 	return (this.substring (this.indexOf (str) + str.length));
 }
 
+var Set = function () {}
+Set.prototype.add = function (o) { this[o] = true; }
+Set.prototype.remove = function (o) { delete this[o]; }
+
+function toSet (array) {
+	var s = new Set ();
+	for (var i = 0; i < array.length; ++i) {
+		s.add (array[i]);
+	}
+	return s;
+}
+
+function toArray (set) {
+	return Object.keys (set);
+}
+
 var default_length = 8;
 var default_strength = 2;
 
