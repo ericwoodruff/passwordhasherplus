@@ -191,6 +191,7 @@ function loadStorage () {
 		alert("Sorry, the data in the text area to the right is not valid JSON.");
 		return;
 	}
+	localStorage.clear ();
 	for (var key in everything) {
 		var value = everything[key];
 		if (key.slice(0, 7) != "option:") value = JSON.stringify(value);
