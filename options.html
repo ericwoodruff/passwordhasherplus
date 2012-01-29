@@ -196,6 +196,8 @@ function loadStorage () {
 		if (key.slice(0, 7) != "option:") value = JSON.stringify(value);
 		localStorage.setItem (key, value);
 	}
+	chrome.extension.getBackgroundPage ().migrate ();
+	refreshStorage ();
 }
 
 </script>
