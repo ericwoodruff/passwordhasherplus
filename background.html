@@ -70,7 +70,7 @@ chrome.extension.onConnect.addListener (function (port) {
 			var config = loadConfig (url);
 			port.passhashUrl = url;
 			portsByTabId[port.tab.id] = port;
-			port.postMessage ({ update: config });
+			port.postMessage ({ init: true, update: config });
 		} else if (null != msg.save) {
 			var url = grepUrl (msg.url);
 			saveConfig (url, msg.save, null);
@@ -85,8 +85,12 @@ chrome.extension.onConnect.addListener (function (port) {
 
 function saveConfig (url, config, tabid) {
 	console.log ("Called saveConfig " + url);
+	if (config.fields instanceof Set) {
+		config.fields = toArray (config.fields);
+	}
 	delete config.options;
 	localStorage.setObject ("url:" + url, config);
+	config.options = loadOptions ();
 
 	if (null != tabid) {
 		portsByTabId[tabid].postMessage ({ update: config });
@@ -137,8 +141,8 @@ function saveOptions (options) {
 function loadConfig (url) {
 	console.log ("Called loadConfig " + url);
 
-	var options = localStorage.getObject ("options");
 	var config;
+	var options = loadOptions ();
 	try {
 		config = localStorage.getObject ("url:" + url);
 	} catch (e) {
@@ -149,7 +153,6 @@ function loadConfig (url) {
 		config.fields = new Array ();
 		config.seed = options.privateSeed;
 	}
-
 	config.options = loadOptions ();
 
 	return config;
