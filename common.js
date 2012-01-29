@@ -53,8 +53,8 @@ function toSet (array) {
 	return s;
 }
 
-function toArray (set) {
-	return Object.keys (set);
+function toArray (s) {
+	return Object.keys (s);
 }
 
 var default_length = 8;
