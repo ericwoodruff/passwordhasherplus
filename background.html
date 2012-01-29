@@ -193,28 +193,28 @@ function migrate_v4 () {
 	options.compatibilityMode = localStorage.getBoolean ("option:compatibility_mode");
 	options.backedUp = localStorage.getBoolean ("option:backed_up");
 
-	saveOptions (options);
-
-	var keys = new Array ();
-	for (var i = 0; i < localStorage.length; ++i) {
-		keys[i] = localStorage.key (i);
-	}
-
+	var keys = toArray (localStorage);
 	for (var i = 0; i < keys.length; ++i) {
 		var key = keys[i];
 		if (key.startsWith ("option:")) {
 			delete localStorage[key];
 		} else if (key.startsWith ("url:")) {
 			var config = localStorage.getObject (key);
-			if (config.tag.startsWith ("compatible:")) {
-				delete config.seed;
-				config.tag = config.tag.substringAfter ("compatible:");
+			try {
+				if (config.tag.startsWith ("compatible:")) {
+					delete config.seed;
+					config.tag = config.tag.substringAfter ("compatible:");
+				}
+				delete config.compatibilitymode;
+				delete config.backedup;
+				localStorage.setObject (key, config);
+			} catch (e) {
+				console.log ("failed to migrate " + key);
 			}
-			delete config.compatibilitymode;
-			delete config.backedup;
-			localStorage.setObject (key, config);
 		}
 	}
+
+	saveOptions (options);
 
 	localStorage["version"] = "4";
 }
@@ -225,23 +225,24 @@ function migrate_v3 () {
 		return;
 	}
 
-	var keys = new Array ();
-	for (var i = 0; i < localStorage.length; ++i) {
-		var key = localStorage.key (i);
+	var keys = toArray (localStorage);
+	for (var i = 0; i < keys.length; ++i) {
+		var key = keys[i];
 		if (!key.startsWith ("url:")) {
 			continue;
 		}
-		var url = key.substringAfter ("url:");
-		var config = loadConfig (url);
-		var config2 = new Object ();
-		config2.tag = config.site;
-		for (var property in config) {
-			if (config.hasOwnProperty (property)) {
+		try {
+			var config = localStorage.getObject (key);
+			var config2 = new Object ();
+			config2.tag = config.site;
+			for (var property in config) {
 				config2[property] = config[property];
 			}
+			delete config2.site;
+			localStorage.setObject (key, config2);
+		} catch (e) {
+			console.log ("failed to migrate " + key);
 		}
-		delete config2.site;
-		saveConfig (url, config2, null);
 	}
 
 	localStorage["version"] = "3";
@@ -253,11 +254,7 @@ function migrate_v2 () {
 		return;
 	}
 
-	var keys = new Array ();
-	for (var i = 0; i < localStorage.length; ++i) {
-		keys[i] = localStorage.key (i);
-	}
-
+	var keys = toArray (localStorage);
 	var reg = new RegExp ("^site:.*$");
 	for (var i = 0; i < keys.length; ++i) {
 		var key = keys[i];
@@ -282,11 +279,7 @@ function migrate_v1 () {
 		return;
 	}
 
-
-	var keys = new Array ();
-	for (var i = 0; i < localStorage.length; ++i) {
-		keys[i] = localStorage.key (i);
-	}
+	var keys = toArray (localStorage);
 
 	var reg = new RegExp ("^compatibility_mode|default_length|default_strength|private_seed|backed_up$");
 	for (var i = 0; i < keys.length; ++i) {
