@@ -133,18 +133,30 @@ chrome.tabs.getSelected (null, function (tab) {
 
 $('#bump').click (function () {
 	$("#tag").val (bump ($("#tag").val ()));
+	writeModel ();
 });
 
-$('#tag').change (writeModel);
-$('#length').change (writeModel);
-$('#strength').change (writeModel);
+function addListeners () {
+	$('#tag').change (writeModel);
+	$('#length').change (writeModel);
+	$('#strength').change (writeModel);
+}
+function removeListeners () {
+	$('#tag').unbind ('change');
+	$('#length').unbind ('change');
+	$('#strength').unbind ('change');
+}
+
+addListeners ();
 
 var port = chrome.extension.connect ({name: "passhash"});
 
 port.onMessage.addListener (function (msg) {
 	if (null != msg.update) {
+		removeListeners ();
 		config = msg.update;
 		readModel (config);
+		addListeners ();
 	}
 });
 
