@@ -135,10 +135,13 @@ $('#bump').click (function () {
 	$("#tag").val (bump ($("#tag").val ()));
 });
 
+$('#tag').change (writeModel);
+$('#length').change (writeModel);
+$('#strength').change (writeModel);
+
 var port = chrome.extension.connect ({name: "passhash"});
 
 port.onMessage.addListener (function (msg) {
-	console.debug (msg);
 	if (null != msg.update) {
 		config = msg.update;
 		readModel (config);
