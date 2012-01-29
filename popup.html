@@ -99,7 +99,7 @@ function writeModel () {
 	if (config.tag.startsWith ("compatible:")) {
 		config.tag = config.tag.substringAfter ("compatible:");
 		delete config.seed;
-	} else if (null == config.seed) {
+	} else {
 		config.seed = config.options.privateSeed;
 	}
 	config.length = $('#length').val ();
@@ -108,8 +108,7 @@ function writeModel () {
 }
 window.onunload = writeModel;
 
-function readModel (url) {
-	config = chrome.extension.getBackgroundPage ().loadConfig (url);
+function readModel (config) {
 	$('#tag').val (config.tag);
 	$('#length').val (config.length);
 	$('#strength').val (config.strength);
@@ -128,11 +127,22 @@ function readModel (url) {
 chrome.tabs.getSelected (null, function (tab) {
 	tabid = tab.id;
 	url = chrome.extension.getBackgroundPage ().grepUrl (tab.url);
-	readModel (url);
+	config = chrome.extension.getBackgroundPage ().loadConfig (url);
+	readModel (config);
 });
 
 $('#bump').click (function () {
 	$("#tag").val (bump ($("#tag").val ()));
+});
+
+var port = chrome.extension.connect ({name: "passhash"});
+
+port.onMessage.addListener (function (msg) {
+	console.debug (msg);
+	if (null != msg.update) {
+		config = msg.update;
+		readModel (config);
+	}
 });
 
 </script>
