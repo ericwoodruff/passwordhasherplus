@@ -47,7 +47,7 @@ function bind (f) {
 	}
 
 	if (-1 != $.inArray(field, fields) || $(field).hasClass ("nopasshash")) {
-		return;
+		return false;
 	}
 	fields[fields.length] = field;
 
@@ -187,6 +187,9 @@ function bind (f) {
 
 	function toggleHashing (save) {
 		hashing = !hashing;
+		if (hashing) {
+			update ();
+		}
 		if (null != hashbutton) {
 			paintHashButton ();
 		}
@@ -295,6 +298,7 @@ function bind (f) {
 	});
 
 	setFieldType ();
+	return true;
 }
 
 $("input[type=password]").each (function (index) {
