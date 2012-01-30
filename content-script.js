@@ -59,8 +59,7 @@ function bind (f) {
 	var masking = true;
 	var editing = false;
 
-	var content = '<span id="hash_' + field.id + '" class="passhashbutton"/>' +
-		'<span id="mask_' + field.id + '" class="passhashbutton"/>';
+	var content = '<span class="passhashbutton hashbutton"/><span class="passhashbutton maskbutton"/>';
 
 	var hashbutton;
 	var maskbutton;
@@ -211,7 +210,6 @@ function bind (f) {
 	}
 
 	$(field).qtip ({
-		id: "tip_" + field.id,
 		content: {
 			text: content
 		},
@@ -233,9 +231,8 @@ function bind (f) {
 					return;
 				}
 
-				hashbutton = $("#hash_" + field.id, api.elements.content).get (0);
-				maskbutton = $("#mask_" + field.id, api.elements.content).get (0);
-
+				hashbutton = $(".hashbutton", api.elements.content).get (0);
+				maskbutton = $(".maskbutton", api.elements.content).get (0);
 
 				hashbutton.addEventListener ("click", function () {
 					toggleHashing (true);
@@ -316,18 +313,23 @@ function removeEventListeners () {
 	document.removeEventListener ("DOMSubtreeModified", onNodeInserted, false);
 }
 
+var setHashEvt = document.createEvent ("HTMLEvents");
+setHashEvt.initEvent ('sethash', true, true);
+
+var rehashEvt = document.createEvent ("HTMLEvents");
+rehashEvt.initEvent ('rehash', true, true);
+
 function onNodeInserted (evt) {
 	removeEventListeners ();
 	$("input[type=password]", evt.srcElement).each (function (index) {
 		bind (this);
+		if (this.id in config.fields) {
+			this.dispatchEvent (setHashEvt);
+		}
 	});
 	addEventListeners ();
 }
 
-var rehashEvt = document.createEvent ("HTMLEvents");
-rehashEvt.initEvent ('rehash', true, true);
-var setHashEvt = document.createEvent ("HTMLEvents");
-setHashEvt.initEvent ('sethash', true, true);
 port.onMessage.addListener (function (msg) {
 	if (null != msg.update) {
 		config = msg.update;
