@@ -113,3 +113,16 @@ function bump (tag) {
 	}
 	return tag + ":" + bump;
 }
+
+function grepUrl (url) {
+	var reg = new RegExp ("^https?://([^:/]+?\\.)*?([^.:/]+)\\.([a-z]{2,15}(\\.[a-z]{2})?)(:\\d+)?/.*$");
+	var m = reg.exec (url);
+	try {
+		if ("" == m[2]) {
+			throw "chrome";
+		}
+		return m[2];
+	} catch (e) {
+		return 'chrome';
+	}
+}
