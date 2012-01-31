@@ -326,8 +326,7 @@ rehashEvt.initEvent ('rehash', true, true);
 function onNodeInserted (evt) {
 	removeEventListeners ();
 	$("input[type=password]", evt.srcElement).each (function (index) {
-		bind (this);
-		if (this.id in config.fields) {
+		if (bind (this) && this.id in config.fields) {
 			this.dispatchEvent (setHashEvt);
 		}
 	});
