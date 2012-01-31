@@ -165,18 +165,31 @@ function loadConfig (url) {
 }
 
 function migrate () {
-	migrate_v1 ();
-	migrate_v2 ();
-	migrate_v3 ();
-	migrate_v4 ();
+	if (null == localStorage["version"]) {
+		if (null != localStorage["option:private_seed"]) {
+			// Migrate Password Hasher Plus Plus databases
+			localStorage["version"] = "1";
+		} else {
+			localStorage["version"] = "0";
+			runMigration (1, migrate_v1);
+		}
+	}
+	runMigration (2, migrate_v2);
+	runMigration (3, migrate_v3);
+	runMigration (4, migrate_v4);
 }
 
-function migrate_v4 () {
+function runMigration (toVersion, func) {
 	var version = parseInt (localStorage["version"]);
-	if (4 <= version) {
+	if (toVersion <= version) {
 		return;
 	}
 
+	func ();
+	localStorage["version"] = toVersion;
+}
+
+function migrate_v4 () {
 	var options = new Object ();
 	options.defaultLength = localStorage["option:default_length"];
 	options.defaultStrength = localStorage["option:default_strength"];
@@ -206,16 +219,9 @@ function migrate_v4 () {
 	}
 
 	saveOptions (options);
-
-	localStorage["version"] = "4";
 }
 
 function migrate_v3 () {
-	var version = parseInt (localStorage["version"]);
-	if (3 <= version) {
-		return;
-	}
-
 	var keys = toArray (localStorage);
 	for (var i = 0; i < keys.length; ++i) {
 		var key = keys[i];
@@ -235,16 +241,9 @@ function migrate_v3 () {
 			console.log ("failed to migrate " + key);
 		}
 	}
-
-	localStorage["version"] = "3";
 }
 
 function migrate_v2 () {
-	var version = parseInt (localStorage["version"]);
-	if (2 <= version) {
-		return;
-	}
-
 	var keys = toArray (localStorage);
 	var reg = new RegExp ("^site:.*$");
 	for (var i = 0; i < keys.length; ++i) {
@@ -255,23 +254,10 @@ function migrate_v2 () {
 			delete localStorage[key];
 		}
 	}
-	
-	localStorage["version"] = "2";
 }
 
 function migrate_v1 () {
-	if (null == localStorage["version"] && null != localStorage["option:private_seed"]) {
-		// Migrate Password Hasher Plus Plus databases
-		localStorage["version"] = "1";
-	}
-
-	var version = parseInt (localStorage["version"]);
-	if (Number.NaN != version && 1 <= version) {
-		return;
-	}
-
 	var keys = toArray (localStorage);
-
 	var reg = new RegExp ("^compatibility_mode|default_length|default_strength|private_seed|backed_up$");
 	for (var i = 0; i < keys.length; ++i) {
 		var key = keys[i];
@@ -282,7 +268,6 @@ function migrate_v1 () {
 		localStorage[to + ":" + key] = localStorage[key];
 		delete localStorage[key];
 	}
-	
 	localStorage["version"] = "1";
 }
 
