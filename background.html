@@ -133,7 +133,10 @@ function loadOptions () {
 
 function saveOptions (options) {
 	localStorage.setObject ("options", options);
-	var keys = toArray (localStorage);
+	if (null == portsByTabId) {
+		return;
+	}
+	var keys = toArray (portsByTabId);
 	for (var i = 0; i < keys.length; ++i) {
 		var key = keys[i];
 		var port = portsByTabId[key];
