@@ -145,7 +145,6 @@ function restoreOptions () {
 	document.getElementById ("compatibility").checked = options.compatibilityMode;
 	document.getElementById ("seed").value = options.privateSeed;
 	document.getElementById ("backedup").checked = options.backedUp;
-	refreshStorage ();
 }
 
 function refreshStorage () {
@@ -198,7 +197,7 @@ function loadStorage () {
 		localStorage.setItem (key, value);
 	}
 	chrome.extension.getBackgroundPage ().migrate ();
-	refreshStorage ();
+	restoreOptions ();
 }
 
 </script>
