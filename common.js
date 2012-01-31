@@ -115,13 +115,15 @@ function bump (tag) {
 }
 
 function grepUrl (url) {
-	var reg = new RegExp ("^https?://([^:/]+?\\.)*?([^.:/]+)\\.([a-z]{2,15}(\\.[a-z]{2})?)(:\\d+)?/.*$");
+	//^(?:[^.]+\.){0,1}((?:[^.]+\.)*(?:[^.]+))\.(?:[^.]{2,15})$
+	//http://www.regexplanet.com/simple/index.html
+	var reg = new RegExp ("^https?://(?:[^:./ ]+\\.){0,1}((?:[^:./ ]+\\.)*(?:[^:. /]+))\\.(?:[^:. /]{2,15})(?::\\d+)?/.*$");
 	var m = reg.exec (url);
 	try {
-		if ("" == m[2]) {
+		if ("" == m[1]) {
 			throw "chrome";
 		}
-		return m[2];
+		return m[1];
 	} catch (e) {
 		return 'chrome';
 	}
