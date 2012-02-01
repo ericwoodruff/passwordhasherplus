@@ -36,44 +36,49 @@
 -->
 <html>
 <script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="storage.js"></script>
 <script type="text/javascript">
 
-Storage.prototype.setObject = function (key, value) {
-	this.setItem (key, JSON.stringify (value));
-}
-
-Storage.prototype.getObject = function (key) {
-	var str = this.getItem (key);
-	if (null == str) {
-		throw "No object stored";
-	}
-	return JSON.parse (str);
-}
-
-Storage.prototype.getBoolean = function (key) {
-	if ("true" == localStorage[key]) {
-		return true;
-	}
-	return false;
-}
-
-
-migrate ();
+localStorage.migrate ();
 
 var portsByTabId = {};
+
+function refreshTabs () {
+	var keys = toArray (portsByTabId);
+	for (var i = 0; i < keys.length; ++i) {
+		var key = keys[i];
+		var port = portsByTabId[key];
+		if (debug) console.log ("Loading " + port.passhashUrl + " for " + key);
+		port.postMessage ({ update: loadConfig (port.passhashUrl) });
+	}
+}
+
+function saveOptions (options) {
+	localStorage.saveOptions (options);
+	refreshTabs ();
+}
+
+function loadConfig (url) {
+	return localStorage.loadConfig (url);
+}
+
+function saveConfig (url, config) {
+	localStorage.saveConfig (url, config);
+	refreshTabs ();
+}
 
 chrome.extension.onConnect.addListener (function (port) {
 	console.assert (port.name == "passhash");
 	port.onMessage.addListener (function (msg) {
 		if (null != msg.init) {
 			var url = grepUrl (msg.url);
-			var config = loadConfig (url);
+			var config = localStorage.loadConfig (url);
 			port.passhashUrl = url;
 			portsByTabId[port.tab.id] = port;
 			port.postMessage ({ init: true, update: config });
 		} else if (null != msg.save) {
 			var url = grepUrl (msg.url);
-			saveConfig (url, msg.save, null);
+			saveConfig (url, msg.save, msg.tabid);
 		}
 	});
 
@@ -83,193 +88,6 @@ chrome.extension.onConnect.addListener (function (port) {
 		}
 	});
 });
-
-function saveConfig (url, config, tabid) {
-	console.log ("Called saveConfig " + url);
-	config.fields = toArray (config.fields);
-	delete config.options;
-	localStorage.setObject ("url:" + url, config);
-	config.options = loadOptions ();
-
-	if (null != tabid) {
-		portsByTabId[tabid].postMessage ({ update: config });
-	}
-}
-
-function loadOptions () {
-	var dirty = false;
-	var options;
-	try {
-		options = localStorage.getObject ("options");
-	} catch (e) {
-		options = new Object ();
-		dirty = true;
-	}
-	if (null == options.privateSeed) {
-		options.privateSeed = generateGuid ();
-		dirty = true;
-	}
-	if (null == options.defaultLength) {
-		options.defaultLength = default_length;
-		dirty = true;
-	}
-	if (null == options.defaultStrength) {
-		options.defaultStrength = default_strength;
-		dirty = true;
-	}
-	if (null == options.backedUp) {
-		options.backedUp = false;
-		dirty = true;
-	}
-	if (null == options.compatibilityMode) {
-		options.compatibilityMode = false;
-		dirty = true;
-	}
-	if (dirty) {
-		saveOptions (options);
-	}
-	return options;
-}
-
-function saveOptions (options) {
-	localStorage.setObject ("options", options);
-	if (null == portsByTabId) {
-		return;
-	}
-	var keys = toArray (portsByTabId);
-	for (var i = 0; i < keys.length; ++i) {
-		var key = keys[i];
-		var port = portsByTabId[key];
-		port.postMessage ({ update: loadConfig (port.passhashUrl) });
-	}
-}
-
-function loadConfig (url) {
-	console.log ("Called loadConfig " + url);
-
-	var config;
-	var options = loadOptions ();
-	try {
-		config = localStorage.getObject ("url:" + url);
-	} catch (e) {
-		config = new Object ();
-		config.tag = url;
-		config.length = options.defaultLength;
-		config.strength = options.defaultStrength;
-		config.fields = new Array ();
-		config.seed = options.privateSeed;
-	}
-	config.options = loadOptions ();
-
-	return config;
-}
-
-function migrate () {
-	if (null == localStorage["version"]) {
-		if (null != localStorage["option:private_seed"]) {
-			// Migrate Password Hasher Plus Plus databases
-			localStorage["version"] = "1";
-		} else {
-			localStorage["version"] = "0";
-			runMigration (1, migrate_v1);
-		}
-	}
-	runMigration (2, migrate_v2);
-	runMigration (3, migrate_v3);
-	runMigration (4, migrate_v4);
-}
-
-function runMigration (toVersion, func) {
-	var version = parseInt (localStorage["version"]);
-	if (toVersion <= version) {
-		return;
-	}
-
-	func ();
-	localStorage["version"] = toVersion;
-}
-
-function migrate_v4 () {
-	var options = new Object ();
-	options.defaultLength = localStorage["option:default_length"];
-	options.defaultStrength = localStorage["option:default_strength"];
-	options.privateSeed = localStorage["option:private_seed"];
-	options.compatibilityMode = localStorage.getBoolean ("option:compatibility_mode");
-	options.backedUp = localStorage.getBoolean ("option:backed_up");
-
-	var keys = toArray (localStorage);
-	for (var i = 0; i < keys.length; ++i) {
-		var key = keys[i];
-		if (key.startsWith ("option:")) {
-			delete localStorage[key];
-		} else if (key.startsWith ("url:")) {
-			var config = localStorage.getObject (key);
-			try {
-				if (config.tag.startsWith ("compatible:")) {
-					delete config.seed;
-					config.tag = config.tag.substringAfter ("compatible:");
-				}
-				delete config.compatibilitymode;
-				delete config.backedup;
-				localStorage.setObject (key, config);
-			} catch (e) {
-				console.log ("failed to migrate " + key);
-			}
-		}
-	}
-
-	saveOptions (options);
-}
-
-function migrate_v3 () {
-	var keys = toArray (localStorage);
-	for (var i = 0; i < keys.length; ++i) {
-		var key = keys[i];
-		if (!key.startsWith ("url:")) {
-			continue;
-		}
-		try {
-			var config = localStorage.getObject (key);
-			var config2 = new Object ();
-			config2.tag = config.site;
-			for (var property in config) {
-				config2[property] = config[property];
-			}
-			delete config2.site;
-			localStorage.setObject (key, config2);
-		} catch (e) {
-			console.log ("failed to migrate " + key);
-		}
-	}
-}
-
-function migrate_v2 () {
-	var keys = toArray (localStorage);
-	var reg = new RegExp ("^site:.*$");
-	for (var i = 0; i < keys.length; ++i) {
-		var key = keys[i];
-		if (reg.test (key)) {
-			var to = "url";
-			localStorage[to + key.slice(4)] = localStorage[key];
-			delete localStorage[key];
-		}
-	}
-}
-
-function migrate_v1 () {
-	var keys = toArray (localStorage);
-	var reg = new RegExp ("^compatibility_mode|default_length|default_strength|private_seed|backed_up$");
-	for (var i = 0; i < keys.length; ++i) {
-		var key = keys[i];
-		var to = "site";
-		if (reg.test (key)) {
-			to = "option";
-		}
-		localStorage[to + ":" + key] = localStorage[key];
-		delete localStorage[key];
-	}
-	localStorage["version"] = "1";
-}
 
 </script>
 </html>

@@ -33,6 +33,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var debug = false;
+
 String.prototype.startsWith = function (str) {
 	return (this.match ("^" + str) == str);
 }
@@ -70,9 +72,9 @@ function generateGuid () {
 function generateHash (config, input) {
 	var tag = config.tag;
 
-	if (false == config.options.compatibilityMode && null != config.seed) {
+	if (false == config.options.compatibilityMode && null != config.policy.seed) {
 		tag = PassHashCommon.generateHashWord (
-			config.seed,
+			config.policy.seed,
 			tag,
 			24,
 			true, // require digits
@@ -86,12 +88,12 @@ function generateHash (config, input) {
 	return PassHashCommon.generateHashWord (
 		tag,
 		input,
-		config.length,
+		config.policy.length,
 		true, // require digits
-		config.strength > 1, // require punctuation
+		config.policy.strength > 1, // require punctuation
 		true, // require mixed case
-		config.strength < 2, // no special characters
-		config.strength == 0 // only digits
+		config.policy.strength < 2, // no special characters
+		config.policy.strength == 0 // only digits
 	);
 }
 

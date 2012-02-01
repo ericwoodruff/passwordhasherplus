@@ -42,6 +42,7 @@
 </style>
 <script type="text/javascript" src="lib/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="storage.js"></script>
 </head>
 
 <body onLoad="restoreOptions (); refreshStorage ()">
@@ -101,6 +102,7 @@
                         <td>
                                 <button onClick="saveOptions ()">Save</button>
 			        <button onClick="restoreOptions ()">Revert</button>
+			        <button onClick="collectGarbage (); refreshStorage ()">Remove Unused Tags</button>
 			</td>
 		</tr>
                 <tr>
@@ -139,7 +141,7 @@ function saveOptions () {
 }
 
 function restoreOptions () {
-	var options = chrome.extension.getBackgroundPage ().loadOptions ();
+	var options = localStorage.loadOptions ();
 	document.getElementById ("length").value = options.defaultLength;
 	document.getElementById ("strength").value = options.defaultStrength;
 	document.getElementById ("compatibility").checked = options.compatibilityMode;
@@ -149,9 +151,9 @@ function restoreOptions () {
 
 function refreshStorage () {
 	var entries = [];
-	var length = localStorage.length;
-	for (var i = 0; i < length; i++) {
-		var key = localStorage.key(i);
+	var keys = toArray (localStorage);
+	for (var i = 0; i < keys.length; i++) {
+		var key = keys[i];
 		var value = localStorage.getItem(key);
 		var entry = {}
 		if (key.slice(0, 7) == "option:") {
@@ -167,7 +169,7 @@ function refreshStorage () {
 		entry = entry.replace("{","").replace(/}$/,"");
 		entries.push(entry);
 	}
-	entries.sort();
+	entries.sort ();
 	document.getElementById ("everything").value = "{\n" + entries.join(",\n") + "\n}\n";
 }
 
@@ -196,7 +198,7 @@ function loadStorage () {
 		if (key.slice(0, 7) != "option:") value = JSON.stringify(value);
 		localStorage.setItem (key, value);
 	}
-	chrome.extension.getBackgroundPage ().migrate ();
+	localStorage.migrate ();
 	restoreOptions ();
 	refreshStorage ();
 }

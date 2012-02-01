@@ -335,6 +335,7 @@ function onNodeInserted (evt) {
 
 port.onMessage.addListener (function (msg) {
 	if (null != msg.update) {
+		if (debug) console.log ("Config updated " + JSON.stringify (msg.update));
 		config = msg.update;
 		config.fields = toSet (config.fields);
 		for (var i = 0; i < fields.length; ++i) {

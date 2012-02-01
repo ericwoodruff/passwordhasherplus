@@ -92,30 +92,29 @@
 <script type="text/javascript">
 var url;
 var config;
-var tabid;
 
 function writeModel () {
 	config.tag = $('#tag').val ();
 	if (config.tag.startsWith ("compatible:")) {
 		config.tag = config.tag.substringAfter ("compatible:");
-		delete config.seed;
+		delete config.policy.seed;
 	} else {
-		config.seed = config.options.privateSeed;
+		config.policy.seed = config.options.privateSeed;
 	}
-	config.length = $('#length').val ();
-	config.strength = $('#strength').val ();
-	chrome.extension.getBackgroundPage ().saveConfig (url, config, tabid);
+	config.policy.length = $('#length').val ();
+	config.policy.strength = $('#strength').val ();
+	chrome.extension.getBackgroundPage ().saveConfig (url, config);
 }
 window.onunload = writeModel;
 
-function readModel (config) {
+function readModel () {
 	$('#tag').val (config.tag);
-	$('#length').val (config.length);
-	$('#strength').val (config.strength);
+	$('#length').val (config.policy.length);
+	$('#strength').val (config.policy.strength);
 	if (true == config.options.compatibilityMode) {
 		$('div#compatmodeheader').html ("<b>Compatibility:</b>");
 		$('div#compatmode').text ("on");
-	} else if (null == config.seed) {
+	} else if (null == config.policy.seed) {
 		$('#tag').val ("compatible:" + config.tag);
 	}
 	if (false == config.options.backedUp && false == config.options.compatibilityMode) {
@@ -125,10 +124,10 @@ function readModel (config) {
 }
 
 chrome.tabs.getSelected (null, function (tab) {
-	tabid = tab.id;
 	url = chrome.extension.getBackgroundPage ().grepUrl (tab.url);
 	config = chrome.extension.getBackgroundPage ().loadConfig (url);
-	readModel (config);
+	config.fields = toSet (config.fields);
+	readModel ();
 });
 
 $('#bump').click (function () {
@@ -136,29 +135,9 @@ $('#bump').click (function () {
 	writeModel ();
 });
 
-function addListeners () {
-	$('#tag').change (writeModel);
-	$('#length').change (writeModel);
-	$('#strength').change (writeModel);
-}
-function removeListeners () {
-	$('#tag').unbind ('change');
-	$('#length').unbind ('change');
-	$('#strength').unbind ('change');
-}
-
-addListeners ();
-
-var port = chrome.extension.connect ({name: "passhash"});
-
-port.onMessage.addListener (function (msg) {
-	if (null != msg.update) {
-		removeListeners ();
-		config = msg.update;
-		readModel (config);
-		addListeners ();
-	}
-});
+$('#tag').change (writeModel);
+$('#length').change (writeModel);
+$('#strength').change (writeModel);
 
 </script>
 </html>
