@@ -183,6 +183,7 @@ function clearStorage () {
 		      "and hit \"Load\" to re-populate the database. " +
 		      "Good luck.");
 	}
+	localStorage.migrate ();
 }
 
 function loadStorage () {
