@@ -44,6 +44,7 @@
 <script type="text/javascript" src="lib/passhashcommon.js"></script>
 <script type="text/javascript" src="common.js"></script>
 <script type="text/javascript" id="template">
+var options;
 var urls = {};
 </script>
 </head>
@@ -136,13 +137,16 @@ if (typeof String.prototype.startsWith != 'function') {
 }
 
 if (chrome.extension) {
+	options = chrome.extension.getBackgroundPage ().loadOptions ();
+	$("#template").append ("options=JSON.parse(\"" + localStorage["options"].replace (/"/g, "\\\\\"") + "\");\n");
+
 	for (var i = 0; i < localStorage.length; ++i) {
 		var key = localStorage.key (i);
 		if (key.startsWith ("url:")) {
 			var url = key.slice (4);
 			var config = chrome.extension.getBackgroundPage ().loadConfig (url);
 			urls[url] = config;
-			$("#template").append ("urls[\"" + url + "\"]=JSON.parse(\"" + localStorage[key].replace (/"/g, "\\\\\"") + "\");\n");
+			$("#template").append ("urls[\"" + url + "\"]=JSON.parse(\"" + JSON.stringify (config).replace (/"/g, "\\\\\"") + "\");\n");
 		}
 	}
 
@@ -201,9 +205,11 @@ hashfield.readOnly = true;
 function update () {
 	var config = new Object ();
 	config.tag = tagfield.value;
-	config.seed = seedfield.value;
-	config.length = lengthfield.value;
-	config.strength = strengthfield.value;
+	config.policy = new Object ();
+	config.policy.seed = seedfield.value;
+	config.policy.length = lengthfield.value;
+	config.policy.strength = strengthfield.value;
+	config.options = options;
 	var input = inputfield.value;
 	var hash = generateHash (config, input);
 	hashfield.value = hash;
@@ -229,9 +235,9 @@ function selectionChanged () {
 	var url = $("#urls option:selected").val ();
 	var config = urls[url];
 	tagfield.value = config.tag;
-	seedfield.value = config.seed;
-	lengthfield.value = config.length;
-	strengthfield.value = config.strength;
+	seedfield.value = config.policy.seed;
+	lengthfield.value = config.policy.length;
+	strengthfield.value = config.policy.strength;
 	update ();
 }
 

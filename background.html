@@ -53,6 +53,10 @@ function refreshTabs () {
 	}
 }
 
+function loadOptions () {
+	return localStorage.loadOptions ();
+}
+
 function saveOptions (options) {
 	localStorage.saveOptions (options);
 	refreshTabs ();
