@@ -112,6 +112,18 @@ Storage.prototype.saveConfig = function (url, config) {
 	config.options = options;
 }
 
+Storage.prototype.loadTags = function () {
+	var tags = [];
+	var keys = toArray (localStorage);
+	for (var i = 0; i < keys.length; ++i) {
+		var key = keys[i];
+		if (key.startsWith ("tag:")) {
+			tags[tags.length] = key.substringAfter ("tag:");
+		}
+	}
+	return tags;
+}
+
 Storage.prototype.isTagReferenced = function (keys, tag) {
 	for (var i = 0; i < keys.length; ++i) {
 		var key = keys[i];

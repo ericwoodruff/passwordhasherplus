@@ -62,6 +62,10 @@ function loadConfig (url) {
 	return localStorage.loadConfig (url);
 }
 
+function loadTags () {
+	return localStorage.loadTags ();
+}
+
 function saveConfig (url, config) {
 	localStorage.saveConfig (url, config);
 	refreshTabs ();

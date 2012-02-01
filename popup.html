@@ -36,11 +36,13 @@
 -->
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="lib/jquery-ui-1.8.17.custom.css"/>
 <style>
 * { font-family: Arial; font-size: 12px; }
 </style>
 <script type="text/javascript" src="lib/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="lib/jquery-ui-1.8.17.custom.min.js"></script>
 </head>
 
 <body>
@@ -109,6 +111,7 @@ window.onunload = writeModel;
 
 function readModel () {
 	$('#tag').val (config.tag);
+	$('#tag').autocomplete ({ source: chrome.extension.getBackgroundPage ().loadTags () });
 	$('#length').val (config.policy.length);
 	$('#strength').val (config.policy.strength);
 	if (true == config.options.compatibilityMode) {
