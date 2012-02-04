@@ -119,14 +119,16 @@ function bump (tag) {
 function grepUrl (url) {
 	//^(?:[^.]+\.){0,1}((?:[^.]+\.)*(?:[^.]+))\.(?:[^.]{2,15})$
 	//http://www.regexplanet.com/simple/index.html
-	var reg = new RegExp ("^https?://(?:[^:./ ]+\\.){0,1}((?:[^:./ ]+\\.)*(?:[^:. /]+))\\.(?:[^:. /]{2,15})(?::\\d+)?/.*$");
+	var reg = new RegExp ("^https?://(?:([^:\\./ ]+?)|([0-9]{1,3}(?:\\.[0-9]{1,3}){3})|(?:[^:./ ]+\\.){0,1}((?:[^:./ ]+\\.)*(?:[^:. /]+))\\.(?:[^:. /]{2,15}))(?::\\d+)?/.*$");
 	var m = reg.exec (url);
 	try {
-		if ("" == m[1]) {
-			throw "chrome";
+		for (var i = 0; i < 3; ++i) {
+			if (null != m[i+1]) {
+				return m[i+1];
+			}
 		}
-		return m[1];
+		throw "unmatched";
 	} catch (e) {
-		return 'chrome';
+		return "chrome";
 	}
 }
