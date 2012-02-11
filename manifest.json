@@ -1,6 +1,6 @@
 {
-	"name": "Password Hasher Plus",
-	"version": "2.1.2",
+	"name": "Password Hasher Plus - Password Generator",
+	"version": "2.1.3",
 	"description": "Password Hasher Plus automatically enhances password strength (length and difficulty) to protect your accounts.",
 	"icons": { "64": "images/icon.png", "128": "images/icon.png" },
 
