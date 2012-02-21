@@ -143,7 +143,7 @@ Storage.prototype.collectGarbage = function () {
 	for (var i = 0; i < keys.length; ++i) {
 		var key = keys[i];
 		if (key.startsWith ("tag:")) {
-			if (!isTagReferenced (keys, key.substringAfter ("tag:"))) {
+			if (!this.isTagReferenced (keys, key.substringAfter ("tag:"))) {
 				delete localStorage[key];
 			}
 		}
