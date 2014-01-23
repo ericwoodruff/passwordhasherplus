@@ -2,7 +2,7 @@
 
 default: export passhashplus.html
 
-version=$(shell grep version manifest.json  | cut -d: -f2 | cut -d\" -f2)
+version=$(shell grep '"version"' manifest.json  | cut -d: -f2 | cut -d\" -f2)
 
 export=_export
 
