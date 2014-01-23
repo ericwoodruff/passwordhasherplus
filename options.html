@@ -43,12 +43,13 @@
 <script type="text/javascript" src="lib/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="common.js"></script>
 <script type="text/javascript" src="storage.js"></script>
+<script type="text/javascript" src="options.js"></script>
 </head>
 
-<body onLoad="restoreOptions (); refreshStorage ()">
+<body>
 <img src="images/icon128.png"/>
 <h1>Password Hasher Plus - Options</h1>
-<a href="javascript:void(0)" onclick="chrome.tabs.create({url:'chrome-extension://'+location.hostname+'/passhashplus.html'})" title="passhashplus.html">Portable HTML Page</a>
+<a href="javascript:void(0)" id="portablePage" title="passhashplus.html">Portable HTML Page</a>
 <div>
 	<table border="0">
 		<tr>
@@ -87,7 +88,7 @@
 			<td>Private Key:</td>
 			<td>
 				<input id="seed" type="text" size="48" maxlength="45"/>
-				<input type="button" value="Generate" onClick="setNewGuid ()"/>
+				<input id="generate" type="button" value="Generate"/>
 			</td>
 		</tr>
 		<tr>
@@ -100,27 +101,25 @@
 		<tr>
 			<td></td>
                         <td>
-                                <button onClick="saveOptions ()">Save</button>
-			        <button onClick="restoreOptions ()">Revert</button>
-			        <button onClick="localStorage.collectGarbage (); refreshStorage ()">Remove Unused Tags</button>
+                                <button id="backupSave">Save</button>
+			        <button id="backupRevert">Revert</button>
+			        <button id="removeUnUsedTags">Remove Unused Tags</button>
 			</td>
 		</tr>
                 <tr>
                         <td colspan=2"><hr/></td>
                 </tr>
                 <tr>
-			<td>Database: <button onClick="clearStorage (); refreshStorage ();">Clear</button>
+			<td>Database: <button id="dbClear">Clear</button>
                         </td>
                         <td>
 				<textarea id="everything" cols="120" rows="12"></textarea>
 				<br/>
-                                <button onClick="loadStorage ()">Save</button>
-                                <button onClick="refreshStorage ()">Revert</button>
+                                <button id="dbSave">Save</button>
+                                <button id="dbRevert">Revert</button>
                         </td>
                 </tr>
 	</table>
 </div>
 </body>
-
-<script type="text/javascript" src="options.js"></script>
 </html>
