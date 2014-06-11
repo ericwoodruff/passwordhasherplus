@@ -19,7 +19,7 @@
 	"content_scripts": [
 		{
 			"matches": ["http://*/*", "https://*/*"],
-			"js": ["lib/jquery-1.7.1.min.js", "lib/jquery.qtip.min.js", "lib/sha1.js", "lib/passhashcommon.js", "common.js", "content-script.js"],
+			"js": ["lib/jquery-1.7.1.min.js", "lib/jquery.qtip.min.js", "lib/sha1.js", "lib/tld.min.js", "lib/passhashcommon.js", "common.js", "content-script.js"],
 			"css": ["lib/jquery.qtip.min.css", "styles.css"],
 			"run_at": "document_end",
 			"all_frames": true
