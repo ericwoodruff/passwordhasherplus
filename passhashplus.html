@@ -111,14 +111,33 @@
 			Hash Result:
 			</td>
 			<td>
-				<input id="hash" type="text" size="48" maxlength="45"/>
+                                <!--- I would like to set the type of the hash field to "password."
+                                      But modern browsers don't like you to copy from password fields.
+
+                                      An alternative would be to use something like ZeroClipboard, which could
+                                      copy the hash value from a hidden field, to the clipboard.
+                                      However, it requires flash, so some sort of fallback would be needed
+                                      for clients which do not have flash.
+
+                                      I settled on a compromise, which is to use a very short text field,
+                                      so only the first character or so is visible. -->
+
+                                <!--- Note the width of the hash field, 1em. 1em is wide enough to show at least
+                                      one character (1em = the height of the M character). This is important, because
+                                      some browsers (at least Chrome), will not let you copy from a field too narrow
+                                      to show any text. -->
+				<input id="hash" type="text" maxlength="45" style="width: 1em;"/>
+				<input type="button" value="<->" id="widenhash" title="Widen hash field"/>
 			</td>
 		</tr>
 		<tr>
 			<td>
 			</td>
 			<td>
-				Click the hash result then copy it to the clipboard by pressing 'Ctrl + c'.
+				Click the hash to select it, then press Ctrl+c to copy it to the clipboard.<br/>
+				The <-> button widens the hash field, revealing the whole hash.
+				Watch out for shoulder surfers when using the <-> button.
+				They might have photographic memory / equipment.
 			</td>
 		</tr>
 	</table>
