@@ -11,7 +11,7 @@ $("script[src!='passhashplus-data.js']").each(function () {
 		if (current == total) {
 			var uriContent = "data:application/octet-stream," + encodeURIComponent($('html').html());
 			$('#save').attr('href', uriContent);
-			$('#save').show();
+			$('#savediv').get(0).style['display']='block';
 		}
 	});
 });
