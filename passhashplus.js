@@ -92,3 +92,17 @@ function loadJsonData () {
 		urls[url] = JSON.parse($(this).text ());
 	});
 }
+
+var revealdatabase = $('#revealdatabase').get(0);
+var database = $('#database').get(0);
+$('#revealdatabase').click(function () {
+  if (revealdatabase.value=="Reveal") {
+    revealdatabase.value="Hide";
+    revealdatabase.title="Hide Database";
+    database.style['display'] = 'block';
+  } else {
+    revealdatabase.value="Reveal";
+    revealdatabase.title="Reveal Database";
+    database.style['display'] = 'none';
+  }
+});

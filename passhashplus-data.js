@@ -46,3 +46,7 @@ $("#urls option").sort (sortAlpha).appendTo ("#urls");
 
 selectionChanged ();
 $("#data-script").append ("selectionChanged ();\n");
+
+$(document).ready(function () {
+  $("#database").get(0).value = dumpDatabase();
+});
