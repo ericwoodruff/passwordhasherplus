@@ -23,28 +23,10 @@ function restoreOptions () {
 	document.getElementById ("backedup").checked = options.backedUp;
 }
 
-function refreshStorage () {
-	var entries = [];
-	var keys = toArray (localStorage);
-	for (var i = 0; i < keys.length; i++) {
-		var key = keys[i];
-		var value = localStorage.getItem(key);
-		var entry = {}
-		if (key.slice(0, 7) == "option:") {
-			entry[key] = value;
-		} else {
-			try {
-				entry[key] = JSON.parse(value);
-			} catch (e) {
-				entry[key] = "BAD: " + value
-			}
-		}
-		entry = JSON.stringify(entry);
-		entry = entry.replace("{","").replace(/}$/,"");
-		entries.push(entry);
-	}
-	entries.sort ();
-	document.getElementById ("everything").value = "{\n" + entries.join(",\n") + "\n}\n";
+
+
+function refreshStorage() {
+	document.getElementById ("everything").value = dumpDatabase();
 }
 
 function clearStorage () {
