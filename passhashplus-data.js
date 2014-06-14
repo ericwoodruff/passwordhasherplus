@@ -1,14 +1,17 @@
 options = chrome.extension.getBackgroundPage ().loadOptions ();
 
+// replace script src= references with the script content
 var total = $("script[src!='passhashplus-data.js']").size ();
 var current = 0;
 $("script[src!='passhashplus-data.js']").each(function () {
 	var script = this;
 	$.get ($(this).attr('src'), function (data) {
+		$(script).before('<!-- src="' + $(script).attr('src') + '" -->');
 		$(script).text (data);
 		$(script).removeAttr("src");
 		++current;
 		if (current == total) {
+			// encode the html content within the save putton href attribute
 			var uriContent = "data:application/octet-stream," + encodeURIComponent($('html').html());
 			$('#save').attr('href', uriContent);
 			$('#savediv').get(0).style['display']='block';
@@ -17,6 +20,7 @@ $("script[src!='passhashplus-data.js']").each(function () {
 });
 $("#data-script").removeAttr("src");
 
+// create json script elements for database entries
 $("#json-data").append ('<script type="application/json" id="json-internal-options"></script>\n');
 $("#json-internal-options").text (localStorage["options"]);
 
