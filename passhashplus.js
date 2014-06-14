@@ -41,6 +41,19 @@ var lengthfield = $('#length').get (0);
 var strengthfield = $('#strength').get (0);
 var inputfield = $('#input').get (0);
 var hashfield = $('#hash').get (0);
+var widenbutton = $('#widenhash');
+
+widenbutton.click (function() {
+  if ("<->" == widenbutton.get(0).value) {
+    hashfield.style["width"] = "26em";
+    widenbutton.get(0).value= ">.<";
+    widenbutton.get(0).title= "Narrow hash field"
+  } else {
+    hashfield.style["width"] = "1em";
+    widenbutton.get(0).value= "<->";
+    widenbutton.get(0).title = "Widen hash field"
+  }
+});
 
 hashfield.readOnly = true;
 
