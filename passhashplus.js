@@ -45,7 +45,6 @@ widenbutton.click (function() {
   }
 });
 
-hashfield.readOnly = true;
 
 function update () {
 	var config = new Object ();
