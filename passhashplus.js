@@ -1,4 +1,4 @@
-var urls = {};
+var database; //this gets set only once, at [[database]]
 
 if (typeof String.prototype.startsWith != 'function') {
 	String.prototype.startsWith = function (str){
