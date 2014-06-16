@@ -1,4 +1,3 @@
-var options;
 var urls = {};
 
 if (typeof String.prototype.startsWith != 'function') {

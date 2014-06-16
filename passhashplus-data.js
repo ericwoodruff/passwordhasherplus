@@ -1,4 +1,3 @@
-options = chrome.extension.getBackgroundPage ().loadOptions ();
 
 // replace script src= references with the script content
 var total = $("script[src!='passhashplus-data.js']").size ();
