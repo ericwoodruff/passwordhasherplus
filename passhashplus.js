@@ -20,52 +20,68 @@ function toggleField () {
 	}
 }
 
-$('#unmaskseed').click (toggleField);
-$('#unmasktag').click (toggleField);
-$('#unmaskpassword').click (toggleField);
-
-$('#bump').click (function () {
-	$("#tag").val (bump ($("#tag").val ()));
-	update ();
-});
-
-
-widenbutton.click (function() {
-  if ("<->" == widenbutton.get(0).value) {
-    hashfield.style["width"] = "26em";
-    widenbutton.get(0).value= ">.<";
-    widenbutton.get(0).title= "Narrow hash field"
-  } else {
-    hashfield.style["width"] = "1em";
-    widenbutton.get(0).value= "<->";
-    widenbutton.get(0).title = "Widen hash field"
-  }
-});
-
+function selectionChanged () {
+  var tag = $("#urls option:selected").text ();
+  $('#tag').val(tag);
+  $('#seed').val(database['tag:' + tag].seed);
+  $('#length').val(database['tag:' + tag].length);
+  $('#strength').val(database['tag:' + tag].strength);
+  update ();
+}
 
 function update () {
-	var config = new Object ();
-	config.tag = tagfield.value;
-	config.policy = new Object ();
-	config.policy.seed = seedfield.value;
-	config.policy.length = lengthfield.value;
-	config.policy.strength = strengthfield.value;
-	config.options = options;
-	var input = inputfield.value;
-	var hash = generateHash (config, input);
-	hashfield.value = hash;
+  var config = new Object ();
+  config.tag = $('#tag').val();
+  config.policy = new Object ();
+  config.policy.seed = $('#seed').val();
+  config.policy.length = $('#length').val();
+  config.policy.strength = $('#strength').val();
+  config.options = database.options;
+  $('#hash').val
+    (generateHash
+      (config,$('#input').val())
+    );
 }
 
+$( document ).ready(function () {
 
-function selectionChanged () {
-	var url = $("#urls option:selected").val ();
-	var config = urls[url];
-	tagfield.value = config.tag;
-	seedfield.value = config.policy.seed;
-	lengthfield.value = config.policy.length;
-	strengthfield.value = config.policy.strength;
-	update ();
-}
+  $('#unmaskseed').click (toggleField);
+  $('#unmasktag').click (toggleField);
+  $('#unmaskpassword').click (toggleField);
+
+  $('#bump').click (function () {
+          $("#tag").val (bump ($("#tag").val ()));
+          update ();
+  });
+
+  $('#widenhash').click (function() {
+    if ("<->" == $('#widenhash').val()) {
+      $('#hash').css("width", "26em");
+      $('#widenhash').val(">.<");
+      $('#widenhash').attr("title", "Narrow hash field");
+    } else {
+      $('#hash').css("width", "1em");
+      $('#widenhash').val("<->");
+      $('#widenhash').attr("title", "Widen hash field");
+    }
+  });
+
+  $('#hash').click(function () {
+    $('#hash').select();
+  });
+
+  $('#revealdatabase').click(function () {
+    if ($('#revealdatabase').val()=="Reveal") {
+      $('#revealdatabase').val("Hide");
+      $('#revealdatabase').attr("title","Hide Database");
+      $('#databasetextarea').css('display','block');
+    } else {
+      $('#revealdatabase').val("Reveal");
+      $('#revealdatabase').attr("title","Reveal Database");
+      $('#databasetextarea').css('display','none');
+    }
+  });
+}); //end of $(document).ready()
 
 function loadJsonData () {
 	options=JSON.parse($('#json-internal-options').text ());
@@ -76,17 +92,3 @@ function loadJsonData () {
 }
   $('.nopasshash').on("keyup", update);         //x
   $('.nopasshash').on("change", update);          //y
-
-var revealdatabase = $('#revealdatabase').get(0);
-var database = $('#database').get(0);
-$('#revealdatabase').click(function () {
-  if (revealdatabase.value=="Reveal") {
-    revealdatabase.value="Hide";
-    revealdatabase.title="Hide Database";
-    database.style['display'] = 'block';
-  } else {
-    revealdatabase.value="Reveal";
-    revealdatabase.title="Reveal Database";
-    database.style['display'] = 'none';
-  }
-});
