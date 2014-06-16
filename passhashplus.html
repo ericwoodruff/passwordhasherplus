@@ -39,11 +39,18 @@
 <style>
 * { font-family: Arial; font-size: 12px; }
 </style>
+
 <script type="text/javascript" src="lib/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="lib/sha1.js"></script>
 <script type="text/javascript" src="lib/passhashcommon.js"></script>
 <script type="text/javascript" src="lib/tld.min.js"></script>
 <script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="passhashplus.js"></script>
+<script type="application/json" id="database"></script>
+<script type="application/json" id="is-file-portable">
+  false
+</script> <!-- see [is-file-portable] in passhashplus.js -->
+
 </head>
 
 <body>
@@ -82,7 +89,7 @@
 		</tr>
 		<tr>
 			<td>Password Length:</td>
-			<td><select id="length">
+			<td><select id="length" class="nopasshash">
 				<option value="2">2</option>
 				<option value="4">4</option>
 				<option value="6">6</option>
@@ -100,7 +107,7 @@
 		</tr>
 		<tr>
 			<td>Password Strength:</td>
-			<td><select id="strength">
+			<td><select id="strength" class="nopasshash">
 				<option value="2">Alphanumeric+Special</option>
 				<option value="1">Alphanumeric</option>
 				<option value="0">Numeric</option>
@@ -126,7 +133,7 @@
                                       one character (1em = the height of the M character). This is important, because
                                       some browsers (at least Chrome), will not let you copy from a field too narrow
                                       to show any text. -->
-				<input id="hash" type="text" maxlength="45" style="width: 1em;"/>
+				<input id="hash" type="text" maxlength="45" style="width: 1em;" readonly/>
 				<input type="button" value="<->" id="widenhash" title="Widen hash field"/>
 			</td>
 		</tr>
@@ -143,18 +150,23 @@
 	</table>
 
 </div>
+
 <h2>Database backup</h2>
 <div><p>Your database is also backed up in this portable html page.</p></div>
-<div><input type="button" value="Reveal" id="revealdatabase" title="Reveal Database"/></div>
-<div><textarea id="database" cols="120" rows="12" style="display: none;"></textarea></div>
 
-<div id="savediv" syle="display: none;">
-<h2>Download portable html page</h2>
-<a download="passhashplus.html" id="save"><input type="button" value="Download"/></a>
+<div>
+  <input type="button" value="Reveal" id="revealdatabase" title="Reveal Database"/>
+</div>
+
+<div>
+  <textarea id="databasetextarea" cols="120" rows="12" style="display: none;">
+  </textarea>
+</div>
+
+<div id="savediv" style="display: none;">
+  <h2>Download portable html page</h2>
+  <a download="passhashplus.html" id="save"><input type="button" value="Download"/></a>
 </div>
 
 </body>
-<script type="text/javascript" src="passhashplus.js"></script>
-<div id="json-data"></div>
-<script type="text/javascript" id="data-script" src="passhashplus-data.js"></script>
 </html>
