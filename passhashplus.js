@@ -6,9 +6,6 @@ if (typeof String.prototype.startsWith != 'function') {
 	};
 }
 
-$('#length').val (12);
-$('#strength').val (2);
-
 function toggleField () {
 	var button = this;
 	var field = $(this).prev ("input").get (0);
