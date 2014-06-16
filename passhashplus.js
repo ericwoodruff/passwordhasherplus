@@ -33,15 +33,6 @@ $('#bump').click (function () {
 });
 
 
-var selectfield = $('#urls').get (0);
-var tagfield = $('#tag').get (0);
-var seedfield = $('#seed').get (0);
-var lengthfield = $('#length').get (0);
-var strengthfield = $('#strength').get (0);
-var inputfield = $('#input').get (0);
-var hashfield = $('#hash').get (0);
-var widenbutton = $('#widenhash');
-
 widenbutton.click (function() {
   if ("<->" == widenbutton.get(0).value) {
     hashfield.style["width"] = "26em";
@@ -69,21 +60,6 @@ function update () {
 	hashfield.value = hash;
 }
 
-tagfield.addEventListener ("keydown", update);
-seedfield.addEventListener ("keydown", update);
-inputfield.addEventListener ("keydown", update);
-tagfield.addEventListener ("keyup", update);
-seedfield.addEventListener ("keyup", update);
-inputfield.addEventListener ("keyup", update);
-tagfield.addEventListener ("change", update);
-seedfield.addEventListener ("change", update);
-inputfield.addEventListener ("change", update);
-lengthfield.addEventListener ("change", update);
-strengthfield.addEventListener ("change", update);
-
-hashfield.addEventListener ("click", function () {
-	hashfield.select ();
-});
 
 function selectionChanged () {
 	var url = $("#urls option:selected").val ();
@@ -95,8 +71,6 @@ function selectionChanged () {
 	update ();
 }
 
-selectfield.addEventListener ("change", selectionChanged);
-
 function loadJsonData () {
 	options=JSON.parse($('#json-internal-options').text ());
 	$("script[id^=json-config]").each (function () {
@@ -104,6 +78,8 @@ function loadJsonData () {
 		urls[url] = JSON.parse($(this).text ());
 	});
 }
+  $('.nopasshash').on("keyup", update);         //x
+  $('.nopasshash').on("change", update);          //y
 
 var revealdatabase = $('#revealdatabase').get(0);
 var database = $('#database').get(0);
