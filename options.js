@@ -10,6 +10,8 @@ function saveOptions () {
 	options.compatibilityMode = document.getElementById ("compatibility").checked;
 	options.privateSeed = document.getElementById ("seed").value;
 	options.backedUp = document.getElementById ("backedup").checked;
+	options.hashKey = document.getElementById ("hashkey").value;
+	options.maskKey = document.getElementById ("maskkey").value;
 	chrome.extension.getBackgroundPage ().saveOptions (options);
 	refreshStorage ();
 }
@@ -21,6 +23,8 @@ function restoreOptions () {
 	document.getElementById ("compatibility").checked = options.compatibilityMode;
 	document.getElementById ("seed").value = options.privateSeed;
 	document.getElementById ("backedup").checked = options.backedUp;
+	document.getElementById ("hashkey").value = options.hashKey;
+	document.getElementById ("maskkey").value = options.maskKey;
 }
 
 
@@ -60,6 +64,19 @@ function loadStorage () {
 	refreshStorage ();
 }
 
+function setShortcut(action, e) {
+	if (e.which == 16 || e.which == 17)
+		return;
+	if (action == "hash")
+		hk = document.getElementById('hashkey');
+	if (action == "mask")
+		hk = document.getElementById('maskkey');
+	if (e.which != 0)
+		hk.value = (e.ctrlKey ? "Ctrl+" : "") + (e.shiftKey ? "Shift+" : "") + e.which;
+	else
+		hk.value = (action == "hash" ? "Ctrl+Shift+51" : "Ctrl+Shift+56");
+}
+
 // Add event listeners once the DOM has fully loaded by listening for the
 // `DOMContentLoaded` event on the document, and adding your listeners to
 // specific elements when it triggers.
@@ -76,5 +93,10 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#dbRevert').click(refreshStorage);
 
     $('#portablePage').click(function() {chrome.tabs.create({url:'chrome-extension://'+location.hostname+'/passhashplus.html'})});
+	
+	$('#hashkey').keydown(function(e) {setShortcut("hash", e)});
+	$('#maskkey').keydown(function(e) {setShortcut("mask", e)});
+	$('#haskeydefault').click(function() {var e = new Object(); e.which=0; setShortcut("hash", e)});
+	$('#maskkeydefault').click(function(e) {var e = new Object(); e.which=0; setShortcut("mask", e)});
 
 });
