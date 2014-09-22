@@ -12,8 +12,10 @@ function writeModel () {
 	config.policy.length = $('#length').val ();
 	config.policy.strength = $('#strength').val ();
 	chrome.extension.getBackgroundPage ().saveConfig (url, config);
+	if(null == config.policy.seed || config.policy.seed == config.options.privateSeed) {
+		$("#syncneeded").addClass("hidden");
+	}
 }
-window.onunload = writeModel;
 
 function readModel () {
 	$('#tag').val (config.tag);
@@ -29,6 +31,9 @@ function readModel () {
 	if (false == config.options.backedUp && false == config.options.compatibilityMode) {
 		$('div#compatmodeheader').html ("<b>Warning:</b>");
 		$('div#compatmode').text ("You have not yet indicated that you have backed up your private key. Please do so on the Options page.");
+	}
+	if(null != config.policy.seed && config.policy.seed != config.options.privateSeed) {
+		$("#syncneeded").removeClass("hidden");
 	}
 }
 
