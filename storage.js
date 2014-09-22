@@ -90,6 +90,14 @@ Storage.prototype.loadOptions = function () {
 		options.compatibilityMode = false;
 		dirty = true;
 	}
+	if (null == options.hashKey) {
+		options.hashKey = default_hashkey;
+		dirty = true;
+	}
+	if (null == options.maskKey) {
+		options.maskKey = default_maskkey;
+		dirty = true;
+	}
 	if (dirty) {
 		this.saveOptions (options);
 	}

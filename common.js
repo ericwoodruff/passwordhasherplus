@@ -61,6 +61,8 @@ function toArray (s) {
 
 var default_length = 8;
 var default_strength = 2;
+var default_hashkey = "Ctrl+Shift+51";
+var default_maskkey = "Ctrl+Shift+56";
 
 function generateGuid () {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace (/[xy]/g, function(c) {
