@@ -52,4 +52,5 @@ $(document).ready(function() {
     $('#link-options').click(function() {
         chrome.tabs.create({url:'chrome-extension://'+location.hostname+'/options.html'})
     });
+    $('#portablePage').click(function() {chrome.tabs.create({url:'chrome-extension://'+location.hostname+'/passhashplus.html?tag=' + $('#tag').val()})});
 })

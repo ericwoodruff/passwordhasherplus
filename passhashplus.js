@@ -136,7 +136,13 @@ $( document ).ready(function () {
       $('#save').attr('href', uriContent); //3.a
       $('#savediv').css('display','block'); //3.b
       invariant_startup_code();
+      var siteTag = queryParam("tag");
+      if (null != siteTag) {
+        $("#urls").val(siteTag);
+        selectionChanged();
+      }
     });
+
   }
 }); //end of $(document).ready()
 
@@ -169,7 +175,7 @@ function invariant_startup_code(){
   for (var key in database) {
     if (key.match(regexp)){ //5.b.
       var sitetag = regexp.exec(key)[1];
-      $('#urls').append ($("<option></option>").text(sitetag)); //5.b.i
+      $('#urls').append ($('<option value="'+sitetag+'"></option>').text(sitetag)); //5.b.i
     }
   }
 

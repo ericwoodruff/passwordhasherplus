@@ -193,3 +193,10 @@ function grepUrl (url) {
         return "chrome";                                               // d
     }
 }
+
+// http://stackoverflow.com/questions/7731778/jquery-get-query-string-parameters
+function queryParam(key) {
+    key = key.replace(/[*+?^$.\[\]{}()|\\\/]/g, "\\$&"); // escape RegEx meta chars
+    var match = location.search.match(new RegExp("[?&]"+key+"=([^&]+)(&|$)"));
+    return match && decodeURIComponent(match[1].replace(/\+/g, " "));
+}
