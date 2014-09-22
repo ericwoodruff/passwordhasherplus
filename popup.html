@@ -44,51 +44,66 @@
 <script type="text/javascript" src="lib/tld.min.js"></script>
 <script type="text/javascript" src="common.js"></script>
 <script type="text/javascript" src="lib/jquery-ui-1.8.17.custom.min.js"></script>
+<style>
+html {
+	height: 0;
+}
+
+body {
+	height: 0;
+	width: 270px;
+	padding: 3px;
+}
+
+.right {
+	float: right;
+}
+
+label.field {
+text-align: right;
+float: left;
+width: 60px;
+padding-right: 6px;
+}
+
+select {
+	width: 188px;
+}
+</style>
 </head>
 
 <body>
-<div style="width: 310px;">
-	<table border="0">
-		<tr>
-			<td><div id="compatmodeheader"/></td>
-			<td><div id="compatmode"/></td>
-		</tr>
-		<tr>
-			<td>Site Tag:</td>
-			<td>
-				<input style="width: 134px;" type="text" id="tag" value="" />
-				<input type="button" value="Bump" id="bump" />
-			</td>
-		</tr>
-		<tr>
-			<td>Password Length:</td>
-			<td><select id="length">
-				<option value="2">2</option>
-				<option value="4">4</option>
-				<option value="6">6</option>
-				<option value="8">8</option>
-				<option value="10">10</option>
-				<option value="12">12</option>
-				<option value="14">14</option>
-				<option value="16">16</option>
-				<option value="18">18</option>
-				<option value="20">20</option>
-				<option value="22">22</option>
-				<option value="24">24</option>
-				<option value="26">26</option>
-			</select></td>
-		</tr>
-		<tr>
-			<td>Password Strength:</td>
-			<td><select id="strength">
-				<option value="2">Alphanumeric+Special</option>
-				<option value="1">Alphanumeric</option>
-				<option value="0">Numeric</option>
-			</select></td>
-		</tr>
-	</table>
-	<hr/>
-	<a href="#" title="Extension options" id="link-options">Options</a>
+<div>
+	<div id="compatmodeheader"/>
+	<div id="compatmode"/>
+	<p><label class="field">Site Tag:</label> <input style="width: 134px;" type="text" id="tag" value="" /> <input type="button" value="Bump" id="bump" /></p>
+	<p><label class="field">Password Length:</label>
+	<select id="length">
+	<option value="2">2</option>
+	<option value="4">4</option>
+	<option value="6">6</option>
+	<option value="8">8</option>
+	<option value="10">10</option>
+	<option value="12">12</option>
+	<option value="14">14</option>
+	<option value="16">16</option>
+	<option value="18">18</option>
+	<option value="20">20</option>
+	<option value="22">22</option>
+	<option value="24">24</option>
+	<option value="26">26</option>
+	</select>
+	</p>
+	<p><label class="field">Password Strength:</label>
+	<select id="strength">
+	<option value="2">Alphanumeric+Special</option>
+	<option value="1">Alphanumeric</option>
+	<option value="0">Numeric</option>
+	</select>
+	</p>
+	<p>
+	<a class="right" href="#" title="Extension options" id="link-options">Options</a>
+	</p>
 </div>
 </body>
 
