@@ -248,53 +248,21 @@ function bind (f) {
 		}
 	});
 
-	var ctrlDown = false;
-	var shiftDown = false;
-	var altDown = false;
-	$(field).keyup (function (e) {
-		switch (e.which) {
-			case 16: shiftDown = false; break;
-			case 17: ctrlDown = false; break;
-			case 18: altDown = false; break;
-		};
-	});
-
-	var ctrl = 100000;
-	var alt = 10000;
-	var shift = 1000;
-
 	$(field).keydown (function (e) {
-		switch (e.which) {
-			case 16: shiftDown = true; break;
-			case 17: ctrlDown = true; break;
-			case 18: altDown = true; break;
-			default:
-				// http://www.scottklarr.com/topic/126/how-to-create-ctrl-key-shortcuts-in-javascript/
-				if (shiftDown) e.which += shift;
-				if (altDown)   e.which += alt;
-				if (ctrlDown)  e.which += ctrl;
-				switch (e.which) {
-					case ctrl + shift + 51: // ctrl + #
-					case ctrl + 117: // ctrl + f6 
-						toggleHashing (true);
-					break;
-					case ctrl + shift + 56: // ctrl + *
-						toggleMasking ();
-					break;
-					case ctrl + 67: // ctrl + c
-						if (null == getSelection () && !masking) {
-							copy ();
-						}
-					break;
-					case 13:
-						update ();
-						if (hashing) {
-							paintHash ();
-						}
-						$(field).qtip ("hide");
-					break;
-				};
-		};
+		shortcut = (e.ctrlKey ? "Ctrl+" : "") + (e.shiftKey ? "Shift+" : "") + e.which;
+		if (shortcut == config.options.hashKey)
+			toggleHashing (true);
+		if (shortcut == config.options.maskKey)
+			toggleMasking ();
+		if (shortcut == "Ctrl+67" && null == getSelection () && !masking) // ctrl + c
+			copy ();
+		if (e.which == 13) {
+			update ();
+			if (hashing) {
+				paintHash ();
+			}
+			$(field).qtip ("hide");
+		}
 	});
 
 	setFieldType ();
