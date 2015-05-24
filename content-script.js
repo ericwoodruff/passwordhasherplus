@@ -279,17 +279,17 @@ setHashEvt.initEvent ('sethash', true, true);
 var rehashEvt = document.createEvent ("HTMLEvents");
 rehashEvt.initEvent ('rehash', true, true);
 
-
 function onMutation (mutations, observer) {
 	mutations.forEach (function(mutation) {
 		for (var i = 0; i < mutation.addedNodes.length; ++i) {
 			var item = mutation.addedNodes[i];
 			if (item.nodeName == 'INPUT' && item.type == 'password') {
-				if (bind (item) && item.id in config.fields) {
-					item.dispatchEvent (item);
-				}
+				bind(item);
+			} else {
+				$("input[type=password]", item).each(function (i) {
+					bind(this);
+				})
 			}
-
 		}
 	});
 }
