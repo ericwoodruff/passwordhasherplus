@@ -139,7 +139,7 @@ function dumpDatabase () {
 	entries.push(entry);
     }
     entries.sort ();
-    return "{\n" + entries.join(",\n") + "\n}\n";document.getElementById("")
+    return "{\n" + entries.join(",\n") + "\n}\n";
 }
 
 /* grepUrl:
