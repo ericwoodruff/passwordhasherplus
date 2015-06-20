@@ -273,33 +273,27 @@ $("input[type=password]").each (function (index) {
 	bind (this);
 });
 
-function addEventListeners () {
-	document.addEventListener ("DOMNodeInserted", onNodeInserted, false);
-	document.addEventListener ("DOMNodeInsertedIntoDocument", onNodeInserted, false);
-	document.addEventListener ("DOMSubtreeModified", onNodeInserted, false);
-}
-
-function removeEventListeners () {
-	document.removeEventListener ("DOMNodeInserted", onNodeInserted, false);
-	document.removeEventListener ("DOMNodeInsertedIntoDocument", onNodeInserted, false);
-	document.removeEventListener ("DOMSubtreeModified", onNodeInserted, false);
-}
-
 var setHashEvt = document.createEvent ("HTMLEvents");
 setHashEvt.initEvent ('sethash', true, true);
 
 var rehashEvt = document.createEvent ("HTMLEvents");
 rehashEvt.initEvent ('rehash', true, true);
 
-function onNodeInserted (evt) {
-	removeEventListeners ();
-	$("input[type=password]", evt.srcElement).each (function (index) {
-		if (bind (this) && this.id in config.fields) {
-			this.dispatchEvent (setHashEvt);
+function onMutation (mutations, observer) {
+	mutations.forEach (function(mutation) {
+		for (var i = 0; i < mutation.addedNodes.length; ++i) {
+			var item = mutation.addedNodes[i];
+			if (item.nodeName == 'INPUT' && item.type == 'password') {
+				bind(item);
+			} else {
+				$("input[type=password]", item).each(function (i) {
+					bind(this);
+				})
+			}
 		}
 	});
-	addEventListeners ();
 }
+
 
 port.onMessage.addListener (function (msg) {
 	if (null != msg.update) {
@@ -317,7 +311,8 @@ port.onMessage.addListener (function (msg) {
 				fields[i].dispatchEvent (setHashEvt);
 			}
 		}
-		addEventListeners ();
+		var observer = new MutationObserver (onMutation);
+		observer.observe (document, { childList: true, subtree: true });
 	}
 });
 
