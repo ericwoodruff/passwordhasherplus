@@ -92,7 +92,9 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#dbSave').click(loadStorage);
     $('#dbRevert').click(refreshStorage);
 
-    $('#portablePage').click(function() {chrome.tabs.create({url:'chrome-extension://'+location.hostname+'/passhashplus.html'})});
+    $('#portablePage').click(function() {
+	chrome.tabs.create({url:'/passhashplus.html'})
+    });
 	
 	$('#hashkey').keydown(function(e) {setShortcut("hash", e)});
 	$('#maskkey').keydown(function(e) {setShortcut("mask", e)});

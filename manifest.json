@@ -31,5 +31,27 @@
 
 	"permissions": [
 		"tabs", "http://*/*", "https://*/*"
+	],
+
+	"web_accessible_resources": [
+		"popup.html",
+		"passhashplus.html",
+
+		"styles.css",
+
+		"common.js",
+		"popup.js",
+		"passhashplus.js",
+
+		"lib/jquery-1.7.1.min.js",
+		"lib/jquery.qtip.min.css",
+		"lib/jquery.qtip.min.js",
+		"lib/jquery-ui-1.8.17.custom.css",
+		"lib/jquery-ui-1.8.17.custom.min.js",
+		"lib/passhashcommon.js",
+		"lib/sha1.js",
+		"lib/tld.min.js",
+
+		"images/*.png"
 	]
 }
