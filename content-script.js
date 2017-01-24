@@ -34,13 +34,7 @@
  * ***** END LICENSE BLOCK ***** */
 var config;
 
-if (typeof chrome.extension.connect === 'function') {
-var port = chrome.extension.connect ({name: "passhash"});
-} else if (typeof browser.runtime.connect === 'function') {
-var port = browser.runtime.connect ({name: "passhash"});
-} else {
-console.log("Not chrome or Firefox: don't know how to connect to background script");
-}
+var port = chrome.runtime.connect({name: "passhash"});
 
 var id = 0;
 

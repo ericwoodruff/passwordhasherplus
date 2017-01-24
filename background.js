@@ -33,8 +33,7 @@ function saveConfig (url, config) {
 	localStorage.saveConfig (url, config);
 	refreshTabs ();
 }
-
-function passHashListener(port) {
+chrome.runtime.onConnect.addListener (function (port) {
 	console.assert (port.name == "passhash");
 	port.onMessage.addListener (function (msg) {
 		if (null != msg.init) {
@@ -54,13 +53,4 @@ function passHashListener(port) {
 			delete ports[port.portId_];
 		}
 	});
-}
-
-// Chrome
-if (typeof chrome.extension.onConnect === 'object') {
-  chrome.extension.onConnect.addListener (passHashListener);
-} else if (typeof browser.runtime.onConnect === 'object') {
-  browser.runtime.onConnect.addListener (passHashListener);
-} else {
-  console.log("Not Chrome or Firefox, don't know how to add listener");
-}
+});

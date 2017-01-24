@@ -55,7 +55,6 @@ $('#strength').change (writeModel);
 
 $(document).ready(function() {
     $('#link-options').click(function() {
-        // Need chrome.runtime here to not break Chrome
         chrome.runtime.openOptionsPage();
     });
     $('#portablePage').click(function() {
