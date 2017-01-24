@@ -39,7 +39,8 @@ function readModel () {
 
 function callOnCurrentTab(f) {
   if (typeof chrome.tabs.query === 'function') {
-    chrome.tabs.query({active: true, currentWindow: true}, f);
+    chrome.tabs.query({active: true, currentWindow: true},
+        (tabs) => { f(tabs[0]) });
   } else if (typeof browser.tabs.query === 'function') {
     browser.tabs.query({active: true, currentWindow: true})
       .then((tabs) => { f(tabs[0]) });
