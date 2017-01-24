@@ -30,7 +30,7 @@
 	],
 
 	"permissions": [
-		"tabs", "http://*/*", "https://*/*"
+		"activeTab", "http://*/*", "https://*/*"
 	],
 
 	"web_accessible_resources": [
