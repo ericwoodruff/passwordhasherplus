@@ -37,20 +37,8 @@ function readModel () {
 	}
 }
 
-function callOnCurrentTab(f) {
-  if (typeof chrome.tabs.query === 'function') {
-    chrome.tabs.query({active: true, currentWindow: true},
-        (tabs) => { f(tabs[0]) });
-  } else if (typeof browser.tabs.query === 'function') {
-    browser.tabs.query({active: true, currentWindow: true})
-      .then((tabs) => { f(tabs[0]) });
-  } else {
-    console.log("Not Chrome or Firefox, don't know how to get current tab");
-  }
-}
-
-callOnCurrentTab(function (tab) {
-	url = chrome.extension.getBackgroundPage ().grepUrl (tab.url);
+chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+	url = chrome.extension.getBackgroundPage ().grepUrl (tabs[0].url);
 	config = chrome.extension.getBackgroundPage ().loadConfig (url);
 	config.fields = toSet (config.fields);
 	readModel ();
