@@ -37,7 +37,18 @@ function readModel () {
 	}
 }
 
-chrome.tabs.getSelected (null, function (tab) {
+function callOnCurrentTab(f) {
+  if (typeof chrome.tabs.getSelected === 'function') {
+    chrome.tabs.getSelected(null, f);
+  } else if (typeof browser.tabs.query === 'function') {
+    browser.tabs.query({active: true, currentWindow: true})
+      .then((tabs) => { f(tabs[0]) });
+  } else {
+    console.log("Not Chrome or Firefox, don't know how to get current tab");
+  }
+}
+
+callOnCurrentTab(function (tab) {
 	url = chrome.extension.getBackgroundPage ().grepUrl (tab.url);
 	config = chrome.extension.getBackgroundPage ().loadConfig (url);
 	config.fields = toSet (config.fields);
@@ -55,7 +66,11 @@ $('#strength').change (writeModel);
 
 $(document).ready(function() {
     $('#link-options').click(function() {
-        chrome.tabs.create({url:'chrome-extension://'+location.hostname+'/options.html'})
+        // Need chrome.runtime here to not break Chrome
+        chrome.runtime.openOptionsPage();
     });
-    $('#portablePage').click(function() {chrome.tabs.create({url:'chrome-extension://'+location.hostname+'/passhashplus.html?tag=' + $('#tag').val()})});
+    $('#portablePage').click(function() {
+        // For compatibility with Firefox just do /page.html for URL
+        chrome.tabs.create({url:'/passhashplus.html?tag=' + $('#tag').val()})
+    });
 })
