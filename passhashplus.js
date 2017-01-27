@@ -124,14 +124,14 @@ $( document ).ready(function () {
           $(script).text (data); //1.b
           $(script).before('<!-- src="' + $(script).attr('src') + '" -->'); //1.d
           $(script).removeAttr("src"); //1.c
-        });
+        }, "script");
       } //if (script.type == "text/javascript")
     });
 
     $('#database').text(dumpDatabase()); //2
 
     $.when.apply(null, gettings).done(function(){ //3
-      var uriContent = "data:application/octet-stream,"
+      var uriContent = "data:text/html;charset=utf-8,"
                        + encodeURIComponent($('html').html());
       $('#save').attr('href', uriContent); //3.a
       $('#savediv').css('display','block'); //3.b
