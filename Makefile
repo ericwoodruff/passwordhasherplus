@@ -13,4 +13,4 @@ export:
 	zip archive/${zip} -r * --exclude archive/*
 
 ff_webext:
-	zip -r ../passhashplus-${version}.zip * --exclude lib/mocha.* lib/chai.*
+	zip -r ../passhashplus-${version}.zip * --exclude lib/mocha.* lib/chai.* Makefile spec.js test.html demo.html Screenshot.png
