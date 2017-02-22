@@ -1,23 +1,23 @@
 var database; //this gets set only once, at [[database]]
 
 if (typeof String.prototype.startsWith != 'function') {
-	String.prototype.startsWith = function (str){
-		return this.indexOf(str) == 0;
-	};
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
 }
 
 function toggleField () {
-	var button = this;
-	var field = $(this).prev ("input").get (0);
-	if ("text" == field.type) {
-		field.type = "password";
-		button.value = "a";
-		button.title = "Show contents (Ctrl + *)";
-	} else {
-		field.type = "text";
-		button.value = "*";
-		button.title = "Mask contents (Ctrl + *)";
-	}
+  var button = this;
+  var field = $(this).prev ("input").get (0);
+  if ("text" == field.type) {
+    field.type = "password";
+    button.value = "a";
+    button.title = "Show contents (Ctrl + *)";
+  } else {
+    field.type = "text";
+    button.value = "*";
+    button.title = "Mask contents (Ctrl + *)";
+  }
 }
 
 function selectionChanged () {
@@ -41,7 +41,7 @@ function update () {
   config.options = database.options;
   $('#hash').val
     (generateHash
-      (config,$('#input').val())
+     (config,$('#input').val())
     );
 }
 
@@ -100,25 +100,25 @@ $( document ).ready(function () {
     invariant_startup_code();
   } else {
 
-     /////////////////////////////////////////////////////////////////////////////
-     // File is not portable:                                                   //
-     //                                                                         //
-     // 1. Inline all javascript scripts                                        //
-     //   1.a. Grab the contents of wherever src= points to.                    //
-     //   1.b. Put those contents in between <script> tags                      //
-     //   1.c. Remove the old "src=" attribute                                  //
-     //   1.d. Leave a comment to say what the old "src=" attribute was         //
-     //                                                                         //
-     // 2. Populate the <script id="database">                                  //
-     //                                                                         //
-     // 3.When the ajax from //1 is all finished: Set up the Download button    //
-     //   3.a. Encode the entire DOM as a URI, and set it to the href of the    //
-     //        download button                                                  //
-     //   3.b. Make the download button visible.                                //
-     //        Note that the download button is made visible _after_ the DOM -> //
-     //        URI encoding. Therefore, it will be invisible in the downloaded  //
-     //        file                                                             //
-     /////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
+    // File is not portable:                                                   //
+    //                                                                         //
+    // 1. Inline all javascript scripts                                        //
+    //   1.a. Grab the contents of wherever src= points to.                    //
+    //   1.b. Put those contents in between <script> tags                      //
+    //   1.c. Remove the old "src=" attribute                                  //
+    //   1.d. Leave a comment to say what the old "src=" attribute was         //
+    //                                                                         //
+    // 2. Populate the <script id="database">                                  //
+    //                                                                         //
+    // 3.When the ajax from //1 is all finished: Set up the Download button    //
+    //   3.a. Encode the entire DOM as a URI, and set it to the href of the    //
+    //        download button                                                  //
+    //   3.b. Make the download button visible.                                //
+    //        Note that the download button is made visible _after_ the DOM -> //
+    //        URI encoding. Therefore, it will be invisible in the downloaded  //
+    //        file                                                             //
+    /////////////////////////////////////////////////////////////////////////////
 
 
     $('#is-file-portable').text("true");
