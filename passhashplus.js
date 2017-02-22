@@ -22,11 +22,13 @@ function toggleField () {
 
 function selectionChanged () {
   var tag = $("#urls option:selected").text ();
-  $('#tag').val(tag);
-  $('#seed').val(database['tag:' + tag].seed);
-  $('#length').val(database['tag:' + tag].length);
-  $('#strength').val(database['tag:' + tag].strength);
-  update ();
+  if (tag) {
+    $('#tag').val(tag);
+    $('#seed').val(database['tag:' + tag].seed);
+    $('#length').val(database['tag:' + tag].length);
+    $('#strength').val(database['tag:' + tag].strength);
+    update ();
+  }
 }
 
 function update () {
