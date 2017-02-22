@@ -175,7 +175,7 @@ function invariant_startup_code(){
   for (var key in database) {
     if (key.match(regexp)){ //5.b.
       var sitetag = regexp.exec(key)[1];
-      $('#urls').append ($('<option value="'+sitetag+'"></option>').text(sitetag)); //5.b.i
+      $('#urls').append ($('<option>').val(sitetag).text(sitetag)); //5.b.i
     }
   }
 
