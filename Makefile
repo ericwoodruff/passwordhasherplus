@@ -12,5 +12,9 @@ export:
 	rm -f ${zip}
 	zip archive/${zip} -r * --exclude archive/*
 
-ff_webext:
+ff_webext: clean
 	zip -r ../passhashplus-${version}.zip * --exclude lib/mocha.* lib/chai.* Makefile spec.js test.html demo.html Screenshot.png
+
+clean:
+	find . -name '*.sha256' -delete
+	rm -f csp.json
