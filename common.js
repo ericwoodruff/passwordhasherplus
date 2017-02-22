@@ -65,8 +65,13 @@ var default_hashkey = "Ctrl+Shift+51";
 var default_maskkey = "Ctrl+Shift+56";
 
 function generateGuid () {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace (/[xy]/g, function(c) {
-		var r = Math.random ()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+	var template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+	var xycount = (template.match(/[xy]/g) || []).length;
+	var rand = new Uint8Array(xycount);
+	crypto.getRandomValues(rand);
+	var i = 0;
+	return template.replace (/[xy]/g, function(c) {
+		var r = rand[i++] % 16, v = c == 'x' ? r : (r&0x3|0x8);
 		return v.toString (16);
 	}).toUpperCase ();
 }
