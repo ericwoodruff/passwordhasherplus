@@ -18,3 +18,11 @@ ff_webext: clean
 clean:
 	find . -name '*.sha256' -delete
 	rm -f csp.json
+
+%.sha256: %.js
+	cat $< | openssl dgst -sha256 -binary | openssl enc -base64 > $@
+
+update_csp: lib/jquery-3.1.1.min.sha256 lib/sha1.sha256 lib/passhashcommon.sha256 lib/tld.min.sha256 common.sha256 passhashplus.sha256
+	rm -f csp.json
+	for F in $^; do echo -n "'sha256-`cat $$F`' " >> csp.json; done
+	echo "" >> csp.json

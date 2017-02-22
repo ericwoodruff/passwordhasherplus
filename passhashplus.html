@@ -40,6 +40,10 @@
 <title>Password Hasher Plus - portable page</title>
 <style>
 * { font-family: Arial; font-size: 12px; }
+#savediv { display: none }
+.nopasshash {width: 134px; }
+#hash { width: 1em; }
+#databasetextarea { display: none; }
 </style>
 
 <script type="text/javascript" src="lib/jquery-3.1.1.min.js"></script>
@@ -57,7 +61,7 @@
 
 <body>
 <h1>This is the Password Hasher Plus portable HTML page</h1>
-<div style="">
+<div>
 <select id="urls">
 </select>
 	<table border="0">
@@ -77,7 +81,7 @@
 		<tr>
 			<td>Site Tag:</td>
 			<td>
-				<input style="width: 134px;" type="password" class="nopasshash" id="tag" value="" />
+				<input type="password" class="nopasshash" id="tag" value="" />
 				<input type="button" value="a" id="unmasktag" title="Disable/enable Masking"/>
 				<input type="button" value="Bump" id="bump" />
 			</td>
@@ -85,7 +89,7 @@
 		<tr>
 			<td>Passphrase:</td>
 			<td>
-				<input style="width: 134px;" type="password" class="nopasshash" id="input" value="" />
+				<input type="password" class="nopasshash" id="input" value="" />
 				<input type="button" value="a" id="unmaskpassword" title="Disable/enable Masking"/>
 			</td>
 		</tr>
@@ -135,7 +139,7 @@
                                       one character (1em = the height of the M character). This is important, because
                                       some browsers (at least Chrome), will not let you copy from a field too narrow
                                       to show any text. -->
-				<input id="hash" type="text" maxlength="45" style="width: 1em;" readonly/>
+				<input id="hash" type="text" maxlength="45" readonly/>
 				<input type="button" value="<->" id="widenhash" title="Widen hash field"/>
 			</td>
 		</tr>
@@ -161,11 +165,11 @@
 </div>
 
 <div>
-  <textarea id="databasetextarea" cols="120" rows="12" style="display: none;">
+  <textarea id="databasetextarea" cols="120" rows="12">
   </textarea>
 </div>
 
-<div id="savediv" style="display: none;">
+<div id="savediv">
   <h2>Download portable html page</h2>
   <a download="passhashplus.html" id="save"><input type="button" value="Download"/></a>
 </div>
