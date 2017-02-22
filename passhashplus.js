@@ -47,55 +47,57 @@ function update () {
 
 $( document ).ready(function () {
 
-  $('#unmaskseed').click (toggleField);
-  $('#unmasktag').click (toggleField);
-  $('#unmaskpassword').click (toggleField);
-
-  $('#bump').click (function () {
-          $("#tag").val (bump ($("#tag").val ()));
-          update ();
-  });
-
-  $('#widenhash').click (function() {
-    if ("<->" == $('#widenhash').val()) {
-      $('#hash').css("width", "26em");
-      $('#widenhash').val(">.<");
-      $('#widenhash').attr("title", "Narrow hash field");
-    } else {
-      $('#hash').css("width", "1em");
-      $('#widenhash').val("<->");
-      $('#widenhash').attr("title", "Widen hash field");
-    }
-  });
-
-  $('#hash').click(function () {
-    $('#hash').select();
-  });
-
-  $('#revealdatabase').click(function () {
-    if ($('#revealdatabase').val()=="Reveal") {
-      $('#revealdatabase').val("Hide");
-      $('#revealdatabase').attr("title","Hide Database");
-      $('#databasetextarea').css('display','block');
-    } else {
-      $('#revealdatabase').val("Reveal");
-      $('#revealdatabase').attr("title","Reveal Database");
-      $('#databasetextarea').css('display','none');
-    }
-  });
-
   if (JSON.parse( $('#is-file-portable').text() )){
 
-     //////////////////////////////////////////////
-     // File is portable:                        //
-     //                                          //
-     //   * Scripts are already inlined          //
-     //   * Database already populated           //
-     //   * Download button already invisible... //
-     //                                          //
-     // Nothing to do.                           //
-     //////////////////////////////////////////////
-     invariant_startup_code();
+    //////////////////////////////////////////////
+    // File is portable:                        //
+    //                                          //
+    //   * Scripts are already inlined          //
+    //   * Database already populated           //
+    //   * Download button already invisible... //
+    //                                          //
+    // Install click handlers and call invariant//
+    // startup code                             //
+    //////////////////////////////////////////////
+
+    $('#unmaskseed').click (toggleField);
+    $('#unmasktag').click (toggleField);
+    $('#unmaskpassword').click (toggleField);
+
+    $('#bump').click (function () {
+      $("#tag").val (bump ($("#tag").val ()));
+      update ();
+    });
+
+    $('#widenhash').click (function() {
+      if ("<->" == $('#widenhash').val()) {
+        $('#hash').css("width", "26em");
+        $('#widenhash').val(">.<");
+        $('#widenhash').attr("title", "Narrow hash field");
+      } else {
+        $('#hash').css("width", "1em");
+        $('#widenhash').val("<->");
+        $('#widenhash').attr("title", "Widen hash field");
+      }
+    });
+
+    $('#hash').click(function () {
+      $('#hash').select();
+    });
+
+    $('#revealdatabase').click(function () {
+      if ($('#revealdatabase').val()=="Reveal") {
+        $('#revealdatabase').val("Hide");
+        $('#revealdatabase').attr("title","Hide Database");
+        $('#databasetextarea').css('display','block');
+      } else {
+        $('#revealdatabase').val("Reveal");
+        $('#revealdatabase').attr("title","Reveal Database");
+        $('#databasetextarea').css('display','none');
+      }
+    });
+
+    invariant_startup_code();
   } else {
 
      /////////////////////////////////////////////////////////////////////////////
