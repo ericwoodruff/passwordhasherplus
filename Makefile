@@ -17,7 +17,6 @@ ff_webext: clean
 
 clean:
 	find . -name '*.sha256' -delete
-	rm -f csp.json
 
 %.sha256: %.js
 	cat $< | openssl dgst -sha256 -binary | openssl enc -base64 > $@
@@ -29,6 +28,7 @@ update_csp: lib/jquery-3.1.1.min.sha256 lib/sha1.sha256 lib/passhashcommon.sha25
 	echo "; object-src 'self' `cat inline_css.sha256`\"" >> manifest_new.json
 	echo "}" >> manifest_new.json
 	mv manifest_new.json manifest.json
+	find . -name '*.sha256' -delete
 
 inline_css_csp:
 	rm -f inline_css.sha256
@@ -36,7 +36,3 @@ inline_css_csp:
 	echo -n "'sha256-`echo "width: 134px;" | openssl dgst -sha256 -binary | openssl enc -base64`' " >> inline_css.sha256
 	echo -n "'sha256-`echo "width: 1em;" | openssl dgst -sha256 -binary | openssl enc -base64`' " >> inline_css.sha256
 	echo -n "'sha256-`echo "display: none;" | openssl dgst -sha256 -binary | openssl enc -base64`'" >> inline_css.sha256
-
-clean:
-	find . -name '*.sha256' -delete
-	rm -f csp.json
