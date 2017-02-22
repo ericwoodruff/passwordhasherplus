@@ -53,5 +53,7 @@
 		"lib/tld.min.js",
 
 		"images/*.png"
-	]
+	], 
+
+	"content_security_policy": "script-src 'self' 'sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=' 'sha256-BXbfmaaxqDFKz4VsEiL7ubAcLlBL2iV7UxnMIMSvfwA=' 'sha256-5UpOmiIImmd9wla+ZcvHMn6RaUWbUygKvqbAUx//yWg=' 'sha256-thpfFgw1VMy7GcMXqpWVABUalukoNCn0g0kQTelDqEA=' 'sha256-VuBPIfNvP9X4j73iCH4J0io3i5jMKxyWJ68F/GlC2FQ=' 'sha256-8qmXqv06LFB/w+smRUOH1VJmPpkZSbJsg/SMis2Af1M='; object-src 'self' 'sha256-zOXGS74flP1hACzZd9It3fYPr3fYXY/PdkM24K0VeDQ='"
 }
