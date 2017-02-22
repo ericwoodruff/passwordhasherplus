@@ -26,3 +26,7 @@ update_csp: lib/jquery-3.1.1.min.sha256 lib/sha1.sha256 lib/passhashcommon.sha25
 	rm -f csp.json
 	for F in $^; do echo -n "'sha256-`cat $$F`' " >> csp.json; done
 	echo "" >> csp.json
+
+clean:
+	find . -name '*.sha256' -delete
+	rm -f csp.json
