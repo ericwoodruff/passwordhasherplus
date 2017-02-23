@@ -33,5 +33,5 @@
 		"activeTab", "http://*/*", "https://*/*"
 	],
 
-	"content_security_policy": "script-src 'self' 'sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=' 'sha256-BXbfmaaxqDFKz4VsEiL7ubAcLlBL2iV7UxnMIMSvfwA=' 'sha256-5UpOmiIImmd9wla+ZcvHMn6RaUWbUygKvqbAUx//yWg=' 'sha256-thpfFgw1VMy7GcMXqpWVABUalukoNCn0g0kQTelDqEA=' 'sha256-VuBPIfNvP9X4j73iCH4J0io3i5jMKxyWJ68F/GlC2FQ=' 'sha256-6EYWh8FtxxihGQ+EWslGXVoXj/Natmo/uGIujm3H96Y=' ; object-src 'self' 'sha256-qn6tsmy+NlW118bVFlClvC7F+htK9rGznGzRfrcazb4=' 'sha256-+qquIqVApKqHzz3SB+8JfPb4xNzvidQUI/mTIlhUNX0=' 'sha256-o0hI4455IPkUMfwUQ6pr99HSE3y9rSuxu+tWIozV0gQ=' 'sha256-r0SU/Q/i3P1+XomK9JPme5UtnflshSlOGQmQko6+c7U='"
+	"content_security_policy": "script-src 'self' 'sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=' 'sha256-BXbfmaaxqDFKz4VsEiL7ubAcLlBL2iV7UxnMIMSvfwA=' 'sha256-5UpOmiIImmd9wla+ZcvHMn6RaUWbUygKvqbAUx//yWg=' 'sha256-thpfFgw1VMy7GcMXqpWVABUalukoNCn0g0kQTelDqEA=' 'sha256-VuBPIfNvP9X4j73iCH4J0io3i5jMKxyWJ68F/GlC2FQ=' 'sha256-6EYWh8FtxxihGQ+EWslGXVoXj/Natmo/uGIujm3H96Y=' ; object-src 'self'"
 }
