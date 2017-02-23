@@ -13,7 +13,7 @@ export:
 	zip archive/${zip} -r * --exclude archive/*
 
 ff_webext: clean
-	rm -r ../${zip}
+	rm -f ../${zip}
 	zip -r ../${zip} * --exclude lib/mocha.* lib/chai.* Makefile spec.js test.html demo.html Screenshot.png
 
 clean:
