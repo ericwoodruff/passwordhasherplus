@@ -36,6 +36,12 @@ function update () {
   config.tag = $('#tag').val();
   config.policy = new Object ();
   config.policy.seed = $('#seed').val();
+  if (config.tag.startsWith ("compatible:") || config.policy.seed == "") {
+    if (config.tag.startsWith ("compatible:")){
+      config.tag = config.tag.substringAfter ("compatible:");
+    }
+    delete config.policy.seed;
+  }
   config.policy.length = $('#length').val();
   config.policy.strength = $('#strength').val();
   config.options = database.options;
