@@ -18,8 +18,9 @@ function writeModel () {
 }
 
 function readModel () {
+    storageLoadTags(tags => {
 	$('#tag').val (config.tag);
-	$('#tag').autocomplete ({ source: chrome.extension.getBackgroundPage ().loadTags () });
+	$('#tag').autocomplete ({ source: tags });
 	$('#length').val (config.policy.length);
 	$('#strength').val (config.policy.strength);
 	if (true == config.options.compatibilityMode) {
@@ -35,13 +36,18 @@ function readModel () {
 	if(null != config.policy.seed && config.policy.seed != config.options.privateSeed) {
 		$("#syncneeded").removeClass("hidden");
 	}
+    });
 }
 
 chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
 	url = chrome.extension.getBackgroundPage ().grepUrl (tabs[0].url);
-	config = chrome.extension.getBackgroundPage ().loadConfig (url);
-	config.fields = toSet (config.fields);
-	readModel ();
+        if (debug) console.log('loading/creating config for url='+url);
+        storageLoadConfig(url, (cfg) => {
+            if (debug) console.log('got config='+JSON.stringify(cfg, null, 2));
+            config = cfg;
+            config.fields = toSet (config.fields);
+            readModel ();
+        });
 });
 
 $('#bump').click (function () {

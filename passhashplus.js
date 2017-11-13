@@ -24,9 +24,9 @@ function selectionChanged () {
   var tag = $("#urls option:selected").text ();
   if (tag) {
     $('#tag').val(tag);
-    $('#seed').val(database['tag:' + tag].seed);
-    $('#length').val(database['tag:' + tag].length);
-    $('#strength').val(database['tag:' + tag].strength);
+    $('#seed').val(database['tag'][tag].seed);
+    $('#length').val(database['tag'][tag].length);
+    $('#strength').val(database['tag'][tag].strength);
     update ();
   }
 }
@@ -138,7 +138,9 @@ $( document ).ready(function () {
       } //if (script.type == "text/javascript")
     });
 
-    $('#database').text(dumpDatabase()); //2
+    dumpDatabase(db => {
+	    $('#database').text(db); //2
+    });
 
     $.when.apply(null, gettings).done(function(){ //3
       var uriContent = "data:text/html;charset=utf-8,"
@@ -181,12 +183,9 @@ function invariant_startup_code(){
   database=JSON.parse($('#database').text ()); //4.a.
 
   //5
-  var regexp = /tag:(.+)/;
-  for (var key in database) {
-    if (key.match(regexp)){ //5.b.
-      var sitetag = regexp.exec(key)[1];
-      $('#urls').append ($('<option>').val(sitetag).text(sitetag)); //5.b.i
-    }
+  for (var url in database['url']) {
+    if (debug) console.log('adding url='+url+' to dropdown');
+    $('#urls').append ($('<option>').val(url).text(url)); //5.b.i
   }
 
   $('#databasetextarea').text($('#database').text()); //6

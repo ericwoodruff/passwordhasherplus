@@ -1,3 +1,4 @@
+
 function setNewGuid () {
 	var seedElement = document.getElementById ("seed");
 	seedElement.value = generateGuid ();
@@ -12,42 +13,46 @@ function saveOptions () {
 	options.backedUp = document.getElementById ("backedup").checked;
 	options.hashKey = document.getElementById ("hashkey").value;
 	options.maskKey = document.getElementById ("maskkey").value;
-	chrome.extension.getBackgroundPage ().saveOptions (options);
-	refreshStorage ();
+        options.sync = document.getElementById ("sync").checked;
+        if (debug) console.log('[options.js] Saving options='+JSON.stringify(options,null,2));
+        storageSaveOptions(options);
+        // make sure we respect 'sync' flag and clear old storage area after
+        storageMigrateArea(options.sync);
 }
 
 function restoreOptions () {
-	var options = localStorage.loadOptions ();
-	document.getElementById ("length").value = options.defaultLength;
-	document.getElementById ("strength").value = options.defaultStrength;
-	document.getElementById ("compatibility").checked = options.compatibilityMode;
-	document.getElementById ("seed").value = options.privateSeed;
-	document.getElementById ("backedup").checked = options.backedUp;
-	document.getElementById ("hashkey").value = options.hashKey;
-	document.getElementById ("maskkey").value = options.maskKey;
+    storagearea.get('options').then(
+        results => {
+            options = results.options;
+            document.getElementById ("length").value = options.defaultLength;
+            document.getElementById ("strength").value = options.defaultStrength;
+            document.getElementById ("compatibility").checked = options.compatibilityMode;
+            document.getElementById ("seed").value = options.privateSeed;
+            document.getElementById ("backedup").checked = options.backedUp;
+            document.getElementById ("hashkey").value = options.hashKey;
+            document.getElementById ("maskkey").value = options.maskKey;
+        });
 }
 
 
 
 function refreshStorage() {
-	document.getElementById ("everything").value = dumpDatabase();
-        browser.storage.local.get(null)
-            .then(results => {
-                document.getElementById ("webext_storage").value = JSON.stringify(results, null, 2);
-            });
+	dumpDatabase(db => {
+		document.getElementById ("everything").value = db;
+	});
 }
 
 function clearStorage () {
 	if (confirm ("You are about to erase all of the Password Hasher Plus database. " +
 		    "This is typically done before loading a snapshot of a previous database state. " +
 		    "Are you certain you want to erase the database?")) {
-		localStorage.clear ();
+		storagearea.clear ();
 		alert ("Your database is now empty. " +
 		      "You probably want to paste a previous snapshot of the database to the text area to the right, " +
 		      "and hit \"Load\" to re-populate the database. " +
 		      "Good luck.");
 	}
-	localStorage.migrate ();
+	storageMigrate ();
 }
 
 function loadStorage () {
@@ -57,15 +62,13 @@ function loadStorage () {
 		alert("Sorry, the data in the text area to the right is not valid JSON.");
 		return;
 	}
-	localStorage.clear ();
-	for (var key in everything) {
-		var value = everything[key];
-		if (key.slice(0, 7) != "option:") value = JSON.stringify(value);
-		localStorage.setItem (key, value);
-	}
-	localStorage.migrate ();
-	restoreOptions ();
-	refreshStorage ();
+        // clear old storage area
+        storagearea.clear();
+        storageInit(everything)
+            .then(() => {
+                restoreOptions ();
+                refreshStorage ();
+            });
 }
 
 function setShortcut(action, e) {
@@ -91,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#generate').click(setNewGuid);
     $('#backupSave').click(saveOptions);
     $('#backupRevert').click(restoreOptions);
-    $('#removeUnUsedTags').click(function() {localStorage.collectGarbage (); refreshStorage ();});
+    $('#removeUnUsedTags').click(function() {storageCollectGarbage (); refreshStorage ();});
     $('#dbClear').click(function() {clearStorage (); refreshStorage ();});
     $('#dbSave').click(loadStorage);
     $('#dbRevert').click(refreshStorage);

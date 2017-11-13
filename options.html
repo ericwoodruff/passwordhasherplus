@@ -111,8 +111,14 @@
 		<tr>
 			<td>Backup:</td>
 			<td>
-				<p><b>Note: You must backup this key and keep it safe and secure in case you need to restore it in the future.</b></p>
+				<b>Note: You must backup this key and keep it safe and secure in case you need to restore it in the future.</b><br/>
 				<input id="backedup" type="checkbox"/> I have backed up my private key.
+			</td>
+		</tr>
+		<tr>
+			<td>Sync settings with Firefox account</td>
+			<td>
+				<input id="sync" type="checkbox"/> Sync settings.
 			</td>
 		</tr>
 		<tr>
@@ -134,14 +140,6 @@
 				<br/>
                                 <button id="dbSave">Save</button>
                                 <button id="dbRevert">Revert</button>
-                        </td>
-                </tr>
-                <tr>
-			<td>(Webext storage) Database:
-                        </td>
-                        <td>
-				<textarea id="webext_storage" cols="120" rows="12"></textarea>
-				<br/>
                         </td>
                 </tr>
 	</table>
