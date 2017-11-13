@@ -31,6 +31,10 @@ function restoreOptions () {
 
 function refreshStorage() {
 	document.getElementById ("everything").value = dumpDatabase();
+        browser.storage.local.get(null)
+            .then(results => {
+                document.getElementById ("webext_storage").value = JSON.stringify(results, null, 2);
+            });
 }
 
 function clearStorage () {
