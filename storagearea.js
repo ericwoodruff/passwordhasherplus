@@ -171,6 +171,8 @@ function migrateLocalStorage() {
     // 1. grab options from localStorage
     options = localStorage.loadOptions();
     settings['options'] = options;
+    settings['url'] = new Object();
+    settings['tag'] = new Object();
     // 2. go through all URLs in localStorage
     var keys = toArray(localStorage);
     for (var i = 0; i < keys.length; ++i) {
