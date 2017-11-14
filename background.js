@@ -22,7 +22,7 @@ chrome.runtime.onConnect.addListener (function (port) {
 	port.onMessage.addListener (function (msg) {
 		if (null != msg.init) {
 			var url = grepUrl (msg.url);
-			var config = storageLoadConfig (url, (cfg) => {
+			storageLoadConfig (url, (config) => {
 				port.passhashUrl = url;
 				ports[port.portId_] = port;
 				port.postMessage ({ init: true, update: config });
