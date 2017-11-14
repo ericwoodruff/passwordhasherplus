@@ -189,7 +189,7 @@ function migrateLocalStorage() {
     return settings;
 }
 
-function storageMigrateArea(sync) {
+function storageMigrateArea(sync, doneHandler) {
     // check if we need to do anything:
     // storage area, sync flag, op
     //    sync         true     noop
@@ -211,8 +211,12 @@ function storageMigrateArea(sync) {
                 if (sync) {
                     browser.storage.local.set({sync: true});
                 }
+                doneHandler();
             });
         });
+    } else {
+        // nothing to do, just call callback
+        doneHandler();
     }
 }
 

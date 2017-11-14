@@ -17,7 +17,7 @@ function saveOptions () {
         if (debug) console.log('[options.js] Saving options='+JSON.stringify(options,null,2));
         storageSaveOptions(options);
         // make sure we respect 'sync' flag and clear old storage area after
-        storageMigrateArea(options.sync);
+        storageMigrateArea(options.sync, () => { refreshStorage(); });
 }
 
 function restoreOptions () {
