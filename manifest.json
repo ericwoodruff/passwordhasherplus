@@ -6,7 +6,8 @@
 	"icons": { "64": "images/icon.png", "128": "images/icon.png" },
         "applications": {
             "gecko": {
-		"id": "{ef60b2e8-9dbe-49f6-8c3c-58563028150f}"
+		"id": "{ef60b2e8-9dbe-49f6-8c3c-58563028150f}",
+		"strict_min_version": "53.0"
             }
         },
 
