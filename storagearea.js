@@ -18,53 +18,63 @@ function storageSaveOptions(options) {
     storagearea.set({'options': options}).then(null, onError);
 }
 
+function storageInitOptions(settings) {
+    var options;
+    if (settings && 'options' in settings) {
+        options = settings['options'];
+    } else {
+        options = new Object();
+    }
+    var dirty = false;
+    if (null == options.privateSeed) {
+        options.privateSeed = generateGuid ();
+        dirty = true;
+    }
+    if (null == options.defaultLength) {
+        options.defaultLength = default_length;
+        dirty = true;
+    }
+    if (null == options.defaultStrength) {
+        options.defaultStrength = default_strength;
+        dirty = true;
+    }
+    if (null == options.backedUp) {
+        options.backedUp = false;
+        dirty = true;
+    }
+    if (null == options.compatibilityMode) {
+        options.compatibilityMode = false;
+        dirty = true;
+    }
+    if (null == options.hashKey) {
+        options.hashKey = default_hashkey;
+        dirty = true;
+    }
+    if (null == options.maskKey) {
+        options.maskKey = default_maskkey;
+        dirty = true;
+    }
+    if (null == options.sync) {
+        options.sync = default_sync;
+        dirty = true;
+    }
+    if (settings) {
+        settings['options'] = options;
+    }
+    return dirty;
+}
+
 function storageLoadOptions(resultHandler) {
     storagearea.get('options').then(results => {
         if (debug) console.log('got options='+JSON.stringify(options,null,2));
-        var options;
-        if (results && 'options' in results) {
-            options = results['options']
-        } else {
-            options = new Object();
-        }
+        var dirty = storageInitOptions(results);
+        var options = results['options'];
 
-        var dirty = false;
-        if (null == options.privateSeed) {
-            options.privateSeed = generateGuid ();
-            dirty = true;
-        }
-        if (null == options.defaultLength) {
-            options.defaultLength = default_length;
-            dirty = true;
-        }
-        if (null == options.defaultStrength) {
-            options.defaultStrength = default_strength;
-            dirty = true;
-        }
-        if (null == options.backedUp) {
-            options.backedUp = false;
-            dirty = true;
-        }
-        if (null == options.compatibilityMode) {
-            options.compatibilityMode = false;
-            dirty = true;
-        }
-        if (null == options.hashKey) {
-            options.hashKey = default_hashkey;
-            dirty = true;
-        }
-        if (null == options.maskKey) {
-            options.maskKey = default_maskkey;
-            dirty = true;
-        }
-        if (null == options.sync) {
-            options.sync = default_sync;
-            dirty = true;
-        }
-        if (dirty) {
+        if (dirty && results && 'settings' in results) {
             storageSaveOptions (options);
         }
 
+	if (debug) console.log('[storageLoadOptions] calling resultHandler with options='+JSON.stringify(options, null, 2));
         resultHandler(options);
     });
 }
@@ -96,10 +106,6 @@ function storageLoadConfig(url, resultHandler) {
     config.tag = url;
     config.fields = new Array();
     function configSetOptions(options) {
-        if (debug) {
-            console.log('got options='+JSON.stringify(options, null, 2));
-            console.log('setting options on config='+JSON.stringify(config, null, 2));
-        }
         config.options = options;
         storagearea.get('tag').then(results => {
             if ('tag' in results && config.tag in results['tag']) {
@@ -119,7 +125,6 @@ function storageLoadConfig(url, resultHandler) {
 
     if (debug) console.log('reading config for url='+url+' from storagearea');
     storagearea.get('url').then(results => {
-        if (debug) console.log('got results: '+JSON.stringify(results, null, 2));
         if ('url' in results && url in results['url']) {
             config = results.url[url];
         } else {
@@ -235,17 +240,16 @@ function storageMigrate(area) {
         } else {
             settings = migrateLocalStorage();
         }
-        storageLoadOptions((opts) => {
-            settings['options'] = opts;
-            // save to new area and update storagearea variable
-            if (debug) console.log('setting webext storage settings: '+
-                    JSON.stringify(settings, null, 2));
-            area.set(settings)
-                .then(() => {
-                    webext_storage_ok = true;
-                    storagearea = area;
-                }, onError);
-        });
+	if (!('options' in settings)) {
+            console.log('no options in settings to migrate?');
+            settings['options'] = storageInitOptions(settings);
+        }
+        if (debug) console.log('setting webext storage settings: '+
+                JSON.stringify(settings, null, 2));
+        area.set(settings).then(() => {
+            webext_storage_ok = true;
+            storagearea = area;
+        }, onError);
     });
 }
 
