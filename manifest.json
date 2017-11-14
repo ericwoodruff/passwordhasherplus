@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Password Hasher Plus - Password Generator",
-	"version": "2.4.0a3",
+	"version": "2.4.0a5",
 	"description": "Password Hasher Plus automatically enhances password strength (length and difficulty) to protect your accounts.",
 	"icons": { "64": "images/icon.png", "128": "images/icon.png" },
         "applications": {
@@ -38,5 +38,5 @@
 		"activeTab", "storage", "http://*/*", "https://*/*"
 	],
 
-	"content_security_policy": "script-src 'self' 'sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=' 'sha256-BXbfmaaxqDFKz4VsEiL7ubAcLlBL2iV7UxnMIMSvfwA=' 'sha256-5UpOmiIImmd9wla+ZcvHMn6RaUWbUygKvqbAUx//yWg=' 'sha256-thpfFgw1VMy7GcMXqpWVABUalukoNCn0g0kQTelDqEA=' 'sha256-fgvcTMiDce27dsN8NTeockuMM5ZJOaWmExY1u7/rmb4=' 'sha256-xBv9JoZJLnZO1hI6S8HCIiKfZ7LsxF3tGlFXQyzEing=' ; object-src 'self'"
+	"content_security_policy": "script-src 'self' 'sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=' 'sha256-BXbfmaaxqDFKz4VsEiL7ubAcLlBL2iV7UxnMIMSvfwA=' 'sha256-5UpOmiIImmd9wla+ZcvHMn6RaUWbUygKvqbAUx//yWg=' 'sha256-thpfFgw1VMy7GcMXqpWVABUalukoNCn0g0kQTelDqEA=' 'sha256-7Lpeho0LDZqnl32TPxcAYWg4kTK0ACiFIvgwmhd7dW4=' 'sha256-cqZbmNulZImkjHYavs6+cr3by+otsNXK062uutH3sng=' ; object-src 'self'"
 }

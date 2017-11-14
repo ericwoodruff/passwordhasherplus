@@ -138,23 +138,21 @@ $( document ).ready(function () {
       } //if (script.type == "text/javascript")
     });
 
-    dumpDatabase(db => {
-	    $('#database').text(db); //2
+    dumpDatabase().then(db => {
+      $('#database').text(JSON.stringify(db, null, 2));
+      $.when.apply(null, gettings).done(function(){ //3
+        var uriContent = "data:text/html;charset=utf-8,"
+          + encodeURIComponent($('html').html());
+        $('#save').attr('href', uriContent); //3.a
+        $('#savediv').css('display','block'); //3.b
+        invariant_startup_code();
+        var siteTag = queryParam("tag");
+        if (null != siteTag) {
+          $("#urls").val(siteTag);
+          selectionChanged();
+        }
+      });
     });
-
-    $.when.apply(null, gettings).done(function(){ //3
-      var uriContent = "data:text/html;charset=utf-8,"
-                       + encodeURIComponent($('html').html());
-      $('#save').attr('href', uriContent); //3.a
-      $('#savediv').css('display','block'); //3.b
-      invariant_startup_code();
-      var siteTag = queryParam("tag");
-      if (null != siteTag) {
-        $("#urls").val(siteTag);
-        selectionChanged();
-      }
-    });
-
   }
 }); //end of $(document).ready()
 

@@ -124,15 +124,13 @@ function bump (tag) {
 	return tag + ":" + bump;
 }
 
-function dumpDatabase (resultHandler) {
-    browser.storage.local.get('sync').then(results => {
+function dumpDatabase() {
+    return browser.storage.local.get('sync').then(results => {
         var storagearea = browser.storage.local;
         if (results['sync']) {
             storagearea = browser.storage.sync;
         }
-        storagearea.get(null).then(results => {
-            resultHandler(JSON.stringify(results, null, 2));
-        });
+        return storagearea.get(null);
     });
 }
 

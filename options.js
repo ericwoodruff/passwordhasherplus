@@ -37,8 +37,8 @@ function restoreOptions () {
 
 
 function refreshStorage() {
-	dumpDatabase(db => {
-		document.getElementById ("everything").value = db;
+	dumpDatabase().then(db => {
+		document.getElementById ("everything").value = JSON.stringify(db, null, 2);
 	});
 }
 
