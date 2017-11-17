@@ -1,10 +1,10 @@
 #!/usr/bin/node
 
 var assert = require('assert');
-var PassHashCommon = require('../lib/passhashcommon.js').PassHashCommon;
+var PassHashCommon = require('lib/passhashcommon.js').PassHashCommon;
 
 // global
-b64_hmac_sha1 = require("../lib/sha1.js").b64_hmac_sha1;
+b64_hmac_sha1 = require("lib/sha1.js").b64_hmac_sha1;
 
     
 suite('PassHashCommon', function() {

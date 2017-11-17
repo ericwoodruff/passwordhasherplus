@@ -2,5 +2,5 @@
 all: js
 
 js: test*.js
-	node ../node_modules/.bin/mocha -u tdd $?
+	NODE_PATH=../ node ../node_modules/.bin/mocha -u tdd $?
 
