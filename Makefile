@@ -19,6 +19,9 @@ ff_webext: clean
 clean:
 	find . -name '*.sha256' -delete
 
+test:
+	make -C tests
+
 %.sha256: %.js
 	cat $< | openssl dgst -sha256 -binary | openssl enc -base64 > $@
 
