@@ -1,5 +1,7 @@
 # Password Hasher Plus
 
+[![Build Status](https://travis-ci.org/simu/passwordhasherplus.svg?branch=master)](http://travis-ci.org/simu/oasswordhasherplus)
+
 Password Hasher Plus is a replacement for the Password Hasher
 extension which unfortunately is not developed anymore and does not
 work correctly with multi-process Firefox.
