@@ -4,4 +4,4 @@ node_js:
   - "7"
   - "6"
 
-script: npm install mocha chai get-random-value && make test
+script: npm install mocha chai get-random-values && make test
