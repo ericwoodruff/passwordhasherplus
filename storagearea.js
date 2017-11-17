@@ -197,19 +197,7 @@ function migrateLocalStorage() {
 var CURRENT_STORAGE_VER = 6;
 
 function storageMigrateArea(sync, doneHandler) {
-    // check if we need to do anything:
-    // storage area, sync flag, op
-    //    sync         true     noop
-    //    sync         false    migrate to local
-    //    local        true     migrate to sync
-    //    local        false    noop
-    if ((storagearea == browser.storage.sync) != sync) {
-        var oldstoragearea = storagearea;
-        if (sync) {
-            storagearea = browser.storage.sync;
-        } else {
-            storagearea = browser.storage.local;
-        }
+    function doMigration() {
         oldstoragearea.get(null).then(results => {
             storagearea.set(results).then(() => {
                 // clear old storage area
@@ -221,6 +209,34 @@ function storageMigrateArea(sync, doneHandler) {
                 doneHandler();
             });
         });
+    }
+
+    // check if we need to do anything:
+    // storage area, sync flag, op
+    //    sync         true     noop
+    //    sync         false    migrate to local
+    //    local        true     migrate to sync
+    //    local        false    noop
+    if ((storagearea == browser.storage.sync) != sync) {
+        var oldstoragearea = storagearea;
+        if (sync) {
+            storagearea = browser.storage.sync;
+            // TODO: ask user what to do, and implement optional merging of
+            // local and sync area
+            console.log("checking if sync already contains settings");
+            storagearea.get('version').then(results => {
+                if(results['version'] == CURRENT_STORAGE_VER) {
+                    console.log('sync already has config, switching sync on, but not pushing local config into sync!');
+                    browser.storage.local.set({sync: true}).then(() => { doneHandler(); });
+                } else {
+                    doMigration();
+                }
+            });
+            return;
+        } else {
+            storagearea = browser.storage.local;
+        }
+        doMigration();
     } else {
         // nothing to do, just call callback
         doneHandler();
