@@ -194,6 +194,8 @@ function migrateLocalStorage() {
     return settings;
 }
 
+var CURRENT_STORAGE_VER = 6;
+
 function storageMigrateArea(sync, doneHandler) {
     // check if we need to do anything:
     // storage area, sync flag, op
@@ -227,14 +229,14 @@ function storageMigrateArea(sync, doneHandler) {
 
 function storageMigrate(area) {
     area.get('version').then(results => {
-        if (results['version'] == 6 && area == storagearea) {
+        if (results['version'] == CURRENT_STORAGE_VER && area == storagearea) {
             if (debug) console.log('webext storage already contains up-to-date settings');
             webext_storage_ok = true;
             return;
         }
         // we need to do some work
         var settings;
-        if (results['version'] == 6) {
+        if (results['version'] == CURRENT_STORAGE_VER) {
             if (debug) console.log('migrating settings from ' + storagearea + ' to ' + area);
             settings = storagearea.get(null);
         } else {
