@@ -10,6 +10,7 @@ zip=passhashplus-${version}.zip
 
 export:
 	rm -f ${zip}
+	mkdir -p archive
 	zip archive/${zip} -r * --exclude archive/*
 
 ff_webext: clean
