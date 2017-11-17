@@ -20,7 +20,7 @@ extension.
 
 To run the unit-tests do:
 
-    $ npm install mocha
+    $ npm install mocha chai get-random-value
 
 then
 
