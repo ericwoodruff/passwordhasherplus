@@ -35,6 +35,20 @@
 
 var debug = false;
 
+// XXX: Inject npm packages when running tests
+if (typeof require !== 'undefined') {
+    if (typeof tld === 'undefined') {
+        var tld = require('lib/tld.min.js');
+    }
+    if (typeof crypto === 'undefined') {
+        var crypto = new Object();
+        crypto.getRandomValues = require('get-random-values');
+    }
+    if (typeof PassHashCommon === 'undefined') {
+        PassHashCommon = require('lib/passhashcommon.js').PassHashCommon;
+    }
+}
+
 String.prototype.startsWith = function (str) {
 	return (this.match ("^" + str) == str);
 }
@@ -195,4 +209,12 @@ function extractQueryParam(string, key){
 // http://stackoverflow.com/questions/7731778/jquery-get-query-string-parameters
 function queryParam(key) {
     return extractQueryParam(location.search, key);
+}
+
+if (typeof exports !== 'undefined') {
+    exports.bump = bump;
+    exports.generateGuid = generateGuid;
+    exports.grepUrl = grepUrl;
+    exports.extractQueryParam = extractQueryParam;
+    exports.generateHash = generateHash;
 }

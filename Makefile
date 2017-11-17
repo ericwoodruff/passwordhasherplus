@@ -1,6 +1,6 @@
 #! /bin/make
 
-default: export
+default: ff_webext
 
 version=$(shell grep '"version"' manifest.json  | cut -d: -f2 | cut -d\" -f2)
 
@@ -10,14 +10,18 @@ zip=passhashplus-${version}.zip
 
 export:
 	rm -f ${zip}
+	mkdir -p archive
 	zip archive/${zip} -r * --exclude archive/*
 
 ff_webext: clean
 	rm -f ../${zip} || exit 0
-	zip -r ../${zip} * --exclude lib/mocha.* lib/chai.* Makefile spec.js test.html demo.html Screenshot.png
+	zip -r ../${zip} * --exclude lib/mocha.* lib/chai.* Makefile spec.js test.html demo.html Screenshot.png "tests/*" "node_modules/*"
 
 clean:
 	find . -name '*.sha256' -delete
+
+test:
+	make -C tests
 
 %.sha256: %.js
 	cat $< | openssl dgst -sha256 -binary | openssl enc -base64 > $@
