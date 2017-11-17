@@ -6,7 +6,7 @@ function refreshTabs () {
 		var key = keys[i];
 		var port = ports[key];
 		if (debug) console.log ("Loading " + port.passhashUrl + " for " + key);
-		storageLoadConfig(port.passhashUrl, config => {
+		storage.loadConfig(port.passhashUrl, config => {
 			port.postMessage ({ update: config });
 		});
 	}
@@ -14,7 +14,7 @@ function refreshTabs () {
 
 function saveConfig (url, config) {
     if (debug) console.log('[background.js] Saving config for url='+url+': config='+JSON.stringify(config, null, 2));
-    storageSaveConfig(url, config);
+    storage.saveConfig(url, config);
     refreshTabs ();
 }
 chrome.runtime.onConnect.addListener (function (port) {
@@ -22,7 +22,7 @@ chrome.runtime.onConnect.addListener (function (port) {
 	port.onMessage.addListener (function (msg) {
 		if (null != msg.init) {
 			var url = grepUrl (msg.url);
-			storageLoadConfig (url, (config) => {
+			storage.loadConfig (url, (config) => {
 				port.passhashUrl = url;
 				ports[port.portId_] = port;
 				port.postMessage ({ init: true, update: config });

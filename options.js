@@ -15,23 +15,22 @@ function saveOptions () {
 	options.maskKey = document.getElementById ("maskkey").value;
         options.sync = document.getElementById ("sync").checked;
         if (debug) console.log('[options.js] Saving options='+JSON.stringify(options,null,2));
-        storageSaveOptions(options);
+        storage.saveOptions(options);
         // make sure we respect 'sync' flag and clear old storage area after
-        storageMigrateArea(options.sync, () => { refreshStorage(); });
+        storage.migrateArea(options.sync, () => { refreshStorage(); });
 }
 
 function restoreOptions () {
-    storagearea.get('options').then(
-        results => {
-            options = results.options;
-            document.getElementById ("length").value = options.defaultLength;
-            document.getElementById ("strength").value = options.defaultStrength;
-            document.getElementById ("compatibility").checked = options.compatibilityMode;
-            document.getElementById ("seed").value = options.privateSeed;
-            document.getElementById ("backedup").checked = options.backedUp;
-            document.getElementById ("hashkey").value = options.hashKey;
-            document.getElementById ("maskkey").value = options.maskKey;
-        });
+    console.log('storage: '+JSON.stringify(storage, null, 2));
+    storage.loadOptions((options) => {
+        document.getElementById ("length").value = options.defaultLength;
+        document.getElementById ("strength").value = options.defaultStrength;
+        document.getElementById ("compatibility").checked = options.compatibilityMode;
+        document.getElementById ("seed").value = options.privateSeed;
+        document.getElementById ("backedup").checked = options.backedUp;
+        document.getElementById ("hashkey").value = options.hashKey;
+        document.getElementById ("maskkey").value = options.maskKey;
+    });
 }
 
 
@@ -46,13 +45,13 @@ function clearStorage () {
 	if (confirm ("You are about to erase all of the Password Hasher Plus database. " +
 		    "This is typically done before loading a snapshot of a previous database state. " +
 		    "Are you certain you want to erase the database?")) {
-		storagearea.clear ();
+		storage.storagearea.clear ();
 		alert ("Your database is now empty. " +
 		      "You probably want to paste a previous snapshot of the database to the text area to the right, " +
 		      "and hit \"Load\" to re-populate the database. " +
 		      "Good luck.");
 	}
-	storageMigrate ();
+	storage.migrate ();
 }
 
 function loadStorage () {
@@ -63,8 +62,8 @@ function loadStorage () {
 		return;
 	}
         // clear old storage area
-        storagearea.clear();
-        storageInit(everything)
+        storage.storagearea.clear();
+        storage.init(everything)
             .then(() => {
                 restoreOptions ();
                 refreshStorage ();
@@ -94,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#generate').click(setNewGuid);
     $('#backupSave').click(saveOptions);
     $('#backupRevert').click(restoreOptions);
-    $('#removeUnUsedTags').click(function() {storageCollectGarbage (); refreshStorage ();});
+    $('#removeUnUsedTags').click(function() {storage.collectGarbage (); refreshStorage ();});
     $('#dbClear').click(function() {clearStorage (); refreshStorage ();});
     $('#dbSave').click(loadStorage);
     $('#dbRevert').click(refreshStorage);

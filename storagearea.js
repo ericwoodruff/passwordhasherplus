@@ -1,24 +1,26 @@
-// default to local storage, user can choose to use sync storage.
-var storagearea = browser.storage.local;
-
 var debug = true;
-var webext_storage_ok = false;
+
+var CURRENT_STORAGE_VER = 6;
 
 function onError(error) {
     console.log(`Error: ${error}`);
 }
 
-function storageLoadTags(resultHandler) {
-    storagearea.get('tag').then(results => {
+var StorageArea = function(){
+    this.storagearea = browser.storage.local;
+};
+
+StorageArea.prototype.loadTags = function (resultHandler) {
+    this.storagearea.get('tag').then(results => {
         resultHandler(results['tag']);
     });
 }
 
-function storageSaveOptions(options) {
-    storagearea.set({'options': options}).then(null, onError);
+StorageArea.prototype.saveOptions = function (options) {
+    this.storagearea.set({'options': options}).then(null, onError);
 }
 
-function storageInitOptions(settings) {
+StorageArea.prototype.initOptions = function (settings) {
     var options;
     if (settings && 'options' in settings) {
         options = settings['options'];
@@ -64,14 +66,14 @@ function storageInitOptions(settings) {
     return dirty;
 }
 
-function storageLoadOptions(resultHandler) {
-    storagearea.get('options').then(results => {
+StorageArea.prototype.loadOptions = function (resultHandler) {
+    this.storagearea.get('options').then(results => {
         if (debug) console.log('got options='+JSON.stringify(options,null,2));
-        var dirty = storageInitOptions(results);
+        var dirty = this.initOptions(results);
         var options = results['options'];
 
         if (dirty && results && 'settings' in results) {
-            storageSaveOptions (options);
+            this.saveOptions (options);
         }
 
 	if (debug) console.log('[storageLoadOptions] calling resultHandler with options='+JSON.stringify(options, null, 2));
@@ -79,12 +81,12 @@ function storageLoadOptions(resultHandler) {
     });
 }
 
-function storageSaveConfig(url, config) {
+StorageArea.prototype.saveConfig = function (url, config) {
     if (debug) console.log ("[storagearea.js] Saving " + url + " " + JSON.stringify (config, null, 2));
     config.fields = toArray (config.fields);
 
     // grab settings from storage area and update
-    storagearea.get(['url', 'tag']).then(results => {
+    this.storagearea.get(['url', 'tag']).then(results => {
         if (!('tag' in results)) {
             results.tag = new Object();
         }
@@ -96,18 +98,18 @@ function storageSaveConfig(url, config) {
         }
         results.url[url] = config;
         if (debug) console.log ("Writing " + JSON.stringify (results, null, 2));
-        storagearea.set(results).then(null, onError);
+        this.storagearea.set(results).then(null, onError);
     });
 
 }
 
-function storageLoadConfig(url, resultHandler) {
+StorageArea.prototype.loadConfig = function (url, resultHandler) {
     var config = new Object();
     config.tag = url;
     config.fields = new Array();
     function configSetOptions(options) {
         config.options = options;
-        storagearea.get('tag').then(results => {
+        storage.storagearea.get('tag').then(results => {
             if ('tag' in results && config.tag in results['tag']) {
                 // found tag settings
                 config.policy = results.tag[config.tag];
@@ -124,7 +126,7 @@ function storageLoadConfig(url, resultHandler) {
     };
 
     if (debug) console.log('reading config for url='+url+' from storagearea');
-    storagearea.get('url').then(results => {
+    this.storagearea.get('url').then(results => {
         if ('url' in results && url in results['url']) {
             config = results.url[url];
         } else {
@@ -132,15 +134,16 @@ function storageLoadConfig(url, resultHandler) {
             config.tag = url;
             config.fields = new Array ();
         }
-        storageLoadOptions(configSetOptions);
+        this.loadOptions(configSetOptions);
     }, onError);
 }
 
-function isTagReferenced(keys, tag) {
+// TODO: fix this with new storage format
+StorageArea.prototype.isTagReferenced = function (keys, tag) {
     for (var i = 0; i < keys.length; ++i) {
         var key = keys[i];
         if (key.startsWith ("url:")) {
-            var config = localStorage.getObject (key);
+            var config = this.get
             if (config.tag == tag) {
                 return true;
             }
@@ -149,21 +152,18 @@ function isTagReferenced(keys, tag) {
     return false;
 }
 
-function storageCollectGarbage() {
+StorageArea.prototype.collectGarbage = function () {
     // remove unreferenced tags
-    storagearea.get(null).then(keys => {
-        for (var i = 0; i < keys.length; ++i) {
-            var key = keys[i];
-            if (key.startsWith ("tag:")) {
-                if (!isTagReferenced (keys, key.substringAfter ("tag:"))) {
-                    area.remove(key)
-                }
+    this.storagearea.get('tag').then(tags => {
+        for (var tag in tags) {
+            if (!this.isTagReferenced (keys, key.substringAfter ("tag:"))) {
+                this.storagearea.remove(key)
             }
         }
     });
 }
 
-function migrateLocalStorage() {
+StorageArea.prototype.migrateLocalStorage = function () {
     if (debug) console.log('migrating settings from localStorage to webext storage');
     // first make sure that we're on latest config version
     localStorage.migrate();
@@ -194,12 +194,10 @@ function migrateLocalStorage() {
     return settings;
 }
 
-var CURRENT_STORAGE_VER = 6;
-
-function storageMigrateArea(sync, doneHandler) {
+StorageArea.prototype.migrateArea = function (sync, doneHandler) {
     function doMigration() {
         oldstoragearea.get(null).then(results => {
-            storagearea.set(results).then(() => {
+            this.storagearea.set(results).then(() => {
                 // clear old storage area
                 oldstoragearea.clear();
                 // if we're using sync, remember in local storage
@@ -217,14 +215,14 @@ function storageMigrateArea(sync, doneHandler) {
     //    sync         false    migrate to local
     //    local        true     migrate to sync
     //    local        false    noop
-    if ((storagearea == browser.storage.sync) != sync) {
-        var oldstoragearea = storagearea;
+    if ((this.storagearea == browser.storage.sync) != sync) {
+        var oldstoragearea = this.storagearea;
         if (sync) {
-            storagearea = browser.storage.sync;
+            this.storagearea = browser.storage.sync;
             // TODO: ask user what to do, and implement optional merging of
             // local and sync area
             console.log("checking if sync already contains settings");
-            storagearea.get('version').then(results => {
+            this.storagearea.get('version').then(results => {
                 if(results['version'] == CURRENT_STORAGE_VER) {
                     console.log('sync already has config, switching sync on, but not pushing local config into sync!');
                     browser.storage.local.set({sync: true}).then(() => { doneHandler(); });
@@ -234,7 +232,7 @@ function storageMigrateArea(sync, doneHandler) {
             });
             return;
         } else {
-            storagearea = browser.storage.local;
+            this.storagearea = browser.storage.local;
         }
         doMigration();
     } else {
@@ -243,44 +241,45 @@ function storageMigrateArea(sync, doneHandler) {
     }
 }
 
-function storageMigrate(area) {
-    area.get('version').then(results => {
-        if (results['version'] == CURRENT_STORAGE_VER && area == storagearea) {
+StorageArea.prototype.migrate = function (area) {
+    area.get(null).then(results => {
+        if (results['version'] == CURRENT_STORAGE_VER && area == this.storagearea) {
             if (debug) console.log('webext storage already contains up-to-date settings');
-            webext_storage_ok = true;
             return;
         }
         // we need to do some work
         var settings;
         if (results['version'] == CURRENT_STORAGE_VER) {
-            if (debug) console.log('migrating settings from ' + storagearea + ' to ' + area);
-            settings = storagearea.get(null);
+            if (debug) console.log('migrating settings from ' + this.storagearea + ' to ' + area);
+            settings = results;
         } else {
-            settings = migrateLocalStorage();
+            settings = this.migrateLocalStorage();
         }
 	if (!('options' in settings)) {
             console.log('no options in settings to migrate?');
-            settings['options'] = storageInitOptions(settings);
+            settings['options'] = this.initOptions(settings);
         }
         if (debug) console.log('setting webext storage settings: '+
                 JSON.stringify(settings, null, 2));
         area.set(settings).then(() => {
-            webext_storage_ok = true;
-            storagearea = area;
+            this.storagearea = area;
+            console.log('storage:'+JSON.stringify(storage, null, 2));
         }, onError);
     });
 }
 
-function storageInit(settings) {
+StorageArea.prototype.init = function (settings) {
     if (settings['sync']) {
-        storagearea = browser.storage.sync;
+        this.storagearea = browser.storage.sync;
     } else {
-        storagearea = browser.storage.local;
+        this.storagearea = browser.storage.local;
     }
     // clear new storagearea
-    storagearea.clear ();
-    return storagearea.set(settings)
+    this.storagearea.clear ();
+    return this.storagearea.set(settings)
 }
+
+var storage = new StorageArea();
 
 // make sure settings are available in webext storage after plugin install / plugin reload
 function install_handler() {
@@ -288,9 +287,9 @@ function install_handler() {
     browser.storage.local.get('sync').then(
             results => {
                 if (results['sync']) {
-                    storageMigrate(browser.storage.sync);
+                    storage.migrate(browser.storage.sync);
                 } else {
-                    storageMigrate(browser.storage.local);
+                    storage.migrate(browser.storage.local);
                 }
             });
 }
@@ -301,9 +300,9 @@ function startup_handler() {
     browser.storage.local.get('sync').then(
             results => {
                 if (results['sync']) {
-                    storagearea = browser.storage.sync;
+                    storage.storagearea = browser.storage.sync;
                 } else {
-                    storagearea = browser.storage.local;
+                    storage.storagearea = browser.storage.local;
                 }
             });
 }

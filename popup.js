@@ -18,7 +18,7 @@ function writeModel () {
 }
 
 function readModel () {
-    storageLoadTags(tags => {
+    storage.loadTags(tags => {
 	$('#tag').val (config.tag);
 	$('#tag').autocomplete ({ source: tags });
 	$('#length').val (config.policy.length);
@@ -42,7 +42,7 @@ function readModel () {
 chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
 	url = chrome.extension.getBackgroundPage ().grepUrl (tabs[0].url);
         if (debug) console.log('loading/creating config for url='+url);
-        storageLoadConfig(url, (cfg) => {
+        storage.loadConfig(url, (cfg) => {
             if (debug) console.log('got config='+JSON.stringify(cfg, null, 2));
             config = cfg;
             config.fields = toSet (config.fields);
