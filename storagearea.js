@@ -6,7 +6,8 @@ function onError(error) {
     console.log(`Error: ${error}`);
 }
 
-var StorageArea = function(){
+function StorageArea(){
+    "use strict"
     this.storagearea = browser.storage.local;
 };
 
@@ -280,6 +281,7 @@ StorageArea.prototype.init = function (settings) {
 }
 
 var storage = new StorageArea();
+console.dir(storage.constructor.prototype);
 
 // make sure settings are available in webext storage after plugin install / plugin reload
 function install_handler() {
@@ -307,3 +309,7 @@ function startup_handler() {
             });
 }
 browser.runtime.onStartup.addListener(startup_handler);
+
+if (typeof exports !== 'undefined') {
+    exports.StorageArea = StorageArea;
+}
