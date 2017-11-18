@@ -231,3 +231,10 @@ if (typeof exports !== 'undefined') {
     exports.extractQueryParam = extractQueryParam;
     exports.generateHash = generateHash;
 }
+
+function copy() {
+  var copyText = document.querySelector("#hash");
+  copyText.select();
+  document.execCommand("Copy");
+}
+

@@ -30,8 +30,8 @@
 	],
 
 	"permissions": [
-		"activeTab", "http://*/*", "https://*/*"
+		"activeTab", "http://*/*", "https://*/*", "clipboardWrite"
 	],
 
-	"content_security_policy": "script-src 'self' 'sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=' 'sha256-BXbfmaaxqDFKz4VsEiL7ubAcLlBL2iV7UxnMIMSvfwA=' 'sha256-5UpOmiIImmd9wla+ZcvHMn6RaUWbUygKvqbAUx//yWg=' 'sha256-thpfFgw1VMy7GcMXqpWVABUalukoNCn0g0kQTelDqEA=' 'sha256-VuBPIfNvP9X4j73iCH4J0io3i5jMKxyWJ68F/GlC2FQ=' 'sha256-LGVqXk0Tf3Je6nTB8fXGRetTmci/npn793gY5Vn2xd0=' ; object-src 'self'"
+	"content_security_policy": "script-src 'self' 'sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=' 'sha256-xaA6jdp8Hrg9UJVct3bu0uieCYCytFZrv/nqG7Kouys=' 'sha256-leDZ7yEeVa7Q7xy2S/45h+BUogqAQoBrDTpBkTFNkMk=' 'sha256-thpfFgw1VMy7GcMXqpWVABUalukoNCn0g0kQTelDqEA=' 'sha256-yp/hWzj3tsndiDUWOHGT4Nh7WpXIGDzBZKVEEf1vMR8=' 'sha256-uEG3ofIBhdrFD+exe4+k4bTXrJ069Sp8wjjQhyJhanY=' ; object-src 'self'"
 }

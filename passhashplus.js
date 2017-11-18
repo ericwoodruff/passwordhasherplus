@@ -70,6 +70,13 @@ $( document ).ready(function () {
     $('#unmasktag').click (toggleField);
     $('#unmaskpassword').click (toggleField);
 
+    $('#copy').click (function() {
+      var copyText = document.getElementById("hash");
+      copyText.select();
+      document.execCommand("Copy");
+    });
+    
+    
     $('#bump').click (function () {
       $("#tag").val (bump ($("#tag").val ()));
       update ();
