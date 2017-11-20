@@ -1,9 +1,35 @@
+var storage;
 
 function setNewGuid () {
 	var seedElement = document.getElementById ("seed");
 	seedElement.value = generateGuid ();
 }
 
+function refreshOptionsPage(tag) {
+    console.log("[options.js] refreshOptionsPage called: " + tag);
+    // make sure checkbox does not remain checked
+    document.getElementById("sync-overwrite").checked = false;
+    restoreOptions();
+    refreshStorage();
+}
+
+function saveSync() {
+    var sync = document.getElementById("sync").value == "true";
+    var overwrite = document.getElementById("sync-overwrite").checked;
+    console.log("[options.js:saveSync] sync=" + sync);
+    console.log("[options.js:saveSync] overwrite=" + overwrite);
+    browser.storage.local.get(null).then(localdata=>{
+        console.log("local:");
+        console.dir(localdata);
+        browser.storage.local.get(null).then(syncdata=>{
+            console.log("sync:");
+            console.dir(syncdata);
+            storage.migrateArea(sync, overwrite, () => { refreshOptionsPage('saveSync') });
+        });
+    });
+}
+
+// saveOptions does not update sync status, see saveSync().
 function saveOptions () {
 	var options = new Object ();
 	options.defaultLength = document.getElementById ("length").value;
@@ -13,15 +39,11 @@ function saveOptions () {
 	options.backedUp = document.getElementById ("backedup").checked;
 	options.hashKey = document.getElementById ("hashkey").value;
 	options.maskKey = document.getElementById ("maskkey").value;
-        options.sync = document.getElementById ("sync").checked;
         if (debug) console.log('[options.js] Saving options='+JSON.stringify(options,null,2));
-        storage.saveOptions(options);
-        // make sure we respect 'sync' flag and clear old storage area after
-        storage.migrateArea(options.sync, () => { refreshStorage(); });
+        storage.saveOptions(options, () => { refreshOptionsPage('saveOptions') });
 }
 
 function restoreOptions () {
-    console.log('storage: '+JSON.stringify(storage, null, 2));
     storage.loadOptions((options) => {
         document.getElementById ("length").value = options.defaultLength;
         document.getElementById ("strength").value = options.defaultStrength;
@@ -30,6 +52,8 @@ function restoreOptions () {
         document.getElementById ("backedup").checked = options.backedUp;
         document.getElementById ("hashkey").value = options.hashKey;
         document.getElementById ("maskkey").value = options.maskKey;
+	console.log('setting sync value to '+ options.sync);
+        document.getElementById ("sync").value = options.sync;
     });
 }
 
@@ -45,11 +69,13 @@ function clearStorage () {
 	if (confirm ("You are about to erase all of the Password Hasher Plus database. " +
 		    "This is typically done before loading a snapshot of a previous database state. " +
 		    "Are you certain you want to erase the database?")) {
-		storage.storagearea.clear ();
-		alert ("Your database is now empty. " +
-		      "You probably want to paste a previous snapshot of the database to the text area to the right, " +
-		      "and hit \"Load\" to re-populate the database. " +
-		      "Good luck.");
+		select_storage_area().then(area => {
+                    area.clear ();
+                    alert ("Your database is now empty. " +
+                            "You probably want to paste a previous snapshot of the database to the text area to the right, " +
+                            "and hit \"Load\" to re-populate the database. " +
+                            "Good luck.");
+                });
 	}
 	storage.migrate ();
 }
@@ -61,13 +87,8 @@ function loadStorage () {
 		alert("Sorry, the data in the text area to the right is not valid JSON.");
 		return;
 	}
-        // clear old storage area
-        storage.storagearea.clear();
-        storage.init(everything)
-            .then(() => {
-                restoreOptions ();
-                refreshStorage ();
-            });
+        // clear and rewrite storage area
+        storage.init(everything).then(() => { refreshOptionsPage('load from db') });
 }
 
 function setShortcut(action, e) {
@@ -97,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#dbClear').click(function() {clearStorage (); refreshStorage ();});
     $('#dbSave').click(loadStorage);
     $('#dbRevert').click(refreshStorage);
+    $('#syncSave').click(saveSync);
 
     $('#portablePage').click(function() {
 	chrome.tabs.create({url:'/passhashplus.html'})

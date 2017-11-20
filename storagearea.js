@@ -1,5 +1,6 @@
-var debug = true;
+var debug = false;
 
+// TODO: update to storage version 7?
 var CURRENT_STORAGE_VER = 6;
 
 function onError(error) {
@@ -8,22 +9,28 @@ function onError(error) {
 
 function StorageArea(){
     "use strict"
-    this.storagearea = browser.storage.local;
 };
 
 StorageArea.prototype.loadTags = function (resultHandler) {
-    this.storagearea.get('tag').then(results => {
-        resultHandler(results['tag']);
+    select_storage_area().then(storagearea => {
+        storagearea.get('tag').then(results => {
+            resultHandler(results['tag']);
+        });
     });
 }
 
-StorageArea.prototype.saveOptions = function (options) {
-    this.storagearea.set({'options': options}).then(null, onError);
+StorageArea.prototype.saveOptions = function (options, doneHandler) {
+    if ('sync' in options) {
+        delete options['sync'];
+    }
+    select_storage_area().then(storagearea => {
+        storagearea.set({'options': options}).then(doneHandler, onError);
+    });
 }
 
 StorageArea.prototype.initOptions = function (settings) {
     var options;
-    if (settings && 'options' in settings) {
+    if (settings && settings.options !== undefined) {
         options = settings['options'];
     } else {
         options = new Object();
@@ -57,10 +64,6 @@ StorageArea.prototype.initOptions = function (settings) {
         options.maskKey = default_maskkey;
         dirty = true;
     }
-    if (null == options.sync) {
-        options.sync = default_sync;
-        dirty = true;
-    }
     if (settings) {
         settings['options'] = options;
     }
@@ -68,40 +71,59 @@ StorageArea.prototype.initOptions = function (settings) {
 }
 
 StorageArea.prototype.loadOptions = function (resultHandler) {
-    this.storagearea.get('options').then(results => {
-        if (debug) console.log('got options='+JSON.stringify(options,null,2));
-        var dirty = this.initOptions(results);
-        var options = results['options'];
+    select_storage_area().then(storagearea => {
+        storagearea.get(['options', 'sync']).then(results => {
+            if (debug) {
+                console.log("[storagearea.js:loadOptions]");
+                console.dir(results);
+            }
+            var dirty = this.initOptions(results);
+            console.log('[loadOptions] initOptions -> ' + dirty);
+            var options = results['options'];
+            console.assert(options !== undefined);
 
-        if (dirty && results && 'settings' in results) {
-            this.saveOptions (options);
-        }
+            // inject sync for options page and stuff
+            if (results.sync === undefined) {
+                results.sync = options.sync;
+                dirty = true;
+                delete options.sync;
+                storagearea.set({sync: results.sync});
+            }
 
-	if (debug) console.log('[storageLoadOptions] calling resultHandler with options='+JSON.stringify(options, null, 2));
-        resultHandler(options);
+            if (dirty) {
+                console.log("options updated, saving");
+                this.saveOptions (options);
+            }
+
+            options.sync = results['sync'];
+
+            if (debug) console.log('[storageLoadOptions] calling resultHandler with options='+JSON.stringify(options, null, 2));
+            resultHandler(options);
+        });
     });
 }
 
-StorageArea.prototype.saveConfig = function (url, config) {
+StorageArea.prototype.saveConfig = function (url, config, doneHandler) {
     if (debug) console.log ("[storagearea.js] Saving " + url + " " + JSON.stringify (config, null, 2));
     config.fields = toArray (config.fields);
 
     // grab settings from storage area and update
-    this.storagearea.get(['url', 'tag']).then(results => {
-        if (!('tag' in results)) {
-            results.tag = new Object();
-        }
-        results.tag[config.tag] = config.policy;
-        delete config.policy;
-        delete config.options;
-        if (!('url' in results)) {
-            results.url = new Object();
-        }
-        results.url[url] = config;
-        if (debug) console.log ("Writing " + JSON.stringify (results, null, 2));
-        this.storagearea.set(results).then(null, onError);
+    select_storage_area().then(storagearea => {
+        storagearea.get(['url', 'tag']).then(results => {
+            if (!('tag' in results)) {
+                results.tag = new Object();
+            }
+            results.tag[config.tag] = config.policy;
+            delete config.policy;
+            delete config.options;
+            if (!('url' in results)) {
+                results.url = new Object();
+            }
+            results.url[url] = config;
+            //if (debug) console.log ("Writing " + JSON.stringify (results, null, 2));
+            storagearea.set(results).then(doneHandler, onError);
+        });
     });
-
 }
 
 StorageArea.prototype.loadConfig = function (url, resultHandler) {
@@ -110,33 +132,37 @@ StorageArea.prototype.loadConfig = function (url, resultHandler) {
     config.fields = new Array();
     function configSetOptions(options) {
         config.options = options;
-        storage.storagearea.get('tag').then(results => {
-            if ('tag' in results && config.tag in results['tag']) {
-                // found tag settings
-                config.policy = results.tag[config.tag];
-            } else {
-                // init default tag settings
-                config.policy = new Object();
-                config.policy.seed = config.options.privateSeed;
-                config.policy.length = config.options.defaultLength;
-                config.policy.strength = config.options.defaultStrength;
-            }
-            if (debug) console.log('calling result handler with config='+JSON.stringify(config, null, 2));
-            resultHandler(config);
-        }, onError);
+        select_storage_area().then(storagearea => {
+            storagearea.get('tag').then(results => {
+                if ('tag' in results && config.tag in results['tag']) {
+                    // found tag settings
+                    config.policy = results.tag[config.tag];
+                } else {
+                    // init default tag settings
+                    config.policy = new Object();
+                    config.policy.seed = config.options.privateSeed;
+                    config.policy.length = config.options.defaultLength;
+                    config.policy.strength = config.options.defaultStrength;
+                }
+                if (debug) console.log('calling result handler with config='+JSON.stringify(config, null, 2));
+                resultHandler(config);
+            }, onError);
+        });
     };
 
     if (debug) console.log('reading config for url='+url+' from storagearea');
-    this.storagearea.get('url').then(results => {
-        if ('url' in results && url in results['url']) {
-            config = results.url[url];
-        } else {
-            config = new Object ();
-            config.tag = url;
-            config.fields = new Array ();
-        }
-        this.loadOptions(configSetOptions);
-    }, onError);
+    select_storage_area().then(storagearea => {
+        storagearea.get('url').then(results => {
+            if ('url' in results && url in results['url']) {
+                config = results.url[url];
+            } else {
+                config = new Object ();
+                config.tag = url;
+                config.fields = new Array ();
+            }
+            this.loadOptions(configSetOptions);
+        }, onError);
+    });
 }
 
 // TODO: fix this with new storage format
@@ -155,12 +181,14 @@ StorageArea.prototype.isTagReferenced = function (keys, tag) {
 
 StorageArea.prototype.collectGarbage = function () {
     // remove unreferenced tags
-    this.storagearea.get('tag').then(tags => {
-        for (var tag in tags) {
-            if (!this.isTagReferenced (keys, key.substringAfter ("tag:"))) {
-                this.storagearea.remove(key)
+    select_storage_area().then(storagearea => {
+        storagearea.get('tag').then(tags => {
+            for (var tag in tags) {
+                if (!this.isTagReferenced (keys, key.substringAfter ("tag:"))) {
+                    storagearea.remove(key)
+                }
             }
-        }
+        });
     });
 }
 
@@ -175,7 +203,7 @@ StorageArea.prototype.migrateLocalStorage = function () {
     // now construct settings object which we will store in this storage area
     settings['version'] = 6;
     // 1. grab options from localStorage
-    options = localStorage.loadOptions();
+    var options = localStorage.loadOptions();
     settings['options'] = options;
     settings['url'] = new Object();
     settings['tag'] = new Object();
@@ -195,16 +223,16 @@ StorageArea.prototype.migrateLocalStorage = function () {
     return settings;
 }
 
-StorageArea.prototype.migrateArea = function (sync, doneHandler) {
-    function doMigration() {
-        oldstoragearea.get(null).then(results => {
-            this.storagearea.set(results).then(() => {
-                // clear old storage area
-                oldstoragearea.clear();
-                // if we're using sync, remember in local storage
-                if (sync) {
-                    browser.storage.local.set({sync: true});
-                }
+StorageArea.prototype.migrateArea = function (sync, overwrite, doneHandler) {
+    function doMigration(oldarea, area, syncval) {
+        oldarea.get(null).then(results => {
+            // update sync field
+            results.sync = syncval;
+            console.dir('[migrateArea] storing');
+            console.dir(results);
+            area.set(results).then(() => {
+                // update top-level sync flag in local storage
+                browser.storage.local.set({sync: syncval});
                 doneHandler();
             });
         });
@@ -216,42 +244,52 @@ StorageArea.prototype.migrateArea = function (sync, doneHandler) {
     //    sync         false    migrate to local
     //    local        true     migrate to sync
     //    local        false    noop
-    if ((this.storagearea == browser.storage.sync) != sync) {
-        var oldstoragearea = this.storagearea;
-        if (sync) {
-            this.storagearea = browser.storage.sync;
-            // TODO: ask user what to do, and implement optional merging of
-            // local and sync area
-            console.log("checking if sync already contains settings");
-            this.storagearea.get('version').then(results => {
-                if(results['version'] == CURRENT_STORAGE_VER) {
-                    console.log('sync already has config, switching sync on, but not pushing local config into sync!');
-                    browser.storage.local.set({sync: true}).then(() => { doneHandler(); });
-                } else {
-                    doMigration();
-                }
-            });
-            return;
+    select_storage_area().then(oldstoragearea => {
+        if ((oldstoragearea == browser.storage.sync) != sync) {
+            if (sync) {
+                var storagearea = browser.storage.sync;
+                console.log("checking if sync already contains settings");
+                storagearea.get('version').then(results => {
+                    console.log('migrate: results='+JSON.stringify(results, null, 2));
+                    if(!overwrite && results['version'] == CURRENT_STORAGE_VER) {
+                        console.log('sync already has config, and user did not request overwrite: retrieve settings from sync');
+                        console.log('setting local.sync = ' + sync);
+                        browser.storage.local.set({sync: sync}).then(() => {
+                            browser.storage.sync.set({sync: sync}).then(doneHandler);
+                        });
+                        return;
+                    } else {
+                        console.log('User requested sync with forced update or no settings present in sync, writing current settings to sync');
+                        doMigration(oldstoragearea, storagearea, sync);
+                    }
+                });
+                return;
+            } else if (!overwrite) {
+                console.log("User selected local storage, and did not request overwrite");
+                browser.storage.local.set({sync: sync}).then(doneHandler);
+                return;
+            } else {
+                doMigration(browser.storage.sync, browser.storage.local, sync);
+            }
         } else {
-            this.storagearea = browser.storage.local;
+            // nothing to do, just call callback
+            doneHandler();
         }
-        doMigration();
-    } else {
-        // nothing to do, just call callback
-        doneHandler();
-    }
+    });
 }
 
 StorageArea.prototype.migrate = function (area) {
+    console.assert(area !== null);
     area.get(null).then(results => {
-        if (results['version'] == CURRENT_STORAGE_VER && area == this.storagearea) {
+        if ('version' in results && results['version'] == CURRENT_STORAGE_VER)
+        {
             if (debug) console.log('webext storage already contains up-to-date settings');
             return;
         }
         // we need to do some work
         var settings;
-        if (results['version'] == CURRENT_STORAGE_VER) {
-            if (debug) console.log('migrating settings from ' + this.storagearea + ' to ' + area);
+        if ('version' in results && results['version'] == CURRENT_STORAGE_VER) {
+            if (debug) console.log('migrating settings to ' + area);
             settings = results;
         } else {
             settings = this.migrateLocalStorage();
@@ -260,10 +298,10 @@ StorageArea.prototype.migrate = function (area) {
             console.log('no options in settings to migrate?');
             settings['options'] = this.initOptions(settings);
         }
+        console.log(">>>>> Writing storagearea");
         if (debug) console.log('setting webext storage settings: '+
                 JSON.stringify(settings, null, 2));
         area.set(settings).then(() => {
-            this.storagearea = area;
             console.log('storage:'+JSON.stringify(storage, null, 2));
         }, onError);
     });
@@ -271,24 +309,30 @@ StorageArea.prototype.migrate = function (area) {
 
 StorageArea.prototype.init = function (settings) {
     if (settings['sync']) {
-        this.storagearea = browser.storage.sync;
+        storagearea = browser.storage.sync;
     } else {
-        this.storagearea = browser.storage.local;
+        storagearea = browser.storage.local;
     }
-    // clear new storagearea
-    this.storagearea.clear ();
-    return this.storagearea.set(settings)
+    storagearea.clear ();
+    return browser.storage.local.set({sync: settings['sync']}).then(() => {
+        // clear selected storagearea
+        return storagearea.set(settings)
+    });
 }
 
 var storage = new StorageArea();
-console.dir(storage.constructor.prototype);
 
 // make sure settings are available in webext storage after plugin install / plugin reload
 function install_handler() {
     if (debug) console.log('Initializing webext storage...');
     browser.storage.local.get('sync').then(
             results => {
-                if (results['sync']) {
+                var sync = 'sync' in results && results['sync'] > 0;
+                console.log("storage.local.sync = " + sync);
+                browser.storage.sync.get(null).then(results => {
+                    console.log("sync: "+JSON.stringify(results, null, 2));
+                });
+                if (sync) {
                     storage.migrate(browser.storage.sync);
                 } else {
                     storage.migrate(browser.storage.local);
@@ -296,19 +340,6 @@ function install_handler() {
             });
 }
 browser.runtime.onInstalled.addListener(install_handler);
-
-// make sure settings are read from correct webext storage after browser start
-function startup_handler() {
-    browser.storage.local.get('sync').then(
-            results => {
-                if (results['sync']) {
-                    storage.storagearea = browser.storage.sync;
-                } else {
-                    storage.storagearea = browser.storage.local;
-                }
-            });
-}
-browser.runtime.onStartup.addListener(startup_handler);
 
 if (typeof exports !== 'undefined') {
     exports.StorageArea = StorageArea;

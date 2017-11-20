@@ -38,9 +38,6 @@
  * ***** END LICENSE BLOCK ***** */
 -->
 <title>Password Hasher Plus - Options</title>
-<style>
-* { font-family: Arial; font-size: 12px; }
-</style>
 <script type="text/javascript" src="lib/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="lib/tld.min.js"></script>
 <script type="text/javascript" src="common.js"></script>
@@ -50,10 +47,35 @@
 </head>
 
 <body>
-<h1>Password Hasher Plus - Options</h1>
-<a href="javascript:void(0)" id="portablePage" title="passhashplus.html">Portable HTML Page</a>
+<p>
+<h3><a href="javascript:void(0)" id="portablePage" title="passhashplus.html">Portable HTML Page</a></h3>
+</p>
 <div>
 	<table border="0">
+		<tr><td colspan="2">
+		<h4>Use Firefox Account to sync settings</h4>
+		</td></tr>
+		<tr><td colspan="2">
+		If you change the dropdown below and click &quot;save&quot;,
+		your options, tags, and URLs will be stored or reloaded from
+		the selected 
+		</td></tr>
+		<tr id="syncsetting">
+			<td colspan="2">
+				<select id="sync">
+					<option value="false">Do not sync settings</option>
+					<option value="true">Sync settings</option>
+				</select>
+				<input id="sync-overwrite" type="checkbox" />Overwrite existing settings
+				<button id="syncSave">Save</button>
+			</td>
+		</tr>
+                <tr>
+                        <td colspan="2"><hr/></td>
+                </tr>
+		<tr><td colspan="2">
+		<h4>Options</h4>
+		</td></tr>
 		<tr>
 			<td>Default Password Length:</td>
 			<td><select id="length">
@@ -115,12 +137,6 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Sync settings with Firefox account</td>
-			<td>
-				<input id="sync" type="checkbox"/> Sync settings.
-			</td>
-		</tr>
-		<tr>
 			<td></td>
                         <td>
                                 <button id="backupSave">Save</button>
@@ -131,11 +147,14 @@
                 <tr>
                         <td colspan="2"><hr/></td>
                 </tr>
+		<tr><td colspan="2">
+		<h4>Database dump for backup</h4>
+		</td></tr>
                 <tr>
-			<td>Database: <button id="dbClear">Clear</button>
+			<td><button id="dbClear">Clear</button>
                         </td>
                         <td>
-				<textarea id="everything" cols="120" rows="12"></textarea>
+				<textarea id="everything" cols="80" rows="20"></textarea>
 				<br/>
                                 <button id="dbSave">Save</button>
                                 <button id="dbRevert">Revert</button>

@@ -138,13 +138,22 @@ function bump (tag) {
 	return tag + ":" + bump;
 }
 
-function dumpDatabase() {
+function select_storage_area() {
     return browser.storage.local.get('sync').then(results => {
-        var storagearea = browser.storage.local;
-        if (results['sync']) {
-            storagearea = browser.storage.sync;
+        console.log("[select_storage_area] results="+JSON.stringify(results));
+        var sync = 'sync' in results && results['sync'];
+        console.log("[select_storage_area] sync="+sync);
+        if (sync) {
+            return browser.storage.sync;
+        } else {
+            return browser.storage.local;
         }
-        return storagearea.get(null);
+    });
+}
+
+function dumpDatabase() {
+    return select_storage_area().then(area => {
+        return area.get(null);
     });
 }
 
