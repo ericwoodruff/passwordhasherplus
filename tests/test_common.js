@@ -127,4 +127,17 @@ suite('generateHash', function() {
         expect(withoutSeed).to.be.equal(withNewSeed);
         expect(withSeed).to.be.equal(result2);
     });
+
+    /*
+    test("compatible with old extension", function() {
+        var twitter_cfg = {
+            tag: "twitter", options: { compatibilityMode: true },
+            policy: { length: 8, strength: 2 }
+        };
+        var twitter_old = 'scxqJ/Lx';
+        console.log("twitter_cfg:"+JSON.stringify(twitter_cfg));
+        var twitter_gen = generateHash(twitter_cfg, "123456");
+        assert.equal(twitter_gen, twitter_old);
+    });
+    */
 });

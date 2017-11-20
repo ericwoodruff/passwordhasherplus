@@ -14,5 +14,15 @@ suite('PassHashCommon', function() {
             'site', 'master', 14, true, true, true, false, false);
         assert.equal(hash, ',n/pRqqn4rwKvb');
     });
+    test('twitter+123456 no reqs', function() {
+        var hash = PassHashCommon.generateHashWord(
+                'twitter', '123456', 8, false, false, false, false);
+        assert.equal(hash, 'scxqJ/Lx');
+    });
+    test('twitter+aaaaaa no reqs', function() {
+        var hash = PassHashCommon.generateHashWord(
+                'twitter', 'aaaaaa', 8, false, false, false, false);
+        assert.equal(hash, 'q6oCYnFI');
+    });
 });
 
