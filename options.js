@@ -1,3 +1,6 @@
+// TODO:
+// notify user if they have local and sync settings that differ + offer to
+// merge
 var storage;
 
 function setNewGuid () {
