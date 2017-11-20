@@ -1,3 +1,4 @@
+var storage;
 var url;
 var config;
 
@@ -11,10 +12,16 @@ function writeModel () {
 	}
 	config.policy.length = $('#length').val ();
 	config.policy.strength = $('#strength').val ();
-	chrome.extension.getBackgroundPage ().saveConfig (url, config);
 	if(null == config.policy.seed || config.policy.seed == config.options.privateSeed) {
 		$("#syncneeded").addClass("hidden");
 	}
+        if (debug) console.log("[popup.js] saving config");
+        storage.saveConfig(url, config, function() {
+            if (debug) console.log("[popup.js:writeModel] refreshing tabs");
+            chrome.extension.getBackgroundPage ().refreshTabs();
+            if (debug) console.log("[popup.js:writeModel] refreshing popup");
+            refreshPopup();
+        });
 }
 
 function readModel () {
@@ -39,8 +46,9 @@ function readModel () {
     });
 }
 
-chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-	url = chrome.extension.getBackgroundPage ().grepUrl (tabs[0].url);
+function refreshPopup() {
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        url = chrome.extension.getBackgroundPage ().grepUrl (tabs[0].url);
         if (debug) console.log('loading/creating config for url='+url);
         storage.loadConfig(url, (cfg) => {
             if (debug) console.log('got config='+JSON.stringify(cfg, null, 2));
@@ -48,7 +56,8 @@ chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
             config.fields = toSet (config.fields);
             readModel ();
         });
-});
+    });
+}
 
 $('#bump').click (function () {
 	$("#tag").val (bump ($("#tag").val ()));
@@ -60,6 +69,9 @@ $('#length').change (writeModel);
 $('#strength').change (writeModel);
 
 $(document).ready(function() {
+    // populate popup fields
+    refreshPopup();
+
     $('#link-options').click(function() {
         chrome.runtime.openOptionsPage();
     });
