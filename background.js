@@ -22,7 +22,7 @@ chrome.runtime.onConnect.addListener (function (port) {
 			storage.loadConfig (url, (cfg) => {
                             console.dir(cfg);
                             console.dir(port);
-                            console.log("Registering port for url " + url);
+                            if (debug) console.log("Registering port for url " + url);
                             port.passhashUrl = url;
                             ports[port] = port;
                             port.postMessage ({ init: true, update: cfg });
@@ -35,7 +35,7 @@ chrome.runtime.onConnect.addListener (function (port) {
 
 	port.onDisconnect.addListener (function (port) {
 		if (null != port.passhashUrl) {
-                    console.log("deregistering port for url "+port.passhashUrl);
+                    if (debug) console.log("deregistering port for url "+port.passhashUrl);
                     delete ports[port];
 		}
 	});

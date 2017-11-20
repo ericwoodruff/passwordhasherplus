@@ -78,7 +78,7 @@ StorageArea.prototype.loadOptions = function (resultHandler) {
                 console.dir(results);
             }
             var dirty = this.initOptions(results);
-            console.log('[loadOptions] initOptions -> ' + dirty);
+            if (debug) console.log('[loadOptions] initOptions -> ' + dirty);
             var options = results['options'];
             console.assert(options !== undefined);
 
@@ -91,7 +91,7 @@ StorageArea.prototype.loadOptions = function (resultHandler) {
             }
 
             if (dirty) {
-                console.log("options updated, saving");
+                if (debug) console.log("options updated, saving");
                 this.saveOptions (options);
             }
 
@@ -228,8 +228,10 @@ StorageArea.prototype.migrateArea = function (sync, overwrite, doneHandler) {
         oldarea.get(null).then(results => {
             // update sync field
             results.sync = syncval;
-            console.dir('[migrateArea] storing');
-            console.dir(results);
+            if (debug) {
+                console.log('[migrateArea] storing');
+                console.dir(results);
+            }
             area.set(results).then(() => {
                 // update top-level sync flag in local storage
                 browser.storage.local.set({sync: syncval});
@@ -298,12 +300,8 @@ StorageArea.prototype.migrate = function (area) {
             console.log('no options in settings to migrate?');
             settings['options'] = this.initOptions(settings);
         }
-        console.log(">>>>> Writing storagearea");
-        if (debug) console.log('setting webext storage settings: '+
-                JSON.stringify(settings, null, 2));
-        area.set(settings).then(() => {
-            console.log('storage:'+JSON.stringify(storage, null, 2));
-        }, onError);
+        if (debug) console.log('setting webext storage settings: '+ JSON.stringify(settings, null, 2));
+        area.set(settings).then(null, onError);
     });
 }
 
@@ -328,10 +326,12 @@ function install_handler() {
     browser.storage.local.get('sync').then(
             results => {
                 var sync = 'sync' in results && results['sync'] > 0;
-                console.log("storage.local.sync = " + sync);
-                browser.storage.sync.get(null).then(results => {
-                    console.log("sync: "+JSON.stringify(results, null, 2));
-                });
+                if (debug) {
+                    console.log("storage.local.sync = " + sync);
+                    browser.storage.sync.get(null).then(results => {
+                        console.log("sync: "+JSON.stringify(results, null, 2));
+                    });
+                }
                 if (sync) {
                     storage.migrate(browser.storage.sync);
                 } else {

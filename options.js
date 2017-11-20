@@ -9,7 +9,7 @@ function setNewGuid () {
 }
 
 function refreshOptionsPage(tag) {
-    console.log("[options.js] refreshOptionsPage called: " + tag);
+    if (debug) console.log("[options.js] refreshOptionsPage called: " + tag);
     // make sure checkbox does not remain checked
     document.getElementById("sync-overwrite").checked = false;
     restoreOptions();
@@ -19,17 +19,9 @@ function refreshOptionsPage(tag) {
 function saveSync() {
     var sync = document.getElementById("sync").value == "true";
     var overwrite = document.getElementById("sync-overwrite").checked;
-    console.log("[options.js:saveSync] sync=" + sync);
-    console.log("[options.js:saveSync] overwrite=" + overwrite);
-    browser.storage.local.get(null).then(localdata=>{
-        console.log("local:");
-        console.dir(localdata);
-        browser.storage.local.get(null).then(syncdata=>{
-            console.log("sync:");
-            console.dir(syncdata);
-            storage.migrateArea(sync, overwrite, () => { refreshOptionsPage('saveSync') });
-        });
-    });
+    if (debug) console.log("[options.js:saveSync] sync=" + sync);
+    if (debug) console.log("[options.js:saveSync] overwrite=" + overwrite);
+    storage.migrateArea(sync, overwrite, () => { refreshOptionsPage('saveSync') });
 }
 
 // saveOptions does not update sync status, see saveSync().
@@ -55,7 +47,7 @@ function restoreOptions () {
         document.getElementById ("backedup").checked = options.backedUp;
         document.getElementById ("hashkey").value = options.hashKey;
         document.getElementById ("maskkey").value = options.maskKey;
-	console.log('setting sync value to '+ options.sync);
+	if (debug) console.log('setting sync value to '+ options.sync);
         document.getElementById ("sync").value = options.sync;
     });
 }
