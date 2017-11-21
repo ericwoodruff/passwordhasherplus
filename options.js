@@ -17,7 +17,7 @@ function refreshOptionsPage(tag) {
 }
 
 function saveSync() {
-    var sync = document.getElementById("sync").value == "true";
+    var sync = document.getElementById("sync").value == 1;
     var syncopt = document.getElementById("sync-options").value;
     if (debug) console.log("[options.js:saveSync] sync=" + sync);
     if (debug) console.log("[options.js:saveSync] syncopt=" + syncopt);
@@ -48,7 +48,7 @@ function restoreOptions () {
         document.getElementById ("hashkey").value = options.hashKey;
         document.getElementById ("maskkey").value = options.maskKey;
 	if (debug) console.log('setting sync value to '+ options.sync);
-        document.getElementById ("sync").value = options.sync;
+        document.getElementById ("sync").value = options.sync ? 1 : 0;
     });
 }
 
