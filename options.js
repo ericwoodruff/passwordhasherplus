@@ -106,6 +106,13 @@ document.addEventListener('DOMContentLoaded', function () {
     restoreOptions ();
     refreshStorage ();
 
+    // make sure that when storage is changed, and options page is open, we
+    // reflect the changed settings.
+    browser.storage.onChanged.addListener(function(changes, area) {
+        restoreOptions();
+        refreshStorage();
+    });
+
     $('#generate').click(setNewGuid);
     $('#backupSave').click(saveOptions);
     $('#backupRevert').click(restoreOptions);
