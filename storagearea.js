@@ -74,7 +74,7 @@ StorageArea.prototype.loadOptions = function (resultHandler) {
     select_storage_area().then(storagearea => {
         storagearea.get(['options', 'sync']).then(results => {
             if (debug) {
-                console.log("[storagearea.js:loadOptions]");
+                console.log("[storagearea.js:loadOptions] sync="+results.sync);
                 console.dir(results);
             }
             var dirty = initOptions(results);
@@ -84,10 +84,17 @@ StorageArea.prototype.loadOptions = function (resultHandler) {
 
             // inject sync for options page and stuff
             if (results.sync === undefined) {
-                results.sync = options.sync;
+                if (options.sync !== undefined) {
+                    results.sync = options.sync;
+                    delete options.sync;
+                } else {
+                    results.sync = false;
+                }
                 dirty = true;
-                delete options.sync;
-                storagearea.set({sync: results.sync});
+                console.log("[loadOptions] sync was undefined, setting sync to " + results.sync);
+                browser.storage.local.set({sync: results.sync}).then(() => {
+                    browser.storage.sync.set({sync: results.sync});
+                });
             }
 
             if (dirty) {
@@ -184,8 +191,8 @@ StorageArea.prototype.collectGarbage = function () {
     select_storage_area().then(storagearea => {
         storagearea.get('tag').then(tags => {
             for (var tag in tags) {
-                if (!this.isTagReferenced (keys, key.substringAfter ("tag:"))) {
-                    storagearea.remove(key)
+                if (!this.isTagReferenced (tags, tag.substringAfter ("tag:"))) {
+                    storagearea.remove(tag)
                 }
             }
         });
@@ -229,6 +236,7 @@ StorageArea.prototype.migrateLocalStorage = function () {
 // 2: merge local settings with sync settings -- local options take precedence
 // 3: merge local settings with sync settings -- sync options take precedence
 StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
+    console.log("[storagearea.js:migrateArea] sync="+sync+", syncopt="+syncopt);
     function saveToArea(area, syncval, settings, mDoneHandler) {
         browser.storage.local.set({sync: syncval}).then(() => {
             browser.storage.sync.set({sync: syncval}).then(() => {
@@ -368,8 +376,10 @@ StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
                 console.log('user requested merge without switching area');
                 doMerge(oldstoragearea, sync, syncopt, doneHandler);
             } else {
-                // nothing to do, just call callback
-                doneHandler();
+                // nothing to do, make sure sync flag is correct
+                browser.storage.local.set({sync: sync}).then(() => {
+                    browser.storage.sync.set({sync: sync}).then(doneHandler);
+                });
             }
         }
     });
