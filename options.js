@@ -18,10 +18,10 @@ function refreshOptionsPage(tag) {
 
 function saveSync() {
     var sync = document.getElementById("sync").value == "true";
-    var overwrite = document.getElementById("sync-overwrite").checked;
+    var syncopt = document.getElementById("sync-options").value;
     if (debug) console.log("[options.js:saveSync] sync=" + sync);
-    if (debug) console.log("[options.js:saveSync] overwrite=" + overwrite);
-    storage.migrateArea(sync, overwrite, () => { refreshOptionsPage('saveSync') });
+    if (debug) console.log("[options.js:saveSync] syncopt=" + syncopt);
+    storage.migrateArea(sync, syncopt, () => { refreshOptionsPage('saveSync') });
 }
 
 // saveOptions does not update sync status, see saveSync().

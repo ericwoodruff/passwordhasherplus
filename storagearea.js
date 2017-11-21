@@ -223,7 +223,12 @@ StorageArea.prototype.migrateLocalStorage = function () {
     return settings;
 }
 
-StorageArea.prototype.migrateArea = function (sync, overwrite, doneHandler) {
+// Possible syncopt values:
+// 0: use existing sync settings if available, move local settings to sync otherwise
+// 1: Overwrite existing sync settings
+// 2: merge local settings with sync settings -- local options take precedence
+// 3: merge local settings with sync settings -- sync options take precedence
+StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
     function doMigration(oldarea, area, syncval) {
         oldarea.get(null).then(results => {
             // update sync field
@@ -240,6 +245,12 @@ StorageArea.prototype.migrateArea = function (sync, overwrite, doneHandler) {
         });
     }
 
+    function doMerge(oldarea, area, syncval, syncoptval) {
+        if (debug) console.log('[migrateArea:doMerge] sync='+syncval+' syncopt='+syncoptval);
+        console.assert(!'NYI');
+        return;
+    }
+
     // check if we need to do anything:
     // storage area, sync flag, op
     //    sync         true     noop
@@ -253,15 +264,27 @@ StorageArea.prototype.migrateArea = function (sync, overwrite, doneHandler) {
                 console.log("checking if sync already contains settings");
                 storagearea.get('version').then(results => {
                     console.log('migrate: results='+JSON.stringify(results, null, 2));
-                    if(!overwrite && results['version'] == CURRENT_STORAGE_VER) {
-                        console.log('sync already has config, and user did not request overwrite: retrieve settings from sync');
-                        console.log('setting local.sync = ' + sync);
-                        browser.storage.local.set({sync: sync}).then(() => {
-                            browser.storage.sync.set({sync: sync}).then(doneHandler);
-                        });
+                    if(results['version'] == CURRENT_STORAGE_VER) {
+                        console.log('sync already has config');
+			if (syncopt == 0) {
+                            console.log('user requested to use settings in sync');
+                            console.log('setting local.sync = ' + sync);
+                            browser.storage.local.set({sync: sync}).then(() => {
+                                browser.storage.sync.set({sync: sync}).then(doneHandler);
+                            });
+			} else if (syncopt == 1) {
+                            console.log('user requested to overwrite sync with local');
+                            doMigration(oldstoragearea, storagearea, sync);
+                        } else if (syncopt == 2 || syncopt == 3) {
+                            console.log('user requested to merge local and sync');
+                            console.log('merge: keep ' + (syncopt == 3 ? 'sync' : 'local') + ' options');
+                            doMerge(oldstoragearea, storagearea, sync, syncopt);
+                        } else {
+                            console.warn("syncopt = " + syncopt + " unknown");
+                        }
                         return;
                     } else {
-                        console.log('User requested sync with forced update or no settings present in sync, writing current settings to sync');
+                        console.log('No settings present in sync, writing local settings to sync');
                         doMigration(oldstoragearea, storagearea, sync);
                     }
                 });
