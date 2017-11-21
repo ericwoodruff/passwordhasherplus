@@ -153,7 +153,15 @@ function select_storage_area() {
 
 function dumpDatabase() {
     return select_storage_area().then(area => {
-        return area.get(null);
+        return area.get(null).then(results=>{
+            var sane_order_results = new Object();
+            sane_order_results.version = results.version;
+	    sane_order_results.sync = results.sync;
+            sane_order_results.options = results.options;
+            sane_order_results.url = results.url;
+            sane_order_results.tag = results.tag;
+            return sane_order_results;
+	});
     });
 }
 
