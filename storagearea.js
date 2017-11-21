@@ -366,7 +366,7 @@ StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
         } else {
             if (syncopt == 2 || syncopt == 3) {
                 console.log('user requested merge without switching area');
-                console.assert(!"NYI");
+                doMerge(oldstoragearea, sync, syncopt, doneHandler);
             } else {
                 // nothing to do, just call callback
                 doneHandler();
