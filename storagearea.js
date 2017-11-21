@@ -1,4 +1,4 @@
-var debug = false;
+var debug = true;
 
 // TODO: update to storage version 7?
 var CURRENT_STORAGE_VER = 6;
@@ -28,7 +28,7 @@ StorageArea.prototype.saveOptions = function (options, doneHandler) {
     });
 }
 
-StorageArea.prototype.initOptions = function (settings) {
+function initOptions(settings) {
     var options;
     if (settings && settings.options !== undefined) {
         options = settings['options'];
@@ -77,7 +77,7 @@ StorageArea.prototype.loadOptions = function (resultHandler) {
                 console.log("[storagearea.js:loadOptions]");
                 console.dir(results);
             }
-            var dirty = this.initOptions(results);
+            var dirty = initOptions(results);
             if (debug) console.log('[loadOptions] initOptions -> ' + dirty);
             var options = results['options'];
             console.assert(options !== undefined);
@@ -229,7 +229,19 @@ StorageArea.prototype.migrateLocalStorage = function () {
 // 2: merge local settings with sync settings -- local options take precedence
 // 3: merge local settings with sync settings -- sync options take precedence
 StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
-    function doMigration(oldarea, area, syncval) {
+    function saveToArea(area, syncval, settings, mDoneHandler) {
+        browser.storage.local.set({sync: syncval}).then(() => {
+            browser.storage.sync.set({sync: syncval}).then(() => {
+                area.set(settings).then(() => {
+                    storage.collectGarbage();
+                    storage.saveOptions(settings.options);
+                    mDoneHandler();
+                });
+            });
+        });
+    }
+
+    function doMigration(oldarea, area, syncval, mDoneHandler) {
         oldarea.get(null).then(results => {
             // update sync field
             results.sync = syncval;
@@ -237,18 +249,69 @@ StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
                 console.log('[migrateArea] storing');
                 console.dir(results);
             }
-            area.set(results).then(() => {
-                // update top-level sync flag in local storage
-                browser.storage.local.set({sync: syncval});
-                doneHandler();
-            });
+            saveToArea(area, syncval, results, mDoneHandler);
         });
     }
 
-    function doMerge(oldarea, area, syncval, syncoptval) {
+    function doMerge(area, syncval, syncoptval, mDoneHandler) {
         if (debug) console.log('[migrateArea:doMerge] sync='+syncval+' syncopt='+syncoptval);
-        console.assert(!'NYI');
-        return;
+        var masterarea = null;
+        var slavearea = null;
+        var masterareaname = null;
+        if (syncoptval == 2) {
+            masterarea = browser.storage.local;
+            slavearea = browser.storage.sync;
+            masterareaname = 'local';
+        } else if (syncoptval == 3) {
+            masterarea = browser.storage.sync;
+            slavearea = browser.storage.local;
+            masterareaname = 'sync';
+        } else {
+            console.warn("[migrateArea:doMerge] unknown syncopt: " + syncoptval);
+            console.assert(!"Fallback NYI");
+            return;
+        }
+        masterarea.get(null).then(results => {
+            slavearea.get(null).then(slaveres => {
+                if (results.options === null) {
+                    if (slaveres.options !== null) {
+                        console.log('no options in preferred storage, using options from other storage');
+                        results.options = slaveres.options;
+                    } else {
+                        console.log("no options available, generating initial options");
+                        initOptions(results);
+                    }
+                }
+                // now resuls.options == requested options
+                // merge urls in slaveres.url which don't exist in results.url
+                if (!(url in results)) {
+                    if (debug) console.log("no urls in "+masterareaname);
+                    results.url = slaveres.url;
+                } else {
+                    for (var url in slaveres.url) {
+                        if (!(url in results.url)) {
+                            results.url[url] = slaveres.url[url];
+                        }
+                    }
+                }
+                // merge tags in slaveres.tag which don't exist in results.tag
+                if (!(tag in results)) {
+                    if (debug) console.log("no tags in "+masterareaname);
+                    results.tag = slaveres.tag;
+                } else {
+                    for (var tag in slaveres.tag) {
+                        if (!(tag in results.tag)) {
+                            results.tag[tag] = slaveres.tag[tag];
+                        }
+                    }
+                }
+                if (debug) {
+                    console.log('merged settings:');
+                    console.dir(results);
+                }
+                saveToArea(area, syncval, results, mDoneHandler);
+            });
+        });
     }
 
     // check if we need to do anything:
@@ -259,46 +322,55 @@ StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
     //    local        false    noop
     select_storage_area().then(oldstoragearea => {
         if ((oldstoragearea == browser.storage.sync) != sync) {
+            var storagearea = null;
+            var areaname = null;
+            // select new storagearea
             if (sync) {
-                var storagearea = browser.storage.sync;
-                console.log("checking if sync already contains settings");
-                storagearea.get('version').then(results => {
-                    console.log('migrate: results='+JSON.stringify(results, null, 2));
-                    if(results['version'] == CURRENT_STORAGE_VER) {
-                        console.log('sync already has config');
-			if (syncopt == 0) {
-                            console.log('user requested to use settings in sync');
-                            console.log('setting local.sync = ' + sync);
-                            browser.storage.local.set({sync: sync}).then(() => {
-                                browser.storage.sync.set({sync: sync}).then(doneHandler);
-                            });
-			} else if (syncopt == 1) {
-                            console.log('user requested to overwrite sync with local');
-                            doMigration(oldstoragearea, storagearea, sync);
-                        } else if (syncopt == 2 || syncopt == 3) {
-                            console.log('user requested to merge local and sync');
-                            console.log('merge: keep ' + (syncopt == 3 ? 'sync' : 'local') + ' options');
-                            doMerge(oldstoragearea, storagearea, sync, syncopt);
-                        } else {
-                            console.warn("syncopt = " + syncopt + " unknown");
-                        }
-                        return;
-                    } else {
-                        console.log('No settings present in sync, writing local settings to sync');
-                        doMigration(oldstoragearea, storagearea, sync);
-                    }
-                });
-                return;
-            } else if (!overwrite) {
-                console.log("User selected local storage, and did not request overwrite");
-                browser.storage.local.set({sync: sync}).then(doneHandler);
-                return;
+                storagearea = browser.storage.sync;
+                areaname = 'sync';
             } else {
-                doMigration(browser.storage.sync, browser.storage.local, sync);
+                storagearea = browser.storage.local;
+                areaname = 'local';
             }
+            // use the same logic now that we have properly set storageareas
+            console.log("checking if "+areaname+" already contains settings");
+            storagearea.get(['version', 'options']).then(results => {
+                if(results['version'] == CURRENT_STORAGE_VER) {
+                    console.log(areaname + ' already has config');
+                    if (syncopt == 0) {
+                        console.log('user requested to use settings in ' + areaname);
+                        console.log('setting both sync flags to ' + sync);
+                        browser.storage.local.set({sync: sync}).then(() => {
+                            browser.storage.sync.set({sync: sync}).then(() => {
+                                storage.collectGarbage();
+                                storage.saveOptions(results.options);
+                                doneHandler();
+                            });
+                        });
+                    } else if (syncopt == 1) {
+                        console.log('user requested to overwrite ' + areaname);
+                        doMigration(oldstoragearea, storagearea, sync, doneHandler);
+                    } else if (syncopt == 2 || syncopt == 3) {
+                        console.log('user requested to merge configs');
+                        console.log('merge: user requested to keep ' + (syncopt == 3 ? 'sync' : 'local') + ' options');
+                        doMerge(storagearea, sync, syncopt, doneHandler);
+                    } else {
+                        console.warn("syncopt = " + syncopt + " unknown");
+                    }
+                    return;
+                } else {
+                    console.log('No settings present in ' + area +', writing current settings to ' + area);
+                    doMigration(oldstoragearea, storagearea, sync, doneHandler);
+                }
+            });
         } else {
-            // nothing to do, just call callback
-            doneHandler();
+            if (syncopt == 2 || syncopt == 3) {
+                console.log('user requested merge without switching area');
+                console.assert(!"NYI");
+            } else {
+                // nothing to do, just call callback
+                doneHandler();
+            }
         }
     });
 }
@@ -321,7 +393,7 @@ StorageArea.prototype.migrate = function (area) {
         }
 	if (!('options' in settings)) {
             console.log('no options in settings to migrate?');
-            settings['options'] = this.initOptions(settings);
+            settings['options'] = initOptions(settings);
         }
         if (debug) console.log('setting webext storage settings: '+ JSON.stringify(settings, null, 2));
         area.set(settings).then(null, onError);

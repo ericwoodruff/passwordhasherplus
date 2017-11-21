@@ -66,10 +66,12 @@
 					<option value="false">Do not sync settings</option>
 					<option value="true">Sync settings</option>
 				</select>
-				<input name="sync-options" type="radio" value="0" checked/>Use existing sync settings
-				<input name="sync-options" type="radio" value="1"/>Overwrite existing sync settings
-				<input name="sync-options" type="radio" value="2"/>Merge local and sync settings &ndash; set global options to local version
-				<input name="sync-options" type="radio" value="3"/>Merge local and sync settings &ndash; set global options to sync version
+				<select id="sync-options">
+					<option value="0">Use existing settings</option>
+					<option value="1">Overwrite existing settings</option>
+					<option value="2">Merge local and sync settings &ndash; give preference to local version</option>
+					<option value="3">Merge local and sync settings &ndash; give preference to sync version</option>
+				</select>
 				<button id="syncSave">Save</button>
 			</td>
 		</tr>

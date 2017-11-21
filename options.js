@@ -11,7 +11,7 @@ function setNewGuid () {
 function refreshOptionsPage(tag) {
     if (debug) console.log("[options.js] refreshOptionsPage called: " + tag);
     // make sure checkbox does not remain checked
-    document.getElementById("sync-overwrite").checked = false;
+    document.getElementById("sync-options").value = 0;
     restoreOptions();
     refreshStorage();
 }
