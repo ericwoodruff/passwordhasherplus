@@ -244,9 +244,9 @@ StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
         browser.storage.local.set({sync: syncval}).then(() => {
             browser.storage.sync.set({sync: syncval}).then(() => {
                 area.set(settings).then(() => {
-                    storage.collectGarbage();
-                    storage.saveOptions(settings.options);
-                    mDoneHandler();
+                    storage.collectGarbage(() => {
+                        storage.saveOptions(settings.options, mDoneHandler);
+                    });
                 });
             });
         });
@@ -353,9 +353,9 @@ StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
                         console.log('setting both sync flags to ' + sync);
                         browser.storage.local.set({sync: sync}).then(() => {
                             browser.storage.sync.set({sync: sync}).then(() => {
-                                storage.collectGarbage();
-                                storage.saveOptions(results.options);
-                                doneHandler();
+                                storage.collectGarbage(() => {
+                                    storage.saveOptions(results.options, doneHandler);
+                                });
                             });
                         });
                     } else if (syncopt == 1) {
