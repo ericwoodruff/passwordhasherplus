@@ -140,9 +140,7 @@ function bump (tag) {
 
 function select_storage_area() {
     return browser.storage.local.get('sync').then(results => {
-        console.log("[select_storage_area] results="+JSON.stringify(results));
         var sync = 'sync' in results && results['sync'];
-        console.log("[select_storage_area] sync="+sync);
         if (sync) {
             return browser.storage.sync;
         } else {
