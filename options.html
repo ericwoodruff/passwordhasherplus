@@ -62,17 +62,17 @@
 		</td></tr>
 		<tr id="syncsetting">
 			<td colspan="2">
-				<select id="sync">
+				<select class="browser-style" id="sync">
 					<option value="0">Do not sync settings</option>
 					<option value="1">Sync settings</option>
 				</select>
-				<select id="sync-options">
+				<select class="browser-style" id="sync-options">
 					<option value="0">Use existing settings</option>
 					<option value="1">Overwrite existing settings</option>
 					<option value="2">Merge local and sync settings &ndash; give preference to local version</option>
 					<option value="3">Merge local and sync settings &ndash; give preference to sync version</option>
 				</select>
-				<button id="syncSave">Save</button>
+				<button class="browser-style" id="syncSave">Save</button>
 			</td>
 		</tr>
                 <tr>
@@ -83,7 +83,7 @@
 		</td></tr>
 		<tr>
 			<td>Default Password Length:</td>
-			<td><select id="length">
+			<td><select class="browser-style" id="length">
 				<option value="2">2</option>
 				<option value="4">4</option>
 				<option value="6">6</option>
@@ -101,7 +101,7 @@
 		</tr>
 		<tr>
 			<td>Default Password Strength:</td>
-			<td><select id="strength">
+			<td><select class="browser-style" id="strength">
 				<option value="2">Alphanumeric+Special</option>
 				<option value="1">Alphanumeric</option>
 				<option value="0">Numeric</option>
@@ -110,15 +110,19 @@
 		<tr>
 			<td>Hash Shortcut:</td>
 			<td>
-				<input id="hashkey" type="text" size="48"/>
-				<input id="haskeydefault" type="button" value="Default (Ctrl+#)"/>
+				<div class="browser-style">
+					<input id="hashkey" type="text" size="48"/>
+					<button class="browser-style" id="haskeydefault" type="button">Default (Ctrl+#)</button>
+				</div>
 			</td>
 		</tr>
 		<tr>
 			<td>Mask Shortcut:</td>
 			<td>
-				<input id="maskkey" type="text" size="48"/>
-				<input id="maskkeydefault" type="button" value="Default (Ctrl+*)"/>
+				<div class="browser-style">
+					<input id="maskkey" type="text" size="48"/>
+					<button class="browser-style" id="maskkeydefault" type="button">Default (Ctrl+*)</button>
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -130,8 +134,10 @@
 		<tr>
 			<td>Private Key:</td>
 			<td>
-				<input id="seed" type="text" size="48" maxlength="45"/>
-				<input id="generate" type="button" value="Generate"/>
+				<div class="browser-style">
+					<input id="seed" type="text" size="48" maxlength="45"/>
+					<button class="browser-style" id="generate" value="Generate">Generate</button>
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -144,9 +150,9 @@
 		<tr>
 			<td></td>
                         <td>
-                                <button id="backupSave">Save</button>
-			        <button id="backupRevert">Revert</button>
-			        <button id="removeUnUsedTags">Remove Unused Tags</button>
+                                <button class="browser-style" id="backupSave">Save</button>
+			        <button class="browser-style" id="backupRevert">Revert</button>
+			        <button class="browser-style" id="removeUnUsedTags">Remove Unused Tags</button>
 			</td>
 		</tr>
                 <tr>
@@ -156,13 +162,13 @@
 		<h4>Database dump for backup</h4>
 		</td></tr>
                 <tr>
-			<td><button id="dbClear">Clear</button>
+			<td><button class="browser-style" id="dbClear">Clear</button>
                         </td>
                         <td>
-				<textarea id="everything" cols="80" rows="20"></textarea>
+				<textarea class="browser-style" id="everything" cols="80" rows="20"></textarea>
 				<br/>
-                                <button id="dbSave">Save</button>
-                                <button id="dbRevert">Revert</button>
+                                <button class="browser-style" id="dbSave">Save</button>
+                                <button class="browser-style" id="dbRevert">Revert</button>
                         </td>
                 </tr>
 	</table>
