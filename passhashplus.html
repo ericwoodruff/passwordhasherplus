@@ -40,6 +40,29 @@
 <title>Password Hasher Plus - portable page</title>
 <style>
 * { font-family: Arial; font-size: 12px; }
+.hidden { display: none; }
+td.label { vertical-align:top; width:10em; }
+.form-group h4 {
+  color: #666;
+  margin: 3px 0px;
+}
+.form-group ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.form-group li {
+  padding:0;
+  margin:0;
+}
+.form-group label {
+  padding:0px;
+  margin:0px;
+  width: auto;
+}
+.form-group input {
+  vertical-align: middle;
+}
 </style>
 
 <script type="text/javascript" src="lib/jquery-3.1.1.min.js"></script>
@@ -68,14 +91,14 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Private Key:</td>
+			<td class="label">Private Key:</td>
 			<td>
 				<input id="seed" type="password" class="nopasshash" size="48" maxlength="45"/>
 				<input type="button" value="a" id="unmaskseed" title="Disable/enable Masking"/>
 			</td>
 		</tr>
 		<tr>
-			<td>Site Tag:</td>
+			<td class="label">Site Tag:</td>
 			<td>
 				<input style="width: 134px;" type="password" class="nopasshash" id="tag" value="" />
 				<input type="button" value="a" id="unmasktag" title="Disable/enable Masking"/>
@@ -83,14 +106,14 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Passphrase:</td>
+			<td class="label">Passphrase:</td>
 			<td>
 				<input style="width: 134px;" type="password" class="nopasshash" id="input" value="" />
 				<input type="button" value="a" id="unmaskpassword" title="Disable/enable Masking"/>
 			</td>
 		</tr>
 		<tr>
-			<td>Password Length:</td>
+			<td class="label">Password Length:</td>
 			<td><select id="length" class="nopasshash">
 				<option value="2">2</option>
 				<option value="4">4</option>
@@ -113,10 +136,22 @@
 				<option value="2">Alphanumeric+Special</option>
 				<option value="1">Alphanumeric</option>
 				<option value="0">Numeric</option>
+				<option value="-1">Custom</option>
 			</select></td>
 		</tr>
+		<tr id="customstrengthrow" class="hidden">
+			<td  class="label">Custom Password Strength options:</td>
+			<td><div class="browser-style form-group"><ul>
+				<h4>Requirements</h4>
+				<li><input class="browser-style" type="checkbox" id="d" checked="true"/><label for="d">At least one digit</label></li>
+				<li><input class="browser-style" type="checkbox" id="p" checked="true"/><label for="p">At least on punctuation character</label></li>
+				<li><input class="browser-style" type="checkbox" id="m" checked="true"/><label class="browser-style" for="m">Both upper- and lower-case letters</label></li>
+				<h4>Restrictions</h4>
+				<li><input class="browser-style" type="checkbox" id="r"/><label for="r">No special characters</label></li>
+			</ul></div> </td>
+		</tr>
 		<tr>
-			<td>
+			<td class="label">
 			Hash Result:
 			</td>
 			<td>

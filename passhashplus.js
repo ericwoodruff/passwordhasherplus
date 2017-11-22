@@ -27,8 +27,27 @@ function selectionChanged () {
     $('#seed').val(database['tag'][tag].seed);
     $('#length').val(database['tag'][tag].length);
     $('#strength').val(database['tag'][tag].strength);
+    if (database.tag[tag].strength == -1) {
+	$('#customstrengthrow').removeClass('hidden');
+        $('#d').prop('checked', database.tag[tag].custom.d);
+        $('#p').prop('checked', database.tag[tag].custom.p);
+        $('#m').prop('checked', database.tag[tag].custom.m);
+        $('#r').prop('checked', database.tag[tag].custom.r);
+    } else {
+	$('#customstrengthrow').addClass('hidden');
+    }
     update ();
   }
+}
+
+function hideShowCustomStrength() {
+    var strength = $('#strength').val();
+    console.log("[hideShowCstmStr] strength = " + strength);
+    if (strength == -1) {
+	$('#customstrengthrow').removeClass('hidden');
+    } else {
+	$('#customstrengthrow').addClass('hidden');
+    }
 }
 
 function update () {
@@ -44,6 +63,15 @@ function update () {
   }
   config.policy.length = $('#length').val();
   config.policy.strength = $('#strength').val();
+  if (config.policy.strength == -1) {
+      config.policy.custom = new Object();
+      config.policy.custom.d = $('#d').prop('checked');
+      config.policy.custom.p = $('#p').prop('checked');
+      config.policy.custom.m = $('#m').prop('checked');
+      config.policy.custom.r = $('#r').prop('checked');
+  } else {
+      delete config.policy.custom;
+  }
   config.options = database.options;
   $('#hash').val
     (generateHash
@@ -69,6 +97,8 @@ $( document ).ready(function () {
     $('#unmaskseed').click (toggleField);
     $('#unmasktag').click (toggleField);
     $('#unmaskpassword').click (toggleField);
+
+    $('#strength').change(hideShowCustomStrength);
 
     $('#copy').click (function() {
       var copyText = document.getElementById("hash");
