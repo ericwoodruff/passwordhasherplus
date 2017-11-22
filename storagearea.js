@@ -295,7 +295,7 @@ StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
                 }
                 // now resuls.options == requested options
                 // merge urls in slaveres.url which don't exist in results.url
-                if (!(url in results)) {
+                if (results.url === undefined) {
                     if (debug) console.log("no urls in "+masterareaname);
                     results.url = slaveres.url;
                 } else {
@@ -306,7 +306,7 @@ StorageArea.prototype.migrateArea = function (sync, syncopt, doneHandler) {
                     }
                 }
                 // merge tags in slaveres.tag which don't exist in results.tag
-                if (!(tag in results)) {
+                if (results.tag === undefined) {
                     if (debug) console.log("no tags in "+masterareaname);
                     results.tag = slaveres.tag;
                 } else {
