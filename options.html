@@ -44,6 +44,8 @@
 <script type="text/javascript" src="storage.js"></script>
 <script type="text/javascript" src="storagearea.js"></script>
 <script type="text/javascript" src="options.js"></script>
+<link rel="stylesheet" href="ui.css"/>
+<link rel="stylesheet" href="options.css"/>
 </head>
 
 <body>
@@ -58,7 +60,7 @@
 		<tr><td colspan="2">
 		If you change the dropdown below and click &quot;save&quot;,
 		your options, tags, and URLs will be stored or reloaded from
-		the selected 
+		the selected storage.
 		</td></tr>
 		<tr id="syncsetting">
 			<td colspan="2">
@@ -82,7 +84,7 @@
 		<h4>Options</h4>
 		</td></tr>
 		<tr>
-			<td>Default Password Length:</td>
+			<td class="label">Default Password Length:</td>
 			<td><select class="browser-style" id="length">
 				<option value="2">2</option>
 				<option value="4">4</option>
@@ -100,15 +102,27 @@
 			</select></td>
 		</tr>
 		<tr>
-			<td>Default Password Strength:</td>
+			<td class="label">Default Password Strength:</td>
 			<td><select class="browser-style" id="strength">
 				<option value="2">Alphanumeric+Special</option>
 				<option value="1">Alphanumeric</option>
 				<option value="0">Numeric</option>
+				<option value="-1">Custom</option>
 			</select></td>
 		</tr>
+		<tr id="customstrengthrow" class="hidden">
+			<td  class="label"style="vertical-align:top">Custom Password Strength options:</td>
+			<td><div id="strength-restrictions" class="browser-style form-group"><ul>
+				<h4>Requirements</h4>
+				<li><input class="browser-style" type="checkbox" id="d" checked="true"/><label for="d">At least one digit</label></li>
+				<li><input class="browser-style" type="checkbox" id="p" checked="true"/><label for="p">At least on punctuation character</label></li>
+				<li><input class="browser-style" type="checkbox" id="m" checked="true"/><label class="browser-style" for="m">Both upper- and lower-case letters</label></li>
+				<h4>Restrictions</h4>
+				<li><input class="browser-style" type="checkbox" id="r"/><label for="r">No special characters</label></li>
+			</ul></div> </td>
+		</tr>
 		<tr>
-			<td>Hash Shortcut:</td>
+			<td class="label">Hash Shortcut:</td>
 			<td>
 				<div class="browser-style">
 					<input id="hashkey" type="text" size="48"/>
@@ -117,7 +131,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Mask Shortcut:</td>
+			<td class="label">Mask Shortcut:</td>
 			<td>
 				<div class="browser-style">
 					<input id="maskkey" type="text" size="48"/>
@@ -126,13 +140,13 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Compatibility Mode</td>
+			<td class="label">Compatibility Mode</td>
 			<td>
 				<input id="compatibility" type="checkbox"/> Use compatibility mode (less secure).
 			</td>
 		</tr>
 		<tr>
-			<td>Private Key:</td>
+			<td class="label">Private Key:</td>
 			<td>
 				<div class="browser-style">
 					<input id="seed" type="text" size="48" maxlength="45"/>
@@ -141,7 +155,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Backup:</td>
+			<td class="label">Backup:</td>
 			<td>
 				<b>Note: You must backup this key and keep it safe and secure in case you need to restore it in the future.</b><br/>
 				<input id="backedup" type="checkbox"/> I have backed up my private key.
@@ -162,13 +176,12 @@
 		<h4>Database dump for backup</h4>
 		</td></tr>
                 <tr>
-			<td><button class="browser-style" id="dbClear">Clear</button>
-                        </td>
-                        <td>
-				<textarea class="browser-style" id="everything" cols="80" rows="20"></textarea>
+                        <td colspan="2">
+				<textarea class="browser-style" id="everything" cols="100" rows="40"></textarea>
 				<br/>
-                                <button class="browser-style" id="dbSave">Save</button>
-                                <button class="browser-style" id="dbRevert">Revert</button>
+				<button class="browser-style" id="dbClear">Clear</button>
+				<button class="browser-style" id="dbSave">Save</button>
+				<button class="browser-style" id="dbRevert">Revert</button>
                         </td>
                 </tr>
 	</table>

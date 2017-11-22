@@ -12,6 +12,15 @@ function writeModel () {
 	}
 	config.policy.length = $('#length').val ();
 	config.policy.strength = $('#strength').val ();
+        if (config.policy.strength == -1) {
+            config.policy.custom = new Object();
+            config.policy.custom.d = $('#d').prop('checked');
+            config.policy.custom.p = $('#p').prop('checked');
+            config.policy.custom.m = $('#m').prop('checked');
+            config.policy.custom.r = $('#r').prop('checked');
+        } else {
+            delete config.policy.custom;
+        }
 	if(null == config.policy.seed || config.policy.seed == config.options.privateSeed) {
 		$("#syncneeded").addClass("hidden");
 	}
@@ -25,14 +34,14 @@ function writeModel () {
 }
 
 function readModel () {
+    console.log("readModel()");
     storage.loadTags(tags => {
 	$('#tag').val (config.tag);
 	$('#tag').autocomplete ({ source: tags });
 	$('#length').val (config.policy.length);
 	$('#strength').val (config.policy.strength);
 	if (true == config.options.compatibilityMode) {
-		$('div#compatmodeheader').html ("<b>Compatibility:</b>");
-		$('div#compatmode').text ("on");
+		$('div#compatmodeheader').html ("<b>Compatibility:</b> on");
 	} else if (null == config.policy.seed) {
 		$('#tag').val ("compatible:" + config.tag);
 	}
@@ -42,6 +51,22 @@ function readModel () {
 	}
 	if(null != config.policy.seed && config.policy.seed != config.options.privateSeed) {
 		$("#syncneeded").removeClass("hidden");
+	}
+	if (config.policy.strength == -1) {
+		console.log("custom strength: show checkboxes");
+		$('#strength-requirements').removeClass('hidden');
+		$('#strength-restrictions').removeClass('hidden');
+                if (config.policy.custom === undefined) {
+                    config.policy.custom = config.options.custom;
+                }
+                $('#d').prop('checked', config.policy.custom.d);
+                $('#p').prop('checked', config.policy.custom.p);
+                $('#m').prop('checked', config.policy.custom.m);
+                $('#r').prop('checked', config.policy.custom.r);
+	} else {
+		console.log("not custom strength: hide checkboxes");
+		$('#strength-requirements').addClass('hidden');
+		$('#strength-restrictions').addClass('hidden');
 	}
     });
 }
@@ -66,7 +91,11 @@ $('#bump').click (function () {
 
 $('#tag').change (writeModel);
 $('#length').change (writeModel);
-$('#strength').change (writeModel);
+$('#strength').change (writeModel)
+$('#d').change(writeModel);
+$('#p').change(writeModel);
+$('#m').change(writeModel);
+$('#r').change(writeModel);
 
 $(document).ready(function() {
     // populate popup fields

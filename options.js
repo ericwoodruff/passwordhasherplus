@@ -29,6 +29,16 @@ function saveOptions () {
 	var options = new Object ();
 	options.defaultLength = document.getElementById ("length").value;
 	options.defaultStrength = document.getElementById ("strength").value;
+	console.log("defaultStrength = " + options.defaultStrength);
+	if (options.defaultStrength == -1) {
+		options.custom = new Object();
+		options.custom.d = document.getElementById('d').checked;
+		options.custom.p = document.getElementById('p').checked;
+		options.custom.m = document.getElementById('m').checked;
+		options.custom.r = document.getElementById('r').checked;
+	} else {
+		delete options.custom;
+	}
 	options.compatibilityMode = document.getElementById ("compatibility").checked;
 	options.privateSeed = document.getElementById ("seed").value;
 	options.backedUp = document.getElementById ("backedup").checked;
@@ -99,6 +109,14 @@ function setShortcut(action, e) {
 		hk.value = (action == "hash" ? "Ctrl+Shift+51" : "Ctrl+Shift+56");
 }
 
+function showHideCustomStrength() {
+  var strength = $('#strength').val();
+  if (strength == -1) {
+    $('#customstrengthrow').removeClass("hidden");
+  } else {
+    $('#customstrengthrow').addClass("hidden");
+  }
+}
 // Add event listeners once the DOM has fully loaded by listening for the
 // `DOMContentLoaded` event on the document, and adding your listeners to
 // specific elements when it triggers.
@@ -121,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#dbSave').click(loadStorage);
     $('#dbRevert').click(refreshStorage);
     $('#syncSave').click(saveSync);
+    $('#strength').change(showHideCustomStrength);
 
     $('#portablePage').click(function() {
 	chrome.tabs.create({url:'/passhashplus.html'})

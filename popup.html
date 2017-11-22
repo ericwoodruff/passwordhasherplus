@@ -38,48 +38,25 @@
 -->
 <head>
 <link rel="stylesheet" type="text/css" href="lib/jquery-ui-1.8.17.custom.css"/>
-<style>
-* { font-family: Arial; font-size: 12px; }
-</style>
 <script type="text/javascript" src="lib/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="lib/tld.min.js"></script>
 <script type="text/javascript" src="common.js"></script>
 <script type="text/javascript" src="storagearea.js"></script>
 <script type="text/javascript" src="lib/jquery-ui-1.8.17.custom.min.js"></script>
-<style>
-body {
-	width: 270px;
-	padding: 3px;
-}
-
-.right {
-	float: right;
-}
-
-label.field {
-text-align: right;
-float: left;
-width: 60px;
-padding-right: 6px;
-}
-
-select {
-	width: 188px;
-}
-
-.hidden {
-display: none;
-}
-</style>
+<link rel="stylesheet" href="ui.css"/>
+<link rel="stylesheet" href="popup.css"/>
 </head>
 
 <body>
 <div>
 	<div id="compatmodeheader"></div>
-	<div id="compatmode"></div>
-	<p><label class="field">Site Tag:</label> <input style="width: 134px;" type="text" id="tag" value="" /> <input type="button" value="Bump" id="bump" /></p>
-	<p><label class="field">Password Length:</label>
-	<select id="length">
+	<p class="browser-style">
+		<label class="browser-style field">Site Tag:</label>
+		<input style="width: 134px" type="text" id="tag" value="" />
+		<button class="browser-style" id="bump">Bump</button>
+	</p>
+	<p><label class="browser-style field">Password Length:</label>
+	<select id="length" class="browser-style">
 	<option value="2">2</option>
 	<option value="4">4</option>
 	<option value="6">6</option>
@@ -95,16 +72,34 @@ display: none;
 	<option value="26">26</option>
 	</select>
 	</p>
-	<p><label class="field">Password Strength:</label>
-	<select id="strength">
+	<p><label class="browser-style field">Password Strength:</label>
+	<select class="browser-style" id="strength">
 	<option value="2">Alphanumeric+Special</option>
 	<option value="1">Alphanumeric</option>
 	<option value="0">Numeric</option>
+	<option value="-1">Custom</option>
 	</select>
 	</p>
+	<p class="browser-style">
+	<div id="strength-requirements" class="form-group checkboxes requirements">
+		<h2>Requirements</h2>
+		<ul>
+			<li><input class="browser-style" type="checkbox" id="d" checked="true" value="d"/><label for="d">At least one digit</label></li>
+			<li><input class="browser-style" type="checkbox" id="p" checked="true" value="p"/><label for="p">At least on punctuation character</label></li>
+			<li><input class="browser-style" type="checkbox" id="m" checked="true" value="m"/><label class="browser-style" for="m">Both upper- and lower-case letters</label></li>
+		</ul>
+	</div>
+	<div id="strength-restrictions" class="form-group checkboxes restrictions">
+		<h2>Restrictions</h2>
+		<ul>
+			<li><input class="browser-style" type="checkbox" id="r" value="r"/><label for="r">No special characters</label></li>
+		</ul>
+	</div>
+	<div style="clear:both"/>
+	</p>
 	<p>
-	<a href="#" id="portablePage" title="passhashplus.html">Portable HTML Page</a>
-	<a class="right" href="#" title="Extension options" id="link-options">Options</a>
+	<a class="browser-style" href="#" id="portablePage" title="passhashplus.html">Portable HTML Page</a>
+	<a class="browser-style right" href="#" title="Extension options" id="link-options">Options</a>
 	</p>
 	<div id="syncneeded" class="hidden">
 	<p>The site seed for this site does not match your global seed value. To update it, change your site password and update the site options.</p>

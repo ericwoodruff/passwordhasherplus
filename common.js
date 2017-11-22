@@ -107,16 +107,29 @@ function generateHash (config, input) {
 		);
 	}
 
-	return PassHashCommon.generateHashWord (
-		tag,
-		input,
-		config.policy.length,
-		true, // require digits
-		config.policy.strength > 1, // require punctuation
-		true, // require mixed case
-		config.policy.strength < 2, // no special characters
-		config.policy.strength == 0 // only digits
-	);
+  if (config.policy.strength == -1) {
+    return PassHashCommon.generateHashWord (
+      tag,
+      input,
+      config.policy.length,
+      config.policy.custom.d, // require digits
+      config.policy.custom.p, // require punctuation
+      config.policy.custom.m, // require mixed case
+      config.policy.custom.r, // no special characters
+      false // only digits
+    );
+  } else {
+    return PassHashCommon.generateHashWord (
+      tag,
+      input,
+      config.policy.length,
+      true, // require digits
+      config.policy.strength > 1, // require punctuation
+      true, // require mixed case
+      config.policy.strength < 2, // no special characters
+      config.policy.strength == 0 // only digits
+    );
+  }
 }
 
 function bump (tag) {

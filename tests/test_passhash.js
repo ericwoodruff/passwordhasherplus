@@ -16,12 +16,12 @@ suite('PassHashCommon', function() {
     });
     test('twitter+123456 no reqs', function() {
         var hash = PassHashCommon.generateHashWord(
-                'twitter', '123456', 8, false, false, false, false);
+                'twitter', '123456', 8, false, false, false, false, false);
         assert.equal(hash, 'scxqJ/Lx');
     });
     test('twitter+aaaaaa no reqs', function() {
         var hash = PassHashCommon.generateHashWord(
-                'twitter', 'aaaaaa', 8, false, false, false, false);
+                'twitter', 'aaaaaa', 8, false, false, false, false, false);
         assert.equal(hash, 'q6oCYnFI');
     });
 });
