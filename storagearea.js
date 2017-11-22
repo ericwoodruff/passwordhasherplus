@@ -172,29 +172,32 @@ StorageArea.prototype.loadConfig = function (url, resultHandler) {
     });
 }
 
-// TODO: fix this with new storage format
-StorageArea.prototype.isTagReferenced = function (keys, tag) {
-    for (var i = 0; i < keys.length; ++i) {
-        var key = keys[i];
-        if (key.startsWith ("url:")) {
-            var config = this.get
-            if (config.tag == tag) {
+StorageArea.prototype.collectGarbage = function (doneHandler) {
+    function isTagReferenced (urls, tagn) {
+        for (var urln in urls) {
+            var url = urls[urln];
+            if (url.tag == tagn) {
                 return true;
             }
         }
+        return false;
     }
-    return false;
-}
 
-StorageArea.prototype.collectGarbage = function () {
     // remove unreferenced tags
     select_storage_area().then(storagearea => {
-        storagearea.get('tag').then(tags => {
-            for (var tag in tags) {
-                if (!this.isTagReferenced (tags, tag.substringAfter ("tag:"))) {
-                    storagearea.remove(tag)
+        storagearea.get(['tag', 'url']).then(results => {
+            console.dir(results.url);
+            for (var tag in results.tag) {
+                if (!isTagReferenced (results.url, tag)) {
+                    console.log("tag '"+ tag+ "' not referenced, deleting it");
+                    delete results.tag[tag];
                 }
             }
+            if (debug) {
+                console.log("[storagearea:collectGarbage] writing back clean settings");
+                console.dir(results);
+            }
+            storagearea.set(results).then(doneHandler);
         });
     });
 }
