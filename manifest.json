@@ -40,5 +40,5 @@
 		"activeTab", "storage", "http://*/*", "https://*/*", "clipboardWrite"
 	],
 
-	"content_security_policy": "script-src 'self' 'sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=' 'sha256-xaA6jdp8Hrg9UJVct3bu0uieCYCytFZrv/nqG7Kouys=' 'sha256-leDZ7yEeVa7Q7xy2S/45h+BUogqAQoBrDTpBkTFNkMk=' 'sha256-thpfFgw1VMy7GcMXqpWVABUalukoNCn0g0kQTelDqEA=' 'sha256-tWx3W+q3l17phw9WCop5ZhUZFTCTnNfGQKRMaoKhlU8=' 'sha256-1gr3Ns+XtrfLbO0rH/a8wcjLin2DFx/c1tSV7NR6rgI=' ; object-src 'self'"
+	"content_security_policy": "script-src 'self' 'sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=' 'sha256-xaA6jdp8Hrg9UJVct3bu0uieCYCytFZrv/nqG7Kouys=' 'sha256-leDZ7yEeVa7Q7xy2S/45h+BUogqAQoBrDTpBkTFNkMk=' 'sha256-thpfFgw1VMy7GcMXqpWVABUalukoNCn0g0kQTelDqEA=' 'sha256-OCD/KBTNNaSs3GbelJUGecGRt3++OHR9LXbkZxOIyRY=' 'sha256-1gr3Ns+XtrfLbO0rH/a8wcjLin2DFx/c1tSV7NR6rgI=' ; object-src 'self'"
 }
