@@ -19,8 +19,9 @@ select {
   width: 188px;
   vertical-align: middle;
 }
-.requirements, .restrictions {
+#strength-requirements {
   width: 270px;
+  padding-left:6px;
 }
 .form-group h2 {
   font-size: 12px;

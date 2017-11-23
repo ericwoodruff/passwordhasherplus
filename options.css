@@ -7,6 +7,7 @@ td.label {
   vertical-align: top;
   width: 15em;
 }
-#compatibility {
-  vertical-align:middle;
+#everything {
+  font-family:monospace;
+  font-size:120%;
 }
