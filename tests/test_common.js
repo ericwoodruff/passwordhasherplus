@@ -127,4 +127,25 @@ suite('generateHash', function() {
         expect(withoutSeed).to.be.equal(withNewSeed);
         expect(withSeed).to.be.equal(result2);
     });
+
+    test("compatible with old extension - custom strength, twitter+123456", function() {
+        var cstm = { "d": false, "p": false, "m": false, "r": false };
+        var twitter_cfg = {
+            tag: "twitter", options: { compatibilityMode: true },
+            policy: { length: 8, strength: -1, custom: cstm }
+        };
+        var twitter_old = 'scxqJ/Lx';
+        var twitter_gen = generateHash(twitter_cfg, "123456");
+        assert.equal(twitter_gen, twitter_old);
+    });
+    test("compatible with old extension - custom strength, twitter+aaaaaa", function() {
+        var cstm = { "d": false, "p": false, "m": false, "r": false };
+        var twitter_cfg = {
+            tag: "twitter", options: { compatibilityMode: true },
+            policy: { length: 8, strength: -1, custom: cstm }
+        };
+        var twitter_old = 'q6oCYnFI';
+        var twitter_gen = generateHash(twitter_cfg, "aaaaaa");
+        assert.equal(twitter_gen, twitter_old);
+    });
 });

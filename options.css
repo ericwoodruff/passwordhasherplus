@@ -1,0 +1,13 @@
+.form-group h4 {
+  color: #666;
+  margin: 3px 0px;
+}
+
+td.label {
+  vertical-align: top;
+  width: 15em;
+}
+#everything {
+  font-family:monospace;
+  font-size:120%;
+}

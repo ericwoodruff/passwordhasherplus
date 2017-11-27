@@ -15,7 +15,7 @@ export:
 
 ff_webext: clean
 	rm -f ../${zip} || exit 0
-	zip -r ../${zip} * --exclude lib/mocha.* lib/chai.* Makefile spec.js test.html demo.html Screenshot.png "tests/*" "node_modules/*"
+	zip -r ../${zip} * --exclude lib/mocha.* lib/chai.* Makefile HACKING.md README.md spec.js test.html demo.html Screenshot.png "tests/*" "node_modules/*"
 
 clean:
 	find . -name '*.sha256' -delete

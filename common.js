@@ -77,6 +77,7 @@ var default_length = 8;
 var default_strength = 2;
 var default_hashkey = "Ctrl+Shift+51";
 var default_maskkey = "Ctrl+Shift+56";
+var default_sync = false;
 
 function generateGuid () {
 	var template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
@@ -106,16 +107,29 @@ function generateHash (config, input) {
 		);
 	}
 
-	return PassHashCommon.generateHashWord (
-		tag,
-		input,
-		config.policy.length,
-		true, // require digits
-		config.policy.strength > 1, // require punctuation
-		true, // require mixed case
-		config.policy.strength < 2, // no special characters
-		config.policy.strength == 0 // only digits
-	);
+  if (config.policy.strength == -1) {
+    return PassHashCommon.generateHashWord (
+      tag,
+      input,
+      config.policy.length,
+      config.policy.custom.d, // require digits
+      config.policy.custom.p, // require punctuation
+      config.policy.custom.m, // require mixed case
+      config.policy.custom.r, // no special characters
+      false // only digits
+    );
+  } else {
+    return PassHashCommon.generateHashWord (
+      tag,
+      input,
+      config.policy.length,
+      true, // require digits
+      config.policy.strength > 1, // require punctuation
+      true, // require mixed case
+      config.policy.strength < 2, // no special characters
+      config.policy.strength == 0 // only digits
+    );
+  }
 }
 
 function bump (tag) {
@@ -137,28 +151,29 @@ function bump (tag) {
 	return tag + ":" + bump;
 }
 
-function dumpDatabase () {
-    var entries = [];
-    var keys = toArray (localStorage);
-    for (var i = 0; i < keys.length; i++) {
-	var key = keys[i];
-	var value = localStorage.getItem(key);
-	var entry = {}
-	if (key.slice(0, 7) == "option:") {
-	    entry[key] = value;
-	} else {
-	    try {
-		entry[key] = JSON.parse(value);
-	    } catch (e) {
-		entry[key] = "BAD: " + value
-	    }
-	}
-	entry = JSON.stringify(entry);
-	entry = entry.replace("{","").replace(/}$/,"");
-	entries.push(entry);
-    }
-    entries.sort ();
-    return "{\n" + entries.join(",\n") + "\n}\n";
+function select_storage_area() {
+    return browser.storage.local.get('sync').then(results => {
+        var sync = 'sync' in results && results['sync'];
+        if (sync) {
+            return browser.storage.sync;
+        } else {
+            return browser.storage.local;
+        }
+    });
+}
+
+function dumpDatabase() {
+    return select_storage_area().then(area => {
+        return area.get(null).then(results=>{
+            var sane_order_results = new Object();
+            sane_order_results.version = results.version;
+	    sane_order_results.sync = results.sync;
+            sane_order_results.options = results.options;
+            sane_order_results.url = results.url;
+            sane_order_results.tag = results.tag;
+            return sane_order_results;
+	});
+    });
 }
 
 /* grepUrl:
