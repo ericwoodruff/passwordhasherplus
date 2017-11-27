@@ -35,6 +35,20 @@
 
 var debug = false;
 
+// XXX: Inject npm packages when running tests
+if (typeof require !== 'undefined') {
+    if (typeof tld === 'undefined') {
+        var tld = require('lib/tld.min.js');
+    }
+    if (typeof crypto === 'undefined') {
+        var crypto = new Object();
+        crypto.getRandomValues = require('get-random-values');
+    }
+    if (typeof PassHashCommon === 'undefined') {
+        PassHashCommon = require('lib/passhashcommon.js').PassHashCommon;
+    }
+}
+
 String.prototype.startsWith = function (str) {
 	return (this.match ("^" + str) == str);
 }
@@ -63,10 +77,16 @@ var default_length = 8;
 var default_strength = 2;
 var default_hashkey = "Ctrl+Shift+51";
 var default_maskkey = "Ctrl+Shift+56";
+var default_sync = false;
 
 function generateGuid () {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace (/[xy]/g, function(c) {
-		var r = Math.random ()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+	var template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+	var xycount = (template.match(/[xy]/g) || []).length;
+	var rand = new Uint8Array(xycount);
+	crypto.getRandomValues(rand);
+	var i = 0;
+	return template.replace (/[xy]/g, function(c) {
+		var r = rand[i++] % 16, v = c == 'x' ? r : (r&0x3|0x8);
 		return v.toString (16);
 	}).toUpperCase ();
 }
@@ -87,16 +107,29 @@ function generateHash (config, input) {
 		);
 	}
 
-	return PassHashCommon.generateHashWord (
-		tag,
-		input,
-		config.policy.length,
-		true, // require digits
-		config.policy.strength > 1, // require punctuation
-		true, // require mixed case
-		config.policy.strength < 2, // no special characters
-		config.policy.strength == 0 // only digits
-	);
+  if (config.policy.strength == -1) {
+    return PassHashCommon.generateHashWord (
+      tag,
+      input,
+      config.policy.length,
+      config.policy.custom.d, // require digits
+      config.policy.custom.p, // require punctuation
+      config.policy.custom.m, // require mixed case
+      config.policy.custom.r, // no special characters
+      false // only digits
+    );
+  } else {
+    return PassHashCommon.generateHashWord (
+      tag,
+      input,
+      config.policy.length,
+      true, // require digits
+      config.policy.strength > 1, // require punctuation
+      true, // require mixed case
+      config.policy.strength < 2, // no special characters
+      config.policy.strength == 0 // only digits
+    );
+  }
 }
 
 function bump (tag) {
@@ -118,28 +151,29 @@ function bump (tag) {
 	return tag + ":" + bump;
 }
 
-function dumpDatabase () {
-    var entries = [];
-    var keys = toArray (localStorage);
-    for (var i = 0; i < keys.length; i++) {
-	var key = keys[i];
-	var value = localStorage.getItem(key);
-	var entry = {}
-	if (key.slice(0, 7) == "option:") {
-	    entry[key] = value;
-	} else {
-	    try {
-		entry[key] = JSON.parse(value);
-	    } catch (e) {
-		entry[key] = "BAD: " + value
-	    }
-	}
-	entry = JSON.stringify(entry);
-	entry = entry.replace("{","").replace(/}$/,"");
-	entries.push(entry);
-    }
-    entries.sort ();
-    return "{\n" + entries.join(",\n") + "\n}\n";
+function select_storage_area() {
+    return browser.storage.local.get('sync').then(results => {
+        var sync = 'sync' in results && results['sync'];
+        if (sync) {
+            return browser.storage.sync;
+        } else {
+            return browser.storage.local;
+        }
+    });
+}
+
+function dumpDatabase() {
+    return select_storage_area().then(area => {
+        return area.get(null).then(results=>{
+            var sane_order_results = new Object();
+            sane_order_results.version = results.version;
+	    sane_order_results.sync = results.sync;
+            sane_order_results.options = results.options;
+            sane_order_results.url = results.url;
+            sane_order_results.tag = results.tag;
+            return sane_order_results;
+	});
+    });
 }
 
 /* grepUrl:
@@ -204,3 +238,18 @@ function extractQueryParam(string, key){
 function queryParam(key) {
     return extractQueryParam(location.search, key);
 }
+
+if (typeof exports !== 'undefined') {
+    exports.bump = bump;
+    exports.generateGuid = generateGuid;
+    exports.grepUrl = grepUrl;
+    exports.extractQueryParam = extractQueryParam;
+    exports.generateHash = generateHash;
+}
+
+function copy() {
+  var copyText = document.querySelector("#hash");
+  copyText.select();
+  document.execCommand("Copy");
+}
+

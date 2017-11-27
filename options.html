@@ -1,3 +1,6 @@
+<html>
+<head>
+<meta charset="utf-8">
 <!--
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -34,28 +37,55 @@
  *
  * ***** END LICENSE BLOCK ***** */
 -->
-<html>
-<head>
 <title>Password Hasher Plus - Options</title>
-<style>
-* { font-family: Arial; font-size: 12px; }
-</style>
-<script type="text/javascript" src="lib/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="lib/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="lib/tld.min.js"></script>
 <script type="text/javascript" src="common.js"></script>
 <script type="text/javascript" src="storage.js"></script>
+<script type="text/javascript" src="storagearea.js"></script>
 <script type="text/javascript" src="options.js"></script>
+<link rel="stylesheet" href="ui.css"/>
+<link rel="stylesheet" href="options.css"/>
 </head>
 
 <body>
-<img src="images/icon128.png"/>
-<h1>Password Hasher Plus - Options</h1>
-<a href="javascript:void(0)" id="portablePage" title="passhashplus.html">Portable HTML Page</a>
+<p>
+<h3><a href="javascript:void(0)" id="portablePage" title="passhashplus.html">Portable HTML Page</a></h3>
+</p>
 <div>
 	<table border="0">
+		<tr><td colspan="2">
+		<h4>Use Firefox Account to sync settings</h4>
+		</td></tr>
+		<tr><td colspan="2">
+		If you change the dropdown below and click &quot;save&quot;,
+		your options, tags, and URLs will be stored or reloaded from
+		the selected storage.
+		</td></tr>
+		<tr id="syncsetting">
+			<td colspan="2">
+				<select class="browser-style" id="sync">
+					<option value="0">Do not sync settings</option>
+					<option value="1">Sync settings</option>
+				</select>
+				<select class="browser-style" id="sync-options">
+					<option value="0">Use existing settings</option>
+					<option value="1">Overwrite existing settings</option>
+					<option value="2">Merge local and sync settings &ndash; give preference to local version</option>
+					<option value="3">Merge local and sync settings &ndash; give preference to sync version</option>
+				</select>
+				<button class="browser-style" id="syncSave">Save</button>
+			</td>
+		</tr>
+                <tr>
+                        <td colspan="2"><hr/></td>
+                </tr>
+		<tr><td colspan="2">
+		<h4>Options</h4>
+		</td></tr>
 		<tr>
-			<td>Default Password Length:</td>
-			<td><select id="length">
+			<td class="label">Default Password Length:</td>
+			<td><select class="browser-style" id="length">
 				<option value="2">2</option>
 				<option value="4">4</option>
 				<option value="6">6</option>
@@ -72,66 +102,88 @@
 			</select></td>
 		</tr>
 		<tr>
-			<td>Default Password Strength:</td>
-			<td><select id="strength">
+			<td class="label">Default Password Strength:</td>
+			<td><select class="browser-style" id="strength">
 				<option value="2">Alphanumeric+Special</option>
 				<option value="1">Alphanumeric</option>
 				<option value="0">Numeric</option>
+				<option value="-1">Custom</option>
 			</select></td>
 		</tr>
+		<tr id="customstrengthrow" class="hidden">
+			<td  class="label">Custom Strength Options:</td>
+			<td><div id="strength-restrictions" class="browser-style form-group"><ul>
+				<h4>Requirements</h4>
+				<li class="browser-style"><input type="checkbox" id="d" checked="true"/><label for="d">At least one digit</label></li>
+				<li class="browser-style"><input type="checkbox" id="p" checked="true"/><label for="p">At least on punctuation character</label></li>
+				<li class="browser-style"><input type="checkbox" id="m" checked="true"/><label for="m">Both upper- and lower-case letters</label></li>
+				<h4>Restrictions</h4>
+				<li class="browser-style"><input type="checkbox" id="r"/><label for="r">No special characters</label></li>
+			</ul></div> </td>
+		</tr>
 		<tr>
-			<td>Hash Shortcut:</td>
-			<td>
-				<input id="hashkey" type="text" size="48"/>
-				<input id="haskeydefault" type="button" value="Default (Ctrl+#)"/>
+			<td class="label">Hash Shortcut:</td>
+			<td class="browser-style">
+					<input type="text" id="hashkey" size="48"/>
+					<button class="browser-style" id="haskeydefault" type="button">Default (Ctrl+#)</button>
 			</td>
 		</tr>
 		<tr>
-			<td>Mask Shortcut:</td>
+			<td class="label">Mask Shortcut:</td>
 			<td>
-				<input id="maskkey" type="text" size="48"/>
-				<input id="maskkeydefault" type="button" value="Default (Ctrl+*)"/>
+				<div class="browser-style">
+					<input id="maskkey" type="text" size="48"/>
+					<button class="browser-style" id="maskkeydefault" type="button">Default (Ctrl+*)</button>
+				</div>
 			</td>
 		</tr>
 		<tr>
-			<td>Compatibility Mode</td>
+			<td class="label">Compatibility Mode</td>
 			<td>
-				<input id="compatibility" type="checkbox"/> Use compatibility mode (less secure).
+				<div class="browser-style">
+				<input id="compatibility" type="checkbox"/><label for="compatibility">Use compatibility mode (less secure).</label>
+				</div>
 			</td>
 		</tr>
 		<tr>
-			<td>Private Key:</td>
+			<td class="label">Private Key:</td>
 			<td>
-				<input id="seed" type="text" size="48" maxlength="45"/>
-				<input id="generate" type="button" value="Generate"/>
+				<div class="browser-style">
+					<input id="seed" type="text" size="48" maxlength="45"/>
+					<button class="browser-style" id="generate" value="Generate">Generate</button>
+				</div>
 			</td>
 		</tr>
 		<tr>
-			<td>Backup:</td>
+			<td class="label">Backup:</td>
 			<td>
-				<p><b>Note: You must backup this key and keep it safe and secure in case you need to restore it in the future.</b></p>
-				<input id="backedup" type="checkbox"/> I have backed up my private key.
+				<div class="browser-style">
+				<input id="backedup" type="checkbox"/><label for="backedup">I have backed up my private key.</label>
+				</div>
+				<b>Note: You must backup this key and keep it safe and secure in case you need to restore it in the future.</b><br/>
 			</td>
 		</tr>
 		<tr>
 			<td></td>
                         <td>
-                                <button id="backupSave">Save</button>
-			        <button id="backupRevert">Revert</button>
-			        <button id="removeUnUsedTags">Remove Unused Tags</button>
+                                <button class="browser-style" id="backupSave">Save</button>
+			        <button class="browser-style" id="backupRevert">Revert</button>
+			        <button class="browser-style" id="removeUnUsedTags">Remove Unused Tags</button>
 			</td>
 		</tr>
                 <tr>
                         <td colspan="2"><hr/></td>
                 </tr>
+		<tr><td colspan="2">
+		<h4>Database dump for backup</h4>
+		</td></tr>
                 <tr>
-			<td>Database: <button id="dbClear">Clear</button>
-                        </td>
-                        <td>
-				<textarea id="everything" cols="120" rows="12"></textarea>
+                        <td colspan="2">
+				<textarea class="browser-style" id="everything" cols="100" rows="40"></textarea>
 				<br/>
-                                <button id="dbSave">Save</button>
-                                <button id="dbRevert">Revert</button>
+				<button class="browser-style" id="dbClear">Clear</button>
+				<button class="browser-style" id="dbSave">Save</button>
+				<button class="browser-style" id="dbRevert">Revert</button>
                         </td>
                 </tr>
 	</table>

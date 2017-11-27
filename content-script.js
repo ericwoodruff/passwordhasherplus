@@ -34,7 +34,7 @@
  * ***** END LICENSE BLOCK ***** */
 var config;
 
-var port = chrome.extension.connect ({name: "passhash"});
+var port = chrome.runtime.connect({name: "passhash"});
 
 var id = 0;
 
@@ -249,7 +249,7 @@ function bind (f) {
 	});
 
 	$(field).keydown (function (e) {
-		shortcut = (e.ctrlKey ? "Ctrl+" : "") + (e.shiftKey ? "Shift+" : "") + e.which;
+		var shortcut = (e.ctrlKey ? "Ctrl+" : "") + (e.shiftKey ? "Shift+" : "") + e.which;
 		if (shortcut == config.options.hashKey)
 			toggleHashing (true);
 		if (shortcut == config.options.maskKey)
