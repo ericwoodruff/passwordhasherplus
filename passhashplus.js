@@ -120,11 +120,11 @@ $( document ).ready(function () {
     $('#is-file-portable').text("true");
     var gettings = $("script").map(function(_i, script){ //1
       if (script.type == "text/javascript"){
-        return $.get($(script).attr('src'), function (data) { //1.a
+        return $.get($(script).attr('src'), null, function (data) { //1.a
           $(script).text (data); //1.b
           $(script).before('<!-- src="' + $(script).attr('src') + '" -->'); //1.d
           $(script).removeAttr("src"); //1.c
-        });
+        }, 'text');
       } //if (script.type == "text/javascript")
     });
 
